@@ -1,0 +1,1006 @@
+_RNvXs1_Cs5IProYtNGUc_17json_event_parserNtB5_9JsonEventNtNtCs14T3Clq7K4W_4core3cmp9PartialEq2eqCs5l3nETYNrq6_13oxigraph_fuzz:
+   47|    763|#[derive(Eq, PartialEq, Debug, Clone, Copy, Hash)]
+
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE10read_eventCs5l3nETYNrq6_13oxigraph_fuzz:
+   50|  7.79k|    pub fn read_event<'a>(&mut self, buffer: &'a mut Vec<u8>) -> Result<JsonEvent<'a>> {
+   51|  7.79k|        let front = if let Some(b) = self.lookup_front_skipping_whitespaces()? {
+   52|  7.71k|            b
+   53|       |        } else {
+   54|     76|            return if self.state_stack.is_empty() && self.element_read {
+   55|      0|                Ok(JsonEvent::Eof)
+   56|       |            } else {
+   57|     76|                Err(Error::from(ErrorKind::UnexpectedEof))
+   58|       |            };
+   59|       |        };
+   60|  7.71k|        match front {
+   61|       |            b'{' => {
+   62|  1.06k|                self.reader.consume(1);
+   63|  1.06k|                self.check_stack_size()?;
+   64|  1.06k|                self.state_stack.push(JsonState::FirstObjectKey);
+   65|  1.06k|                Ok(JsonEvent::StartObject)
+   66|       |            }
+   67|       |            b'}' => {
+   68|    181|                self.reader.consume(1);
+   69|      2|                if matches!(
+   70|    181|                    self.state_stack.pop(),
+   71|       |                    Some(JsonState::FirstObjectKey) | Some(JsonState::LastObjectKey)
+   72|       |                ) {
+   73|    179|                    self.read_after_value(JsonEvent::EndObject)
+   74|       |                } else {
+   75|      2|                    Err(Error::new(
+   76|      2|                        ErrorKind::InvalidData,
+   77|      2|                        "Closing a not opened object",
+   78|      2|                    ))
+   79|       |                }
+   80|       |            }
+   81|       |            b'[' => {
+   82|  1.07k|                self.reader.consume(1);
+   83|  1.07k|                self.check_stack_size()?;
+   84|  1.07k|                self.state_stack.push(JsonState::FirstArray);
+   85|  1.07k|                Ok(JsonEvent::StartArray)
+   86|       |            }
+   87|       |            b']' => {
+   88|    144|                self.reader.consume(1);
+   89|      4|                if matches!(
+   90|    144|                    self.state_stack.pop(),
+   91|       |                    Some(JsonState::FirstArray) | Some(JsonState::LastArray)
+   92|       |                ) {
+   93|    140|                    self.read_after_value(JsonEvent::EndArray)
+   94|       |                } else {
+   95|      4|                    Err(Error::new(
+   96|      4|                        ErrorKind::InvalidData,
+   97|      4|                        "Closing a not opened array",
+   98|      4|                    ))
+   99|       |                }
+  100|       |            }
+  101|  2.53k|            b'"' => self.parse_string(buffer),
+  102|      5|            b't' => self.parse_constant::<4>("true", JsonEvent::Boolean(true)),
+  103|      3|            b'f' => self.parse_constant::<5>("false", JsonEvent::Boolean(false)),
+  104|      2|            b'n' => self.parse_constant::<4>("null", JsonEvent::Null),
+  105|  2.67k|            b'-' | b'0'..=b'9' => self.parse_number(front, buffer),
+  106|     32|            c => {
+  107|     32|                self.reader.consume(1);
+  108|     32|                Err(Error::new(
+  109|     32|                    ErrorKind::InvalidData,
+  110|     32|                    format!("Unexpected char: {}", char::from(c)),
+  111|     32|                ))
+  112|       |            }
+  113|       |        }
+  114|  7.79k|    }
+_RINvMNtCs5IProYtNGUc_17json_event_parser4readINtB3_10JsonReaderRShE9read_charNCNvB2_12parse_numbers_0ECs5l3nETYNrq6_13oxigraph_fuzz:
+  338|    168|    fn read_char(&mut self, valid: impl Fn(u8) -> bool, output: &mut Vec<u8>) -> Result<()> {
+  339|    168|        let c = self.lookup_mandatory_front()?;
+  340|    164|        if valid(c) {
+  341|    161|            output.push(c);
+  342|    161|            self.reader.consume(1);
+  343|    161|            Ok(())
+  344|       |        } else {
+  345|      3|            Err(Error::new(
+  346|      3|                ErrorKind::InvalidData,
+  347|      3|                format!("Invalid number. Found char {}", char::from(c)),
+  348|      3|            ))
+  349|       |        }
+  350|    168|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE12lookup_frontCs5l3nETYNrq6_13oxigraph_fuzz:
+  469|  24.2k|    fn lookup_front(&mut self) -> Result<Option<u8>> {
+  470|  24.2k|        loop {
+  471|  24.2k|            match self.reader.fill_buf() {
+  472|  24.2k|                Ok(buf) => return Ok(if buf.is_empty() { None } else { Some(buf[0]) }),
+  473|      0|                Err(error) => {
+  474|      0|                    if error.kind() != ErrorKind::Interrupted {
+  475|      0|                        return Err(error);
+  476|      0|                    }
+  477|       |                }
+  478|       |            }
+  479|       |        }
+  480|  24.2k|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE33lookup_front_skipping_whitespacesCs5l3nETYNrq6_13oxigraph_fuzz:
+  436|  13.0k|    fn lookup_front_skipping_whitespaces(&mut self) -> Result<Option<u8>> {
+  437|  13.0k|        loop {
+  438|  13.0k|            match self.reader.fill_buf() {
+  439|  13.0k|                Ok(buf) => {
+  440|  13.0k|                    if buf.is_empty() {
+  441|    157|                        return Ok(None);
+  442|  12.9k|                    }
+  443|  12.9k|                    let skipped = skip_whitespaces(buf);
+  444|  12.9k|                    if skipped == buf.len() {
+  445|     35|                        self.reader.consume(skipped);
+  446|     35|                    } else {
+  447|  12.8k|                        let result = Some(buf[skipped]);
+  448|  12.8k|                        self.reader.consume(skipped);
+  449|  12.8k|                        return Ok(result);
+  450|       |                    }
+  451|       |                }
+  452|      0|                Err(error) => {
+  453|      0|                    if error.kind() != ErrorKind::Interrupted {
+  454|      0|                        return Err(error);
+  455|      0|                    }
+  456|       |                }
+  457|       |            }
+  458|       |        }
+  459|  13.0k|    }
+_RNCNvMNtCs5IProYtNGUc_17json_event_parser4readINtB4_10JsonReaderRShE12parse_number0Cs5l3nETYNrq6_13oxigraph_fuzz:
+  302|    231|            self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+_RNCNvMNtCs5IProYtNGUc_17json_event_parser4readINtB4_10JsonReaderRShE12parse_string0Cs5l3nETYNrq6_13oxigraph_fuzz:
+  154|      3|                                        .map_err(|e| Error::new(ErrorKind::InvalidData, e))?,
+_RNCINvMNtCs5IProYtNGUc_17json_event_parser4readINtB5_10JsonReaderRShE14parse_constantKj4_E0Cs5l3nETYNrq6_13oxigraph_fuzz:
+  266|      1|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE12parse_numberCs5l3nETYNrq6_13oxigraph_fuzz:
+  272|  2.67k|    fn parse_number<'a>(
+  273|  2.67k|        &mut self,
+  274|  2.67k|        first_byte: u8,
+  275|  2.67k|        output: &'a mut Vec<u8>,
+  276|  2.67k|    ) -> Result<JsonEvent<'a>> {
+  277|  2.67k|        output.clear();
+  278|  2.67k|        if first_byte == b'-' {
+  279|     16|            output.push(b'-');
+  280|     16|            self.reader.consume(1);
+  281|  2.65k|        }
+  282|       |        // integer starting with first bytes
+  283|       |        // TODO: avoid too many fill_buf
+  284|  2.67k|        let c = self.lookup_mandatory_front()?;
+  285|  2.66k|        match c {
+  286|    174|            b'0' => {
+  287|    174|                output.push(b'0');
+  288|    174|                self.reader.consume(1);
+  289|    174|            }
+  290|  2.49k|            b'1'..=b'9' => {
+  291|  2.49k|                output.push(c);
+  292|  2.49k|                self.reader.consume(1);
+  293|  2.49k|                self.read_digits(output)?;
+  294|       |            }
+  295|      1|            _ => return Err(Error::new(ErrorKind::InvalidData, "Invalid number")),
+  296|       |        }
+  297|       |
+  298|       |        // Dot
+  299|  2.66k|        if self.lookup_front()? == Some(b'.') {
+  300|    233|            output.push(b'.');
+  301|    233|            self.reader.consume(1);
+  302|    233|            self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+  303|    229|            self.read_digits(output)?;
+  304|  2.43k|        }
+  305|       |
+  306|       |        // Exp
+  307|  2.66k|        if let Some(c) = self.lookup_front()? {
+  308|  2.63k|            if c == b'e' || c == b'E' {
+  309|  1.39k|                output.push(c);
+  310|  1.39k|                self.reader.consume(1);
+  311|  1.39k|                let c = self.lookup_mandatory_front()?;
+  312|  1.39k|                match c {
+  313|       |                    b'-' | b'+' => {
+  314|    168|                        output.push(c);
+  315|    168|                        self.reader.consume(1);
+  316|    168|                        self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+  317|       |                    }
+  318|  1.22k|                    b'0'..=b'9' => {
+  319|  1.22k|                        output.push(c);
+  320|  1.22k|                        self.reader.consume(1);
+  321|  1.22k|                    }
+  322|       |                    _ => {
+  323|      3|                        return Err(Error::new(
+  324|      3|                            ErrorKind::InvalidData,
+  325|      3|                            format!("Invalid number. Found char {}", char::from(c)),
+  326|      3|                        ))
+  327|       |                    }
+  328|       |                }
+  329|  1.38k|                self.read_digits(output)?;
+  330|  1.23k|            }
+  331|     28|        }
+  332|       |
+  333|       |        self.read_after_value(JsonEvent::Number(
+  334|  2.64k|            str::from_utf8(output.as_slice()).map_err(|e| Error::new(ErrorKind::InvalidData, e))?,
+  335|       |        ))
+  336|  2.67k|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE16read_after_valueCs5l3nETYNrq6_13oxigraph_fuzz:
+  365|  5.29k|        match self.state_stack.pop() {
+  366|       |            Some(JsonState::FirstObjectKey) | Some(JsonState::NextObjectKey) => {
+  367|  1.68k|                if self.lookup_front_skipping_whitespaces()? == Some(b':') {
+  368|  1.66k|                    self.reader.consume(1);
+  369|  1.66k|                    self.state_stack.push(JsonState::ObjectValue);
+  370|  1.66k|                    if let JsonEvent::String(value) = value {
+  371|  1.66k|                        Ok(JsonEvent::ObjectKey(value))
+  372|       |                    } else {
+  373|      1|                        Err(Error::new(
+  374|      1|                            ErrorKind::InvalidData,
+  375|      1|                            "Object keys should strings",
+  376|      1|                        ))
+  377|       |                    }
+  378|       |                } else {
+  379|     20|                    Err(Error::new(
+  380|     20|                        ErrorKind::InvalidData,
+  381|     20|                        "Object keys should be followed by ':'",
+  382|     20|                    ))
+  383|       |                }
+  384|       |            }
+  385|    969|            Some(JsonState::ObjectValue) => match self.lookup_front_skipping_whitespaces()? {
+  386|       |                Some(b',') => {
+  387|    816|                    self.reader.consume(1);
+  388|    816|                    self.state_stack.push(JsonState::NextObjectKey);
+  389|    816|                    Ok(value)
+  390|       |                }
+  391|       |                Some(b'}') => {
+  392|     82|                    self.state_stack.push(JsonState::LastObjectKey);
+  393|     82|                    Ok(value)
+  394|       |                }
+  395|     71|                _ => Err(Error::new(
+  396|     71|                    ErrorKind::InvalidData,
+  397|     71|                    "Object values should be followed by a comma or the object end",
+  398|     71|                )),
+  399|       |            },
+  400|       |            Some(JsonState::FirstArray) | Some(JsonState::NextArray) => {
+  401|  2.57k|                match self.lookup_front_skipping_whitespaces()? {
+  402|       |                    Some(b',') => {
+  403|  2.39k|                        self.reader.consume(1);
+  404|  2.39k|                        self.state_stack.push(JsonState::NextArray);
+  405|  2.39k|                        Ok(value)
+  406|       |                    }
+  407|       |                    Some(b']') => {
+  408|    145|                        self.state_stack.push(JsonState::LastArray);
+  409|    145|                        Ok(value)
+  410|       |                    }
+  411|     34|                    _ => Err(Error::new(
+  412|     34|                        ErrorKind::InvalidData,
+  413|     34|                        "Array values should be followed by a comma or the array end",
+  414|     34|                    )),
+  415|       |                }
+  416|       |            }
+  417|       |            None => {
+  418|     63|                if self.element_read {
+  419|      0|                    Err(Error::new(ErrorKind::InvalidData, "JSON trailing content"))
+  420|       |                } else {
+  421|     63|                    self.element_read = true;
+  422|     63|                    Ok(value)
+  423|       |                }
+  424|       |            }
+  425|      0|            Some(JsonState::LastObjectKey) => Err(Error::new(
+  426|      0|                ErrorKind::InvalidData,
+  427|      0|                "JSON object elements should be separated by commas",
+  428|      0|            )),
+  429|      0|            Some(JsonState::LastArray) => Err(Error::new(
+  430|      0|                ErrorKind::InvalidData,
+  431|      0|                "JSON array elements should be separated by commas",
+  432|      0|            )),
+  433|       |        }
+  434|  5.29k|    }
+_RINvMNtCs5IProYtNGUc_17json_event_parser4readINtB3_10JsonReaderRShE14parse_constantKj4_ECs5l3nETYNrq6_13oxigraph_fuzz:
+  250|      7|    fn parse_constant<'a, const SIZE: usize>(
+  251|      7|        &mut self,
+  252|      7|        expected: &str,
+  253|      7|        value: JsonEvent<'a>,
+  254|      7|    ) -> Result<JsonEvent<'a>> {
+  255|      0|        debug_assert_eq!(expected.len(), SIZE);
+  256|      7|        let mut buf = [0u8; SIZE];
+  257|      7|        self.reader.read_exact(&mut buf)?;
+  258|      3|        if buf == expected.as_bytes() {
+  259|      0|            self.read_after_value(value)
+  260|       |        } else {
+  261|       |            Err(Error::new(
+  262|      3|                ErrorKind::InvalidData,
+  263|      3|                format!(
+  264|      3|                    "{} expected, found {}",
+  265|      3|                    expected,
+  266|      3|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+  267|       |                ),
+  268|       |            ))
+  269|       |        }
+  270|      7|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE16check_stack_sizeCs5l3nETYNrq6_13oxigraph_fuzz:
+  483|  2.13k|        if let Some(max_stack_size) = self.max_stack_size {
+  484|      0|            if self.state_stack.len() > max_stack_size {
+  485|      0|                Err(Error::new(
+  486|      0|                    ErrorKind::InvalidData,
+  487|      0|                    format!(
+  488|      0|                        "Max stack size of {} reached on an object opening",
+  489|      0|                        max_stack_size
+  490|      0|                    ),
+  491|      0|                ))
+  492|       |            } else {
+  493|      0|                Ok(())
+  494|       |            }
+  495|       |        } else {
+  496|  2.13k|            Ok(())
+  497|       |        }
+  498|  2.13k|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE22lookup_mandatory_frontCs5l3nETYNrq6_13oxigraph_fuzz:
+  461|  6.76k|    fn lookup_mandatory_front(&mut self) -> Result<u8> {
+  462|  6.76k|        if let Some(v) = self.lookup_front()? {
+  463|  6.74k|            Ok(v)
+  464|       |        } else {
+  465|     19|            Err(Error::from(ErrorKind::UnexpectedEof))
+  466|       |        }
+  467|  6.76k|    }
+_RINvMNtCs5IProYtNGUc_17json_event_parser4readINtB3_10JsonReaderRShE9read_charNCNvB2_12parse_number0ECs5l3nETYNrq6_13oxigraph_fuzz:
+  338|    233|    fn read_char(&mut self, valid: impl Fn(u8) -> bool, output: &mut Vec<u8>) -> Result<()> {
+  339|    233|        let c = self.lookup_mandatory_front()?;
+  340|    231|        if valid(c) {
+  341|    229|            output.push(c);
+  342|    229|            self.reader.consume(1);
+  343|    229|            Ok(())
+  344|       |        } else {
+  345|      2|            Err(Error::new(
+  346|      2|                ErrorKind::InvalidData,
+  347|      2|                format!("Invalid number. Found char {}", char::from(c)),
+  348|      2|            ))
+  349|       |        }
+  350|    233|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE11from_readerCs5l3nETYNrq6_13oxigraph_fuzz:
+   35|    604|    pub fn from_reader(reader: R) -> Self {
+   36|    604|        Self {
+   37|    604|            reader,
+   38|    604|            state_stack: Vec::new(),
+   39|    604|            element_read: false,
+   40|    604|            max_stack_size: None,
+   41|    604|        }
+   42|    604|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE12parse_stringCs5l3nETYNrq6_13oxigraph_fuzz:
+  116|  2.53k|    fn parse_string<'a>(&mut self, output: &'a mut Vec<u8>) -> Result<JsonEvent<'a>> {
+  117|  2.53k|        output.clear();
+  118|  2.53k|        self.reader.consume(1);
+  119|  2.53k|
+  120|  2.53k|        #[derive(Eq, PartialEq, Copy, Clone)]
+  121|  2.53k|        enum StringState {
+  122|  2.53k|            Default,
+  123|  2.53k|            Escape,
+  124|  2.53k|        }
+  125|  2.53k|
+  126|  2.53k|        let mut state = StringState::Default;
+  127|  7.12k|        loop {
+  128|  7.12k|            match state {
+  129|       |                StringState::Default => {
+  130|  4.83k|                    let buffer = match self.reader.fill_buf() {
+  131|  4.83k|                        Ok(buf) => {
+  132|  4.83k|                            if buf.is_empty() {
+  133|    159|                                return Err(Error::from(ErrorKind::UnexpectedEof));
+  134|       |                            } else {
+  135|  4.67k|                                buf
+  136|       |                            }
+  137|       |                        }
+  138|      0|                        Err(e) => {
+  139|      0|                            if e.kind() == ErrorKind::Interrupted {
+  140|      0|                                continue;
+  141|       |                            } else {
+  142|      0|                                return Err(e);
+  143|       |                            }
+  144|       |                        }
+  145|       |                    };
+  146|  4.67k|                    let mut i = 0;
+  147|  26.7k|                    for c in buffer {
+  148|  26.6k|                        i += 1;
+  149|  26.6k|                        match *c {
+  150|       |                            b'"' => {
+  151|  2.33k|                                self.reader.consume(i);
+  152|  2.33k|                                return self.read_after_value(JsonEvent::String(
+  153|  2.33k|                                    str::from_utf8(output.as_slice())
+  154|  2.33k|                                        .map_err(|e| Error::new(ErrorKind::InvalidData, e))?,
+  155|       |                                ));
+  156|       |                            }
+  157|       |                            b'\\' => {
+  158|  2.28k|                                state = StringState::Escape;
+  159|  2.28k|                                break;
+  160|       |                            }
+  161|  22.0k|                            0..=0x1F => {
+  162|     13|                                self.reader.consume(i);
+  163|     13|                                return Err(Error::new(
+  164|     13|                                    ErrorKind::InvalidData,
+  165|     13|                                    "Control characters are not allowed in JSON",
+  166|     13|                                ));
+  167|       |                            }
+  168|  22.0k|                            c => output.push(c),
+  169|       |                        }
+  170|       |                    }
+  171|  2.33k|                    self.reader.consume(i);
+  172|       |                }
+  173|       |                StringState::Escape => {
+  174|  2.28k|                    let c = self.lookup_mandatory_front()?;
+  175|  2.28k|                    self.reader.consume(1);
+  176|  2.28k|                    match c {
+  177|    387|                        b'"' => {
+  178|    387|                            output.push(b'"');
+  179|    387|                        }
+  180|    284|                        b'\\' => {
+  181|    284|                            output.push(b'\\');
+  182|    284|                        }
+  183|     76|                        b'/' => {
+  184|     76|                            output.push(b'/');
+  185|     76|                        }
+  186|    145|                        b'b' => {
+  187|    145|                            output.push(8);
+  188|    145|                        }
+  189|     91|                        b'f' => {
+  190|     91|                            output.push(12);
+  191|     91|                        }
+  192|    228|                        b'n' => {
+  193|    228|                            output.push(b'\n');
+  194|    228|                        }
+  195|     94|                        b'r' => {
+  196|     94|                            output.push(b'\r');
+  197|     94|                        }
+  198|    209|                        b't' => {
+  199|    209|                            output.push(b'\t');
+  200|    209|                        }
+  201|       |                        b'u' => {
+  202|    764|                            let mut buf = [0u8; 4];
+  203|    764|                            self.reader.read_exact(&mut buf)?;
+  204|    760|                            let code_point = read_hexa_char(&buf)?;
+  205|    750|                            if let Some(c) = char::from_u32(code_point) {
+  206|    550|                                output.extend_from_slice(c.encode_utf8(&mut buf).as_bytes());
+  207|    550|                            } else {
+  208|    200|                                let high_surrogate = code_point;
+  209|    200|                                let mut buf = [0u8; 6];
+  210|    200|                                self.reader.read_exact(&mut buf)?;
+  211|    197|                                if !buf.starts_with(b"\\u") {
+  212|      5|                                    return Err(Error::new(
+  213|      5|                                            ErrorKind::InvalidData,
+  214|      5|                                            format!(
+  215|      5|                                                "\\u{:X} is a surrogate should be followed by an other surrogate",
+  216|      5|                                                high_surrogate
+  217|      5|                                            ),
+  218|      5|                                        ));
+  219|    192|                                }
+  220|    192|                                let low_surrogate = read_hexa_char(&buf[2..])?;
+  221|    190|                                let code_point = 0x10000
+  222|    190|                                    + ((high_surrogate & 0x03FF) << 10)
+  223|    190|                                    + (low_surrogate & 0x03FF);
+  224|    190|                                if let Some(c) = char::from_u32(code_point) {
+  225|    190|                                    output.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())
+  226|       |                                } else {
+  227|      0|                                    return Err(Error::new(
+  228|      0|                                        ErrorKind::InvalidData,
+  229|      0|                                        format!(
+  230|      0|                                            "\\u{:X}\\u{:X} is an invalid surrogate pair",
+  231|      0|                                            high_surrogate, low_surrogate
+  232|      0|                                        ),
+  233|      0|                                    ));
+  234|       |                                }
+  235|       |                            }
+  236|       |                        }
+  237|       |                        _ => {
+  238|      6|                            return Err(Error::new(
+  239|      6|                                ErrorKind::InvalidData,
+  240|      6|                                "Invalid string escape",
+  241|      6|                            ));
+  242|       |                        }
+  243|       |                    }
+  244|  2.25k|                    state = StringState::Default;
+  245|       |                }
+  246|       |            }
+  247|       |        }
+  248|  2.53k|    }
+_RINvMNtCs5IProYtNGUc_17json_event_parser4readINtB3_10JsonReaderRShE14parse_constantKj5_ECs5l3nETYNrq6_13oxigraph_fuzz:
+  250|      3|    fn parse_constant<'a, const SIZE: usize>(
+  251|      3|        &mut self,
+  252|      3|        expected: &str,
+  253|      3|        value: JsonEvent<'a>,
+  254|      3|    ) -> Result<JsonEvent<'a>> {
+  255|      0|        debug_assert_eq!(expected.len(), SIZE);
+  256|      3|        let mut buf = [0u8; SIZE];
+  257|      3|        self.reader.read_exact(&mut buf)?;
+  258|      2|        if buf == expected.as_bytes() {
+  259|      0|            self.read_after_value(value)
+  260|       |        } else {
+  261|       |            Err(Error::new(
+  262|      2|                ErrorKind::InvalidData,
+  263|      2|                format!(
+  264|      2|                    "{} expected, found {}",
+  265|      2|                    expected,
+  266|      2|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+  267|       |                ),
+  268|       |            ))
+  269|       |        }
+  270|      3|    }
+_RNvMNtCs5IProYtNGUc_17json_event_parser4readINtB2_10JsonReaderRShE11read_digitsCs5l3nETYNrq6_13oxigraph_fuzz:
+  352|  4.10k|    fn read_digits(&mut self, output: &mut Vec<u8>) -> Result<()> {
+  353|  12.2k|        while let Some(c) = self.lookup_front()? {
+  354|  12.1k|            if matches!(c, b'0'..=b'9') {
+  355|  8.09k|                output.push(c);
+  356|  8.09k|                self.reader.consume(1);
+  357|  8.09k|            } else {
+  358|  4.07k|                break;
+  359|       |            }
+  360|       |        }
+  361|  4.10k|        Ok(())
+  362|  4.10k|    }
+_RNCINvMNtCs5IProYtNGUc_17json_event_parser4readINtB5_10JsonReaderRShE14parse_constantKj5_E0Cs5l3nETYNrq6_13oxigraph_fuzz:
+  266|      1|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+_RNCNvMNtCs5IProYtNGUc_17json_event_parser4readINtB4_10JsonReaderRShE12parse_numbers_0Cs5l3nETYNrq6_13oxigraph_fuzz:
+  316|    164|                        self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+_RNvNtCs5IProYtNGUc_17json_event_parser4read14read_hexa_char:
+  521|    952|fn read_hexa_char(input: &[u8]) -> Result<u32> {
+  522|    952|    let mut value = 0;
+  523|  3.79k|    for c in input.iter().copied() {
+  524|  3.79k|        value = value * 16
+  525|  3.79k|            + match c {
+  526|  3.79k|                b'0'..=b'9' => u32::from(c) - u32::from(b'0'),
+  527|  1.22k|                b'a'..=b'f' => u32::from(c) - u32::from(b'a') + 10,
+  528|  1.22k|                b'A'..=b'F' => u32::from(c) - u32::from(b'A') + 10,
+  529|       |                _ => {
+  530|     12|                    return Err(Error::new(
+  531|     12|                        ErrorKind::InvalidData,
+  532|     12|                        "Unexpected character in a unicode escape",
+  533|     12|                    ))
+  534|       |                }
+  535|       |            }
+  536|       |    }
+  537|    940|    Ok(value)
+  538|    952|}
+_RNvNtCs5IProYtNGUc_17json_event_parser4read16skip_whitespaces:
+  512|  12.9k|fn skip_whitespaces(buf: &[u8]) -> usize {
+  513|  17.1k|    for (i, c) in buf.iter().enumerate() {
+  514|  17.1k|        if !matches!(c, b' ' | b'\t' | b'\n' | b'\r') {
+  515|  12.8k|            return i;
+  516|  4.27k|        }
+  517|       |    }
+  518|     35|    buf.len()
+  519|  12.9k|}
+
+rust_fuzzer_test_input:
+  215|    604|                if let Some(path) = $crate::RUST_LIBFUZZER_DEBUG_PATH.get() {
+  216|       |                    use std::io::Write;
+  217|      0|                    let mut file = std::fs::File::create(path)
+  218|      0|                        .expect("failed to create `RUST_LIBFUZZER_DEBUG_PATH` file");
+  219|      0|                    writeln!(&mut file, "{:?}", bytes)
+  220|      0|                        .expect("failed to write to `RUST_LIBFUZZER_DEBUG_PATH` file");
+  221|      0|                    return 0;
+  222|    604|                }
+  223|    604|
+  224|    604|                __libfuzzer_sys_run(bytes);
+  225|    604|                0
+  226|    604|            }
+_RNvNvCseaLXHFqYa0q_19sparql_results_json1__19___libfuzzer_sys_run:
+  241|    604|            fn __libfuzzer_sys_run($bytes: &[u8]) {
+  242|    604|                $body
+  243|    604|            }
+_RNCNvCshs4t5K2tNQW_13libfuzzer_sys15test_input_wrap0B3_:
+   59|    604|    let test_input = ::std::panic::catch_unwind(|| unsafe {
+   60|    604|        let data_slice = ::std::slice::from_raw_parts(data, size);
+   61|    604|        rust_fuzzer_test_input(data_slice)
+   62|    604|    });
+LLVMFuzzerInitialize:
+   79|      2|pub fn initialize(_argc: *const isize, _argv: *const *const *const u8) -> isize {
+   80|      2|    // Registers a panic hook that aborts the process before unwinding.
+   81|      2|    // It is useful to abort before unwinding so that the fuzzer will then be
+   82|      2|    // able to analyse the process stack frames to tell different bugs appart.
+   83|      2|    //
+   84|      2|    // HACK / FIXME: it would be better to use `-C panic=abort` but it's currently
+   85|      2|    // impossible to build code using compiler plugins with this flag.
+   86|      2|    // We will be able to remove this code when
+   87|      2|    // https://github.com/rust-lang/cargo/issues/5423 is fixed.
+   88|      2|    let default_hook = ::std::panic::take_hook();
+   89|      2|    ::std::panic::set_hook(Box::new(move |panic_info| {
+   90|       |        default_hook(panic_info);
+   91|       |        ::std::process::abort();
+   92|      2|    }));
+   93|       |
+   94|       |    // Initialize the `RUST_LIBFUZZER_DEBUG_PATH` cell with the path so it can be
+   95|       |    // reused with little overhead.
+   96|      2|    if let Ok(path) = std::env::var("RUST_LIBFUZZER_DEBUG_PATH") {
+   97|      0|        RUST_LIBFUZZER_DEBUG_PATH
+   98|      0|            .set(path)
+   99|      0|            .expect("Since this is initialize it is only called once so can never fail");
+  100|      2|    }
+  101|      2|    0
+  102|      2|}
+LLVMFuzzerTestOneInput:
+   58|    604|pub fn test_input_wrap(data: *const u8, size: usize) -> i32 {
+   59|    604|    let test_input = ::std::panic::catch_unwind(|| unsafe {
+   60|       |        let data_slice = ::std::slice::from_raw_parts(data, size);
+   61|       |        rust_fuzzer_test_input(data_slice)
+   62|    604|    });
+   63|    604|
+   64|    604|    match test_input {
+   65|    604|        Ok(i) => i,
+   66|       |        Err(_) => {
+   67|       |            // hopefully the custom panic hook will be called before and abort the
+   68|       |            // process before the stack frames are unwinded.
+   69|      0|            ::std::process::abort();
+   70|       |        }
+   71|       |    }
+   72|    604|}
+
+_RNvMs2_NtCsf6oBi4jrGZJ_9once_cell3impINtB5_8OnceCellNtNtCsaEKa2022IWD_5alloc6string6StringE14is_initializedCshs4t5K2tNQW_13libfuzzer_sys:
+   59|    604|    pub(crate) fn is_initialized(&self) -> bool {
+   60|    604|        // An `Acquire` load is enough because that makes all the initialization
+   61|    604|        // operations visible to us, and, this being a fast path, weaker
+   62|    604|        // ordering helps with performance. This `Acquire` synchronizes with
+   63|    604|        // `SeqCst` operations on the slow path.
+   64|    604|        self.queue.load(Ordering::Acquire) == COMPLETE_PTR
+   65|    604|    }
+
+_RNvMs4_NtCsf6oBi4jrGZJ_9once_cell4syncINtB5_8OnceCellNtNtCsaEKa2022IWD_5alloc6string6StringE3getCshs4t5K2tNQW_13libfuzzer_sys:
+  931|    604|        pub fn get(&self) -> Option<&T> {
+  932|    604|            if self.0.is_initialized() {
+  933|       |                // Safe b/c value is initialized.
+  934|      0|                Some(unsafe { self.get_unchecked() })
+  935|       |            } else {
+  936|    604|                None
+  937|       |            }
+  938|    604|        }
+
+_RNvNtCs5l3nETYNrq6_13oxigraph_fuzz13result_format18fuzz_result_format:
+    6|    604|pub fn fuzz_result_format(format: QueryResultsFormat, data: &[u8]) {
+    7|    604|    let parser = QueryResultsParser::from_format(format);
+    8|    604|    let serializer = QueryResultsSerializer::from_format(format);
+    9|       |
+   10|    604|    let Ok(reader) = parser.read_results(data) else {
+   11|    604|        return;
+   12|       |    };
+   13|      0|    match reader {
+   14|      0|        QueryResultsReader::Solutions(solutions) => {
+   15|      0|            let Ok(solutions) = solutions.collect::<Result<Vec<_>, _>>() else {
+   16|      0|                return;
+   17|       |            };
+   18|       |
+   19|       |            // We try to write again
+   20|      0|            let mut writer = serializer
+   21|      0|                .solutions_writer(
+   22|      0|                    Vec::new(),
+   23|      0|                    solutions
+   24|      0|                        .get(0)
+   25|      0|                        .map_or_else(Vec::new, |s| s.variables().to_vec()),
+   26|      0|                )
+   27|      0|                .unwrap();
+   28|      0|            for solution in &solutions {
+   29|      0|                writer.write(solution).unwrap();
+   30|      0|            }
+   31|      0|            let serialized = String::from_utf8(writer.finish().unwrap()).unwrap();
+   32|       |
+   33|       |            // And to parse again
+   34|      0|            if let QueryResultsReader::Solutions(roundtrip_solutions) = parser
+   35|      0|                .read_results(serialized.as_bytes())
+   36|      0|                .with_context(|| format!("Parsing {:?}", &serialized))
+   37|      0|                .unwrap()
+   38|       |            {
+   39|      0|                assert_eq!(
+   40|      0|                    roundtrip_solutions
+   41|      0|                        .collect::<Result<Vec<_>, _>>()
+   42|      0|                        .with_context(|| format!("Parsing {:?}", &serialized))
+   43|      0|                        .unwrap(),
+   44|      0|                    solutions
+   45|      0|                )
+   46|      0|            }
+   47|       |        }
+   48|      0|        QueryResultsReader::Boolean(value) => {
+   49|      0|            // We try to write again
+   50|      0|            let mut serialized = Vec::new();
+   51|      0|            serializer
+   52|      0|                .write_boolean_result(&mut serialized, value)
+   53|      0|                .unwrap();
+   54|       |
+   55|       |            // And to parse again
+   56|      0|            if let QueryResultsReader::Boolean(roundtrip_value) =
+   57|      0|                parser.read_results(serialized.as_slice()).unwrap()
+   58|       |            {
+   59|      0|                assert_eq!(roundtrip_value, value)
+   60|      0|            }
+   61|       |        }
+   62|       |    }
+   63|    604|}
+
+_RNvXs8_NtCsgmfr5EWdmgg_5oxrdf8variableNtB5_22VariableNameParseErrorNtNtCs14T3Clq7K4W_4core3fmt7Display3fmtCs5l3nETYNrq6_13oxigraph_fuzz:
+  226|     23|    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+  227|     23|        write!(f, "The variable name is invalid")
+  228|     23|    }
+_RNvMNtCsgmfr5EWdmgg_5oxrdf8variableNtB2_8Variable6as_refCs5l3nETYNrq6_13oxigraph_fuzz:
+   54|     12|    pub fn as_ref(&self) -> VariableRef<'_> {
+   55|     12|        VariableRef { name: &self.name }
+   56|     12|    }
+_RNvXs1_NtCsgmfr5EWdmgg_5oxrdf8variableNtB5_11VariableRefNtNtCs14T3Clq7K4W_4core3fmt7Display3fmtCs5l3nETYNrq6_13oxigraph_fuzz:
+  123|     12|    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+  124|     12|        write!(f, "?{}", self.name)
+  125|     12|    }
+_RNvXsd_NtCsgmfr5EWdmgg_5oxrdf8variableNtB5_8VariableNtNtCs14T3Clq7K4W_4core3cmp9PartialEq2eqCs5l3nETYNrq6_13oxigraph_fuzz:
+   17|  3.87k|#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Clone, Hash)]
+_RNvXs_NtCsgmfr5EWdmgg_5oxrdf8variableNtB4_8VariableNtNtCs14T3Clq7K4W_4core3fmt7Display3fmtCs5l3nETYNrq6_13oxigraph_fuzz:
+   61|     12|    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+   62|     12|        self.as_ref().fmt(f)
+   63|     12|    }
+_RNvNtCsgmfr5EWdmgg_5oxrdf8variable28validate_variable_identifier:
+  170|    512|fn validate_variable_identifier(id: &str) -> Result<(), VariableNameParseError> {
+  171|    512|    let mut chars = id.chars();
+  172|    512|    let front = chars.next().ok_or(VariableNameParseError {})?;
+  173|    511|    match front {
+  174|    510|        '0'..='9'
+  175|       |        | '_'
+  176|       |        | ':'
+  177|    240|        | 'A'..='Z'
+  178|     34|        | 'a'..='z'
+  179|      8|        | '\u{00C0}'..='\u{00D6}'
+  180|      8|        | '\u{00D8}'..='\u{00F6}'
+  181|      5|        | '\u{00F8}'..='\u{02FF}'
+  182|      5|        | '\u{0370}'..='\u{037D}'
+  183|      5|        | '\u{037F}'..='\u{1FFF}'
+  184|      4|        | '\u{200C}'..='\u{200D}'
+  185|      4|        | '\u{2070}'..='\u{218F}'
+  186|      4|        | '\u{2C00}'..='\u{2FEF}'
+  187|      4|        | '\u{3001}'..='\u{D7FF}'
+  188|      4|        | '\u{F900}'..='\u{FDCF}'
+  189|      4|        | '\u{FDF0}'..='\u{FFFD}'
+  190|    508|        | '\u{10000}'..='\u{EFFFF}' => (),
+  191|      3|        _ => return Err(VariableNameParseError {}),
+  192|       |    }
+  193|  2.33k|    for c in chars {
+  194|  1.84k|        match c {
+  195|  1.83k|            '0'..='9'
+  196|       |            | '\u{00B7}'
+  197|    124|            | '\u{00300}'..='\u{036F}'
+  198|     31|            | '\u{203F}'..='\u{2040}'
+  199|       |            | '_'
+  200|    705|            | 'A'..='Z'
+  201|    412|            | 'a'..='z'
+  202|    124|            | '\u{00C0}'..='\u{00D6}'
+  203|    124|            | '\u{00D8}'..='\u{00F6}'
+  204|    124|            | '\u{00F8}'..='\u{02FF}'
+  205|    124|            | '\u{0370}'..='\u{037D}'
+  206|    124|            | '\u{037F}'..='\u{1FFF}'
+  207|     31|            | '\u{200C}'..='\u{200D}'
+  208|     31|            | '\u{2070}'..='\u{218F}'
+  209|     31|            | '\u{2C00}'..='\u{2FEF}'
+  210|     31|            | '\u{3001}'..='\u{D7FF}'
+  211|     30|            | '\u{F900}'..='\u{FDCF}'
+  212|     23|            | '\u{FDF0}'..='\u{FFFD}'
+  213|  1.82k|            | '\u{10000}'..='\u{EFFFF}' => (),
+  214|     19|            _ => return Err(VariableNameParseError {}),
+  215|       |        }
+  216|       |    }
+  217|    489|    Ok(())
+  218|    512|}
+_RINvMNtCsgmfr5EWdmgg_5oxrdf8variableNtB3_8Variable3newReEB5_:
+   26|    512|    pub fn new(name: impl Into<String>) -> Result<Self, VariableNameParseError> {
+   27|    512|        let name = name.into();
+   28|    512|        validate_variable_identifier(&name)?;
+   29|    489|        Ok(Self::new_unchecked(name))
+   30|    512|    }
+_RINvMNtCsgmfr5EWdmgg_5oxrdf8variableNtB3_8Variable13new_uncheckedNtNtCsaEKa2022IWD_5alloc6string6StringEB5_:
+   39|    489|    pub fn new_unchecked(name: impl Into<String>) -> Self {
+   40|    489|        Self { name: name.into() }
+   41|    489|    }
+
+_RINvMs4_NtCs2Trx2dcEhbC_10sparesults5errorNtB6_11SyntaxError3msgNtNtCsaEKa2022IWD_5alloc6string6StringECs5l3nETYNrq6_13oxigraph_fuzz:
+   86|     38|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
+   87|     38|        Self {
+   88|     38|            inner: SyntaxErrorKind::Msg { msg: msg.into() },
+   89|     38|        }
+   90|     38|    }
+_RINvMs4_NtCs2Trx2dcEhbC_10sparesults5errorNtB6_11SyntaxError3msgReECs5l3nETYNrq6_13oxigraph_fuzz:
+   86|     83|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
+   87|     83|        Self {
+   88|     83|            inner: SyntaxErrorKind::Msg { msg: msg.into() },
+   89|     83|        }
+   90|     83|    }
+_RNvXs1_NtCs2Trx2dcEhbC_10sparesults5errorNtB5_10ParseErrorINtNtCs14T3Clq7K4W_4core7convert4FromNtB5_11SyntaxErrorE4fromCs5l3nETYNrq6_13oxigraph_fuzz:
+   43|    121|    fn from(error: SyntaxError) -> Self {
+   44|    121|        Self::Syntax(error)
+   45|    121|    }
+_RNvXs0_NtCs2Trx2dcEhbC_10sparesults5errorNtB5_10ParseErrorINtNtCs14T3Clq7K4W_4core7convert4FromNtNtNtCsdtPwAk188Fe_3std2io5error5ErrorE4fromCs5l3nETYNrq6_13oxigraph_fuzz:
+   36|    483|    fn from(error: io::Error) -> Self {
+   37|    483|        Self::Io(error)
+   38|    483|    }
+
+_RNvMs_NtCs2Trx2dcEhbC_10sparesults4jsonINtB4_22JsonQueryResultsReaderRShE4readCs5l3nETYNrq6_13oxigraph_fuzz:
+  137|    604|    pub fn read(source: R) -> Result<Self, ParseError> {
+  138|    604|        let mut reader = JsonReader::from_reader(source);
+  139|    604|        let mut buffer = Vec::default();
+  140|    604|        let mut variables = None;
+  141|    604|
+  142|    604|        if reader.read_event(&mut buffer)? != JsonEvent::StartObject {
+  143|     53|            return Err(SyntaxError::msg("SPARQL JSON results should be an object").into());
+  144|    304|        }
+  145|       |
+  146|       |        loop {
+  147|    314|            let event = reader.read_event(&mut buffer)?;
+  148|    305|            match event {
+  149|    293|                JsonEvent::ObjectKey(key) => match key {
+  150|    293|                    "head" => {
+  151|    203|                        variables = Some(read_head(&mut reader, &mut buffer)?);
+  152|       |                    }
+  153|     90|                    "results" => {
+  154|     81|                        if reader.read_event(&mut buffer)? != JsonEvent::StartObject {
+  155|      2|                            return Err(SyntaxError::msg("'results' should be an object").into());
+  156|     77|                        }
+  157|       |                        loop {
+  158|    514|                            match reader.read_event(&mut buffer)? {
+  159|    488|                                JsonEvent::ObjectKey("bindings") => break, // Found
+  160|    485|                                JsonEvent::ObjectKey(_) => ignore_value(&mut reader, &mut buffer)?,
+  161|       |                                _ => {
+  162|      6|                                    return Err(SyntaxError::msg(
+  163|      6|                                        "'results' should contain a 'bindings' key",
+  164|      6|                                    )
+  165|      6|                                    .into())
+  166|       |                                }
+  167|       |                            }
+  168|       |                        }
+  169|      3|                        if reader.read_event(&mut buffer)? != JsonEvent::StartArray {
+  170|      1|                            return Err(SyntaxError::msg("'bindings' should be an object").into());
+  171|      1|                        }
+  172|      1|                        return if let Some(variables) = variables {
+  173|      0|                            let mut mapping = BTreeMap::default();
+  174|      0|                            for (i, var) in variables.iter().enumerate() {
+  175|      0|                                mapping.insert(var.as_str().to_string(), i);
+  176|      0|                            }
+  177|      0|                            Ok(Self::Solutions {
+  178|      0|                                variables,
+  179|      0|                                solutions: JsonSolutionsReader {
+  180|      0|                                    reader,
+  181|      0|                                    buffer,
+  182|      0|                                    mapping,
+  183|      0|                                },
+  184|      0|                            })
+  185|       |                        } else {
+  186|      1|                            Err(SyntaxError::msg(
+  187|      1|                                "SPARQL tuple query results should contain a head key",
+  188|      1|                            )
+  189|      1|                            .into())
+  190|       |                        };
+  191|       |                    }
+  192|      9|                    "boolean" => {
+  193|      6|                        return if let JsonEvent::Boolean(v) = reader.read_event(&mut buffer)? {
+  194|      0|                            Ok(Self::Boolean(v))
+  195|       |                        } else {
+  196|      2|                            Err(SyntaxError::msg("Unexpected boolean value").into())
+  197|       |                        }
+  198|       |                    }
+  199|       |                    _ => {
+  200|      3|                        return Err(SyntaxError::msg(format!(
+  201|      3|                            "Expecting head or result key, found {key}"
+  202|      3|                        ))
+  203|      3|                        .into());
+  204|       |                    }
+  205|       |                },
+  206|       |                JsonEvent::EndObject => {
+  207|     11|                    return Err(SyntaxError::msg(
+  208|     11|                        "SPARQL results should contain a bindings key or a boolean key",
+  209|     11|                    )
+  210|     11|                    .into())
+  211|       |                }
+  212|       |                JsonEvent::Eof => {
+  213|      0|                    return Err(SyntaxError::msg(
+  214|      0|                        "Unexpected end of JSON object without 'results' or 'boolean' key",
+  215|      0|                    )
+  216|      0|                    .into())
+  217|       |                }
+  218|      1|                _ => return Err(SyntaxError::msg("Invalid SPARQL results serialization").into()),
+  219|       |            }
+  220|       |        }
+  221|    604|    }
+_RNCINvNtCs2Trx2dcEhbC_10sparesults4json9read_headRShE0Cs5l3nETYNrq6_13oxigraph_fuzz:
+  467|     23|                                let new_var = Variable::new(s).map_err(|e| {
+  468|     23|                                    SyntaxError::msg(format!(
+  469|     23|                                        "Invalid variable declaration '{s}': {e}"
+  470|     23|                                    ))
+  471|     23|                                })?;
+_RINvNtCs2Trx2dcEhbC_10sparesults4json12ignore_valueRShECs5l3nETYNrq6_13oxigraph_fuzz:
+  511|    870|fn ignore_value<R: BufRead>(
+  512|    870|    reader: &mut JsonReader<R>,
+  513|    870|    buffer: &mut Vec<u8>,
+  514|    870|) -> Result<(), ParseError> {
+  515|    870|    let mut nesting = 0;
+  516|       |    loop {
+  517|  4.71k|        match reader.read_event(buffer)? {
+  518|       |            JsonEvent::Boolean(_)
+  519|       |            | JsonEvent::Null
+  520|       |            | JsonEvent::Number(_)
+  521|       |            | JsonEvent::String(_) => {
+  522|  2.61k|                if nesting == 0 {
+  523|    714|                    return Ok(());
+  524|  1.89k|                }
+  525|       |            }
+  526|    375|            JsonEvent::ObjectKey(_) => (),
+  527|  1.42k|            JsonEvent::StartArray | JsonEvent::StartObject => nesting += 1,
+  528|       |            JsonEvent::EndArray | JsonEvent::EndObject => {
+  529|    205|                nesting -= 1;
+  530|    205|                if nesting == 0 {
+  531|     56|                    return Ok(());
+  532|    149|                }
+  533|       |            }
+  534|      0|            JsonEvent::Eof => return Err(SyntaxError::msg("Unexpected end of file").into()),
+  535|       |        }
+  536|       |    }
+  537|    870|}
+_RINvNtCs2Trx2dcEhbC_10sparesults4json9read_headRShECs5l3nETYNrq6_13oxigraph_fuzz:
+  449|    203|fn read_head<R: BufRead>(
+  450|    203|    reader: &mut JsonReader<R>,
+  451|    203|    buffer: &mut Vec<u8>,
+  452|    203|) -> Result<Vec<Variable>, ParseError> {
+  453|    203|    if reader.read_event(buffer)? != JsonEvent::StartObject {
+  454|      1|        return Err(SyntaxError::msg("head should be an object").into());
+  455|    199|    }
+  456|    199|    let mut variables = Vec::new();
+  457|       |    loop {
+  458|    555|        match reader.read_event(buffer)? {
+  459|    512|            JsonEvent::ObjectKey(key) => match key {
+  460|    512|                "vars" => {
+  461|    114|                    if reader.read_event(buffer)? != JsonEvent::StartArray {
+  462|      1|                        return Err(SyntaxError::msg("Variable list should be an array").into());
+  463|    112|                    }
+  464|       |                    loop {
+  465|    589|                        match reader.read_event(buffer)? {
+  466|    512|                            JsonEvent::String(s) => {
+  467|    512|                                let new_var = Variable::new(s).map_err(|e| {
+  468|       |                                    SyntaxError::msg(format!(
+  469|       |                                        "Invalid variable declaration '{s}': {e}"
+  470|       |                                    ))
+  471|    512|                                })?;
+  472|    489|                                if variables.contains(&new_var) {
+  473|     12|                                    return Err(SyntaxError::msg(format!(
+  474|     12|                                        "The variable {new_var} is declared twice"
+  475|     12|                                    ))
+  476|     12|                                    .into());
+  477|    477|                                }
+  478|    477|                                variables.push(new_var);
+  479|       |                            }
+  480|     22|                            JsonEvent::EndArray => break,
+  481|       |                            _ => {
+  482|      1|                                return Err(
+  483|      1|                                    SyntaxError::msg("Variable names should be strings").into()
+  484|      1|                                )
+  485|       |                            }
+  486|       |                        }
+  487|       |                    }
+  488|       |                }
+  489|    398|                "link" => {
+  490|     13|                    if reader.read_event(buffer)? != JsonEvent::StartArray {
+  491|      1|                        return Err(SyntaxError::msg("Variable list should be an array").into());
+  492|     11|                    }
+  493|       |                    loop {
+  494|     84|                        match reader.read_event(buffer)? {
+  495|     73|                            JsonEvent::String(_) => (),
+  496|      1|                            JsonEvent::EndArray => break,
+  497|       |                            _ => {
+  498|      1|                                return Err(SyntaxError::msg("Link names should be strings").into())
+  499|       |                            }
+  500|       |                        }
+  501|       |                    }
+  502|       |                }
+  503|    385|                _ => ignore_value(reader, buffer)?,
+  504|       |            },
+  505|     10|            JsonEvent::EndObject => return Ok(variables),
+  506|      1|            _ => return Err(SyntaxError::msg("Invalid head serialization").into()),
+  507|       |        }
+  508|       |    }
+  509|    203|}
+
+_RINvMs_Cs2Trx2dcEhbC_10sparesultsNtB5_18QueryResultsParser12read_resultsRShECs5l3nETYNrq6_13oxigraph_fuzz:
+  194|    604|    pub fn read_results<R: BufRead>(&self, reader: R) -> Result<QueryResultsReader<R>, ParseError> {
+  195|    604|        Ok(match self.format {
+  196|      0|            QueryResultsFormat::Xml => match XmlQueryResultsReader::read(reader)? {
+  197|      0|                XmlQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
+  198|       |                XmlQueryResultsReader::Solutions {
+  199|      0|                    solutions,
+  200|      0|                    variables,
+  201|      0|                } => QueryResultsReader::Solutions(SolutionsReader {
+  202|      0|                    variables: Rc::new(variables),
+  203|      0|                    solutions: SolutionsReaderKind::Xml(solutions),
+  204|      0|                }),
+  205|       |            },
+  206|    604|            QueryResultsFormat::Json => match JsonQueryResultsReader::read(reader)? {
+  207|      0|                JsonQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
+  208|       |                JsonQueryResultsReader::Solutions {
+  209|      0|                    solutions,
+  210|      0|                    variables,
+  211|      0|                } => QueryResultsReader::Solutions(SolutionsReader {
+  212|      0|                    variables: Rc::new(variables),
+  213|      0|                    solutions: SolutionsReaderKind::Json(solutions),
+  214|      0|                }),
+  215|       |            },
+  216|      0|            QueryResultsFormat::Csv => return Err(SyntaxError::msg("CSV SPARQL results syntax is lossy and can't be parsed to a proper RDF representation").into()),
+  217|      0|            QueryResultsFormat::Tsv => match TsvQueryResultsReader::read(reader)? {
+  218|      0|                TsvQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
+  219|       |                TsvQueryResultsReader::Solutions {
+  220|      0|                    solutions,
+  221|      0|                    variables,
+  222|      0|                } => QueryResultsReader::Solutions(SolutionsReader {
+  223|      0|                    variables: Rc::new(variables),
+  224|      0|                    solutions: SolutionsReaderKind::Tsv(solutions),
+  225|      0|                }),
+  226|       |            },
+  227|       |        })
+  228|    604|    }
+_RNvMs_Cs2Trx2dcEhbC_10sparesultsNtB4_18QueryResultsParser11from_formatCs5l3nETYNrq6_13oxigraph_fuzz:
+  167|    604|    pub fn from_format(format: QueryResultsFormat) -> Self {
+  168|    604|        Self { format }
+  169|    604|    }
+_RNvMs2_Cs2Trx2dcEhbC_10sparesultsNtB5_22QueryResultsSerializer11from_formatCs5l3nETYNrq6_13oxigraph_fuzz:
+  362|    604|    pub fn from_format(format: QueryResultsFormat) -> Self {
+  363|    604|        Self { format }
+  364|    604|    }
+
