@@ -1,0 +1,1545 @@
+_RINvXNtCs78EXkEU5erK_6anyhow7contextINtNtCs9jyDXsa31Er_4core6result6ResultINtNtCs9lXrf61Tc6r_5alloc3vec3VecNtNtCsdUl1VstNg53_10sparesults8solution13QuerySolutionENtNtB1L_5error10ParseErrorEINtB5_7ContextB1a_B2A_E12with_contextNtNtB1f_6string6StringNCNvNtCslt04TQWGvnL_13oxigraph_fuzz13result_format18fuzz_result_formats0_0EB44_:
+   58|      2|    fn with_context<C, F>(self, context: F) -> Result<T, Error>
+   59|      2|    where
+   60|      2|        C: Display + Send + Sync + 'static,
+   61|      2|        F: FnOnce() -> C,
+   62|      2|    {
+   63|      2|        match self {
+   64|      2|            Ok(ok) => Ok(ok),
+   65|      0|            Err(error) => Err(error.ext_context(context())),
+   66|       |        }
+   67|      2|    }
+_RINvXNtCs78EXkEU5erK_6anyhow7contextINtNtCs9jyDXsa31Er_4core6result6ResultINtCsdUl1VstNg53_10sparesults18QueryResultsReaderRShENtNtB1d_5error10ParseErrorEINtB5_7ContextB1a_B21_E12with_contextNtNtCs9lXrf61Tc6r_5alloc6string6StringNCNvNtCslt04TQWGvnL_13oxigraph_fuzz13result_format18fuzz_result_formats_0EB3L_:
+   58|      2|    fn with_context<C, F>(self, context: F) -> Result<T, Error>
+   59|      2|    where
+   60|      2|        C: Display + Send + Sync + 'static,
+   61|      2|        F: FnOnce() -> C,
+   62|      2|    {
+   63|      2|        match self {
+   64|      2|            Ok(ok) => Ok(ok),
+   65|      0|            Err(error) => Err(error.ext_context(context())),
+   66|       |        }
+   67|      2|    }
+
+_RNvXs1_Cs5so91rueIzL_17json_event_parserNtB5_9JsonEventNtNtCs9jyDXsa31Er_4core3cmp9PartialEq2eqCslt04TQWGvnL_13oxigraph_fuzz:
+   47|    694|#[derive(Eq, PartialEq, Debug, Clone, Copy, Hash)]
+
+_RINvMNtCs5so91rueIzL_17json_event_parser4readINtB3_10JsonReaderRShE9read_charNCNvB2_12parse_numbers_0ECslt04TQWGvnL_13oxigraph_fuzz:
+  338|      5|    fn read_char(&mut self, valid: impl Fn(u8) -> bool, output: &mut Vec<u8>) -> Result<()> {
+  339|      5|        let c = self.lookup_mandatory_front()?;
+  340|      4|        if valid(c) {
+  341|      2|            output.push(c);
+  342|      2|            self.reader.consume(1);
+  343|      2|            Ok(())
+  344|       |        } else {
+  345|      2|            Err(Error::new(
+  346|      2|                ErrorKind::InvalidData,
+  347|      2|                format!("Invalid number. Found char {}", char::from(c)),
+  348|      2|            ))
+  349|       |        }
+  350|      5|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE12lookup_frontCslt04TQWGvnL_13oxigraph_fuzz:
+  469|  8.82k|    fn lookup_front(&mut self) -> Result<Option<u8>> {
+  470|  8.82k|        loop {
+  471|  8.82k|            match self.reader.fill_buf() {
+  472|  8.82k|                Ok(buf) => return Ok(if buf.is_empty() { None } else { Some(buf[0]) }),
+  473|      0|                Err(error) => {
+  474|      0|                    if error.kind() != ErrorKind::Interrupted {
+  475|      0|                        return Err(error);
+  476|      0|                    }
+  477|       |                }
+  478|       |            }
+  479|       |        }
+  480|  8.82k|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE16check_stack_sizeCslt04TQWGvnL_13oxigraph_fuzz:
+  483|  1.40k|        if let Some(max_stack_size) = self.max_stack_size {
+  484|      0|            if self.state_stack.len() > max_stack_size {
+  485|      0|                Err(Error::new(
+  486|      0|                    ErrorKind::InvalidData,
+  487|      0|                    format!(
+  488|      0|                        "Max stack size of {} reached on an object opening",
+  489|      0|                        max_stack_size
+  490|      0|                    ),
+  491|      0|                ))
+  492|       |            } else {
+  493|      0|                Ok(())
+  494|       |            }
+  495|       |        } else {
+  496|  1.40k|            Ok(())
+  497|       |        }
+  498|  1.40k|    }
+_RNCINvMNtCs5so91rueIzL_17json_event_parser4readINtB5_10JsonReaderRShE14parse_constantKj5_E0Cslt04TQWGvnL_13oxigraph_fuzz:
+  266|      1|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+_RNCNvMNtCs5so91rueIzL_17json_event_parser4readINtB4_10JsonReaderRShE12parse_number0Cslt04TQWGvnL_13oxigraph_fuzz:
+  302|     27|            self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE10read_eventCslt04TQWGvnL_13oxigraph_fuzz:
+   50|  4.38k|    pub fn read_event<'a>(&mut self, buffer: &'a mut Vec<u8>) -> Result<JsonEvent<'a>> {
+   51|  4.38k|        let front = if let Some(b) = self.lookup_front_skipping_whitespaces()? {
+   52|  4.31k|            b
+   53|       |        } else {
+   54|     75|            return if self.state_stack.is_empty() && self.element_read {
+   55|      2|                Ok(JsonEvent::Eof)
+   56|       |            } else {
+   57|     73|                Err(Error::from(ErrorKind::UnexpectedEof))
+   58|       |            };
+   59|       |        };
+   60|  4.31k|        match front {
+   61|       |            b'{' => {
+   62|  1.19k|                self.reader.consume(1);
+   63|  1.19k|                self.check_stack_size()?;
+   64|  1.19k|                self.state_stack.push(JsonState::FirstObjectKey);
+   65|  1.19k|                Ok(JsonEvent::StartObject)
+   66|       |            }
+   67|       |            b'}' => {
+   68|    484|                self.reader.consume(1);
+   69|      3|                if matches!(
+   70|    484|                    self.state_stack.pop(),
+   71|       |                    Some(JsonState::FirstObjectKey) | Some(JsonState::LastObjectKey)
+   72|       |                ) {
+   73|    481|                    self.read_after_value(JsonEvent::EndObject)
+   74|       |                } else {
+   75|      3|                    Err(Error::new(
+   76|      3|                        ErrorKind::InvalidData,
+   77|      3|                        "Closing a not opened object",
+   78|      3|                    ))
+   79|       |                }
+   80|       |            }
+   81|       |            b'[' => {
+   82|    218|                self.reader.consume(1);
+   83|    218|                self.check_stack_size()?;
+   84|    218|                self.state_stack.push(JsonState::FirstArray);
+   85|    218|                Ok(JsonEvent::StartArray)
+   86|       |            }
+   87|       |            b']' => {
+   88|     97|                self.reader.consume(1);
+   89|      3|                if matches!(
+   90|     97|                    self.state_stack.pop(),
+   91|       |                    Some(JsonState::FirstArray) | Some(JsonState::LastArray)
+   92|       |                ) {
+   93|     94|                    self.read_after_value(JsonEvent::EndArray)
+   94|       |                } else {
+   95|      3|                    Err(Error::new(
+   96|      3|                        ErrorKind::InvalidData,
+   97|      3|                        "Closing a not opened array",
+   98|      3|                    ))
+   99|       |                }
+  100|       |            }
+  101|  1.74k|            b'"' => self.parse_string(buffer),
+  102|      6|            b't' => self.parse_constant::<4>("true", JsonEvent::Boolean(true)),
+  103|      3|            b'f' => self.parse_constant::<5>("false", JsonEvent::Boolean(false)),
+  104|      1|            b'n' => self.parse_constant::<4>("null", JsonEvent::Null),
+  105|    555|            b'-' | b'0'..=b'9' => self.parse_number(front, buffer),
+  106|     29|            c => {
+  107|     29|                self.reader.consume(1);
+  108|     29|                Err(Error::new(
+  109|     29|                    ErrorKind::InvalidData,
+  110|     29|                    format!("Unexpected char: {}", char::from(c)),
+  111|     29|                ))
+  112|       |            }
+  113|       |        }
+  114|  4.38k|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE22lookup_mandatory_frontCslt04TQWGvnL_13oxigraph_fuzz:
+  461|  4.28k|    fn lookup_mandatory_front(&mut self) -> Result<u8> {
+  462|  4.28k|        if let Some(v) = self.lookup_front()? {
+  463|  4.27k|            Ok(v)
+  464|       |        } else {
+  465|     13|            Err(Error::from(ErrorKind::UnexpectedEof))
+  466|       |        }
+  467|  4.28k|    }
+_RINvMNtCs5so91rueIzL_17json_event_parser4readINtB3_10JsonReaderRShE9read_charNCNvB2_12parse_number0ECslt04TQWGvnL_13oxigraph_fuzz:
+  338|     28|    fn read_char(&mut self, valid: impl Fn(u8) -> bool, output: &mut Vec<u8>) -> Result<()> {
+  339|     28|        let c = self.lookup_mandatory_front()?;
+  340|     27|        if valid(c) {
+  341|     26|            output.push(c);
+  342|     26|            self.reader.consume(1);
+  343|     26|            Ok(())
+  344|       |        } else {
+  345|      1|            Err(Error::new(
+  346|      1|                ErrorKind::InvalidData,
+  347|      1|                format!("Invalid number. Found char {}", char::from(c)),
+  348|      1|            ))
+  349|       |        }
+  350|     28|    }
+_RINvMNtCs5so91rueIzL_17json_event_parser4readINtB3_10JsonReaderRShE14parse_constantKj5_ECslt04TQWGvnL_13oxigraph_fuzz:
+  250|      3|    fn parse_constant<'a, const SIZE: usize>(
+  251|      3|        &mut self,
+  252|      3|        expected: &str,
+  253|      3|        value: JsonEvent<'a>,
+  254|      3|    ) -> Result<JsonEvent<'a>> {
+  255|      0|        debug_assert_eq!(expected.len(), SIZE);
+  256|      3|        let mut buf = [0u8; SIZE];
+  257|      3|        self.reader.read_exact(&mut buf)?;
+  258|      2|        if buf == expected.as_bytes() {
+  259|      0|            self.read_after_value(value)
+  260|       |        } else {
+  261|       |            Err(Error::new(
+  262|      2|                ErrorKind::InvalidData,
+  263|      2|                format!(
+  264|      2|                    "{} expected, found {}",
+  265|      2|                    expected,
+  266|      2|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+  267|       |                ),
+  268|       |            ))
+  269|       |        }
+  270|      3|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE11from_readerCslt04TQWGvnL_13oxigraph_fuzz:
+   35|    481|    pub fn from_reader(reader: R) -> Self {
+   36|    481|        Self {
+   37|    481|            reader,
+   38|    481|            state_stack: Vec::new(),
+   39|    481|            element_read: false,
+   40|    481|            max_stack_size: None,
+   41|    481|        }
+   42|    481|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE11read_digitsCslt04TQWGvnL_13oxigraph_fuzz:
+  352|    548|    fn read_digits(&mut self, output: &mut Vec<u8>) -> Result<()> {
+  353|  3.46k|        while let Some(c) = self.lookup_front()? {
+  354|  3.43k|            if matches!(c, b'0'..=b'9') {
+  355|  2.91k|                output.push(c);
+  356|  2.91k|                self.reader.consume(1);
+  357|  2.91k|            } else {
+  358|    518|                break;
+  359|       |            }
+  360|       |        }
+  361|    548|        Ok(())
+  362|    548|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE12parse_numberCslt04TQWGvnL_13oxigraph_fuzz:
+  272|    544|    fn parse_number<'a>(
+  273|    544|        &mut self,
+  274|    544|        first_byte: u8,
+  275|    544|        output: &'a mut Vec<u8>,
+  276|    544|    ) -> Result<JsonEvent<'a>> {
+  277|    544|        output.clear();
+  278|    544|        if first_byte == b'-' {
+  279|      6|            output.push(b'-');
+  280|      6|            self.reader.consume(1);
+  281|    538|        }
+  282|       |        // integer starting with first bytes
+  283|       |        // TODO: avoid too many fill_buf
+  284|    544|        let c = self.lookup_mandatory_front()?;
+  285|    541|        match c {
+  286|     33|            b'0' => {
+  287|     33|                output.push(b'0');
+  288|     33|                self.reader.consume(1);
+  289|     33|            }
+  290|    508|            b'1'..=b'9' => {
+  291|    507|                output.push(c);
+  292|    507|                self.reader.consume(1);
+  293|    507|                self.read_digits(output)?;
+  294|       |            }
+  295|      1|            _ => return Err(Error::new(ErrorKind::InvalidData, "Invalid number")),
+  296|       |        }
+  297|       |
+  298|       |        // Dot
+  299|    540|        if self.lookup_front()? == Some(b'.') {
+  300|     28|            output.push(b'.');
+  301|     28|            self.reader.consume(1);
+  302|     28|            self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+  303|     26|            self.read_digits(output)?;
+  304|    512|        }
+  305|       |
+  306|       |        // Exp
+  307|    538|        if let Some(c) = self.lookup_front()? {
+  308|    510|            if c == b'e' || c == b'E' {
+  309|     22|                output.push(c);
+  310|     22|                self.reader.consume(1);
+  311|     22|                let c = self.lookup_mandatory_front()?;
+  312|     19|                match c {
+  313|       |                    b'-' | b'+' => {
+  314|      5|                        output.push(c);
+  315|      5|                        self.reader.consume(1);
+  316|      5|                        self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+  317|       |                    }
+  318|     13|                    b'0'..=b'9' => {
+  319|     13|                        output.push(c);
+  320|     13|                        self.reader.consume(1);
+  321|     13|                    }
+  322|       |                    _ => {
+  323|      1|                        return Err(Error::new(
+  324|      1|                            ErrorKind::InvalidData,
+  325|      1|                            format!("Invalid number. Found char {}", char::from(c)),
+  326|      1|                        ))
+  327|       |                    }
+  328|       |                }
+  329|     15|                self.read_digits(output)?;
+  330|    488|            }
+  331|     28|        }
+  332|       |
+  333|       |        self.read_after_value(JsonEvent::Number(
+  334|    531|            str::from_utf8(output.as_slice()).map_err(|e| Error::new(ErrorKind::InvalidData, e))?,
+  335|       |        ))
+  336|    544|    }
+_RNCNvMNtCs5so91rueIzL_17json_event_parser4readINtB4_10JsonReaderRShE12parse_string0Cslt04TQWGvnL_13oxigraph_fuzz:
+  154|      2|                                        .map_err(|e| Error::new(ErrorKind::InvalidData, e))?,
+_RINvMNtCs5so91rueIzL_17json_event_parser4readINtB3_10JsonReaderRShE14parse_constantKj4_ECslt04TQWGvnL_13oxigraph_fuzz:
+  250|      7|    fn parse_constant<'a, const SIZE: usize>(
+  251|      7|        &mut self,
+  252|      7|        expected: &str,
+  253|      7|        value: JsonEvent<'a>,
+  254|      7|    ) -> Result<JsonEvent<'a>> {
+  255|      0|        debug_assert_eq!(expected.len(), SIZE);
+  256|      7|        let mut buf = [0u8; SIZE];
+  257|      7|        self.reader.read_exact(&mut buf)?;
+  258|      5|        if buf == expected.as_bytes() {
+  259|      2|            self.read_after_value(value)
+  260|       |        } else {
+  261|       |            Err(Error::new(
+  262|      3|                ErrorKind::InvalidData,
+  263|      3|                format!(
+  264|      3|                    "{} expected, found {}",
+  265|      3|                    expected,
+  266|      3|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+  267|       |                ),
+  268|       |            ))
+  269|       |        }
+  270|      7|    }
+_RNCINvMNtCs5so91rueIzL_17json_event_parser4readINtB5_10JsonReaderRShE14parse_constantKj4_E0Cslt04TQWGvnL_13oxigraph_fuzz:
+  266|      1|                    str::from_utf8(&buf).map_err(|e| Error::new(ErrorKind::InvalidData, e))?
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE12parse_stringCslt04TQWGvnL_13oxigraph_fuzz:
+  116|  1.74k|    fn parse_string<'a>(&mut self, output: &'a mut Vec<u8>) -> Result<JsonEvent<'a>> {
+  117|  1.74k|        output.clear();
+  118|  1.74k|        self.reader.consume(1);
+  119|  1.74k|
+  120|  1.74k|        #[derive(Eq, PartialEq, Copy, Clone)]
+  121|  1.74k|        enum StringState {
+  122|  1.74k|            Default,
+  123|  1.74k|            Escape,
+  124|  1.74k|        }
+  125|  1.74k|
+  126|  1.74k|        let mut state = StringState::Default;
+  127|  9.13k|        loop {
+  128|  9.13k|            match state {
+  129|       |                StringState::Default => {
+  130|  5.44k|                    let buffer = match self.reader.fill_buf() {
+  131|  5.44k|                        Ok(buf) => {
+  132|  5.44k|                            if buf.is_empty() {
+  133|    159|                                return Err(Error::from(ErrorKind::UnexpectedEof));
+  134|       |                            } else {
+  135|  5.28k|                                buf
+  136|       |                            }
+  137|       |                        }
+  138|      0|                        Err(e) => {
+  139|      0|                            if e.kind() == ErrorKind::Interrupted {
+  140|      0|                                continue;
+  141|       |                            } else {
+  142|      0|                                return Err(e);
+  143|       |                            }
+  144|       |                        }
+  145|       |                    };
+  146|  5.28k|                    let mut i = 0;
+  147|  23.7k|                    for c in buffer {
+  148|  23.6k|                        i += 1;
+  149|  23.6k|                        match *c {
+  150|       |                            b'"' => {
+  151|  1.54k|                                self.reader.consume(i);
+  152|  1.54k|                                return self.read_after_value(JsonEvent::String(
+  153|  1.54k|                                    str::from_utf8(output.as_slice())
+  154|  1.54k|                                        .map_err(|e| Error::new(ErrorKind::InvalidData, e))?,
+  155|       |                                ));
+  156|       |                            }
+  157|       |                            b'\\' => {
+  158|  3.68k|                                state = StringState::Escape;
+  159|  3.68k|                                break;
+  160|       |                            }
+  161|  18.4k|                            0..=0x1F => {
+  162|      5|                                self.reader.consume(i);
+  163|      5|                                return Err(Error::new(
+  164|      5|                                    ErrorKind::InvalidData,
+  165|      5|                                    "Control characters are not allowed in JSON",
+  166|      5|                                ));
+  167|       |                            }
+  168|  18.4k|                            c => output.push(c),
+  169|       |                        }
+  170|       |                    }
+  171|  3.73k|                    self.reader.consume(i);
+  172|       |                }
+  173|       |                StringState::Escape => {
+  174|  3.68k|                    let c = self.lookup_mandatory_front()?;
+  175|  3.68k|                    self.reader.consume(1);
+  176|  3.68k|                    match c {
+  177|     98|                        b'"' => {
+  178|     98|                            output.push(b'"');
+  179|     98|                        }
+  180|    946|                        b'\\' => {
+  181|    946|                            output.push(b'\\');
+  182|    946|                        }
+  183|    208|                        b'/' => {
+  184|    208|                            output.push(b'/');
+  185|    208|                        }
+  186|    395|                        b'b' => {
+  187|    395|                            output.push(8);
+  188|    395|                        }
+  189|    236|                        b'f' => {
+  190|    236|                            output.push(12);
+  191|    236|                        }
+  192|    234|                        b'n' => {
+  193|    234|                            output.push(b'\n');
+  194|    234|                        }
+  195|    204|                        b'r' => {
+  196|    204|                            output.push(b'\r');
+  197|    204|                        }
+  198|     92|                        b't' => {
+  199|     92|                            output.push(b'\t');
+  200|     92|                        }
+  201|       |                        b'u' => {
+  202|  1.25k|                            let mut buf = [0u8; 4];
+  203|  1.25k|                            self.reader.read_exact(&mut buf)?;
+  204|  1.25k|                            let code_point = read_hexa_char(&buf)?;
+  205|  1.24k|                            if let Some(c) = char::from_u32(code_point) {
+  206|    834|                                output.extend_from_slice(c.encode_utf8(&mut buf).as_bytes());
+  207|    834|                            } else {
+  208|    414|                                let high_surrogate = code_point;
+  209|    414|                                let mut buf = [0u8; 6];
+  210|    414|                                self.reader.read_exact(&mut buf)?;
+  211|    412|                                if !buf.starts_with(b"\\u") {
+  212|      3|                                    return Err(Error::new(
+  213|      3|                                            ErrorKind::InvalidData,
+  214|      3|                                            format!(
+  215|      3|                                                "\\u{:X} is a surrogate should be followed by an other surrogate",
+  216|      3|                                                high_surrogate
+  217|      3|                                            ),
+  218|      3|                                        ));
+  219|    409|                                }
+  220|    409|                                let low_surrogate = read_hexa_char(&buf[2..])?;
+  221|    408|                                let code_point = 0x10000
+  222|    408|                                    + ((high_surrogate & 0x03FF) << 10)
+  223|    408|                                    + (low_surrogate & 0x03FF);
+  224|    408|                                if let Some(c) = char::from_u32(code_point) {
+  225|    408|                                    output.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())
+  226|       |                                } else {
+  227|      0|                                    return Err(Error::new(
+  228|      0|                                        ErrorKind::InvalidData,
+  229|      0|                                        format!(
+  230|      0|                                            "\\u{:X}\\u{:X} is an invalid surrogate pair",
+  231|      0|                                            high_surrogate, low_surrogate
+  232|      0|                                        ),
+  233|      0|                                    ));
+  234|       |                                }
+  235|       |                            }
+  236|       |                        }
+  237|       |                        _ => {
+  238|     10|                            return Err(Error::new(
+  239|     10|                                ErrorKind::InvalidData,
+  240|     10|                                "Invalid string escape",
+  241|     10|                            ));
+  242|       |                        }
+  243|       |                    }
+  244|  3.65k|                    state = StringState::Default;
+  245|       |                }
+  246|       |            }
+  247|       |        }
+  248|  1.74k|    }
+_RNCNvMNtCs5so91rueIzL_17json_event_parser4readINtB4_10JsonReaderRShE12parse_numbers_0Cslt04TQWGvnL_13oxigraph_fuzz:
+  316|      4|                        self.read_char(|c| matches!(c, b'0'..=b'9'), output)?;
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE16read_after_valueCslt04TQWGvnL_13oxigraph_fuzz:
+  365|  2.65k|        match self.state_stack.pop() {
+  366|       |            Some(JsonState::FirstObjectKey) | Some(JsonState::NextObjectKey) => {
+  367|  1.55k|                if self.lookup_front_skipping_whitespaces()? == Some(b':') {
+  368|  1.52k|                    self.reader.consume(1);
+  369|  1.52k|                    self.state_stack.push(JsonState::ObjectValue);
+  370|  1.52k|                    if let JsonEvent::String(value) = value {
+  371|  1.52k|                        Ok(JsonEvent::ObjectKey(value))
+  372|       |                    } else {
+  373|      1|                        Err(Error::new(
+  374|      1|                            ErrorKind::InvalidData,
+  375|      1|                            "Object keys should strings",
+  376|      1|                        ))
+  377|       |                    }
+  378|       |                } else {
+  379|     27|                    Err(Error::new(
+  380|     27|                        ErrorKind::InvalidData,
+  381|     27|                        "Object keys should be followed by ':'",
+  382|     27|                    ))
+  383|       |                }
+  384|       |            }
+  385|    960|            Some(JsonState::ObjectValue) => match self.lookup_front_skipping_whitespaces()? {
+  386|       |                Some(b',') => {
+  387|    487|                    self.reader.consume(1);
+  388|    487|                    self.state_stack.push(JsonState::NextObjectKey);
+  389|    487|                    Ok(value)
+  390|       |                }
+  391|       |                Some(b'}') => {
+  392|    453|                    self.state_stack.push(JsonState::LastObjectKey);
+  393|    453|                    Ok(value)
+  394|       |                }
+  395|     20|                _ => Err(Error::new(
+  396|     20|                    ErrorKind::InvalidData,
+  397|     20|                    "Object values should be followed by a comma or the object end",
+  398|     20|                )),
+  399|       |            },
+  400|       |            Some(JsonState::FirstArray) | Some(JsonState::NextArray) => {
+  401|     84|                match self.lookup_front_skipping_whitespaces()? {
+  402|       |                    Some(b',') => {
+  403|     25|                        self.reader.consume(1);
+  404|     25|                        self.state_stack.push(JsonState::NextArray);
+  405|     25|                        Ok(value)
+  406|       |                    }
+  407|       |                    Some(b']') => {
+  408|     46|                        self.state_stack.push(JsonState::LastArray);
+  409|     46|                        Ok(value)
+  410|       |                    }
+  411|     13|                    _ => Err(Error::new(
+  412|     13|                        ErrorKind::InvalidData,
+  413|     13|                        "Array values should be followed by a comma or the array end",
+  414|     13|                    )),
+  415|       |                }
+  416|       |            }
+  417|       |            None => {
+  418|     56|                if self.element_read {
+  419|      2|                    Err(Error::new(ErrorKind::InvalidData, "JSON trailing content"))
+  420|       |                } else {
+  421|     54|                    self.element_read = true;
+  422|     54|                    Ok(value)
+  423|       |                }
+  424|       |            }
+  425|      0|            Some(JsonState::LastObjectKey) => Err(Error::new(
+  426|      0|                ErrorKind::InvalidData,
+  427|      0|                "JSON object elements should be separated by commas",
+  428|      0|            )),
+  429|      0|            Some(JsonState::LastArray) => Err(Error::new(
+  430|      0|                ErrorKind::InvalidData,
+  431|      0|                "JSON array elements should be separated by commas",
+  432|      0|            )),
+  433|       |        }
+  434|  2.65k|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser4readINtB2_10JsonReaderRShE33lookup_front_skipping_whitespacesCslt04TQWGvnL_13oxigraph_fuzz:
+  436|  6.98k|    fn lookup_front_skipping_whitespaces(&mut self) -> Result<Option<u8>> {
+  437|  7.01k|        loop {
+  438|  7.01k|            match self.reader.fill_buf() {
+  439|  7.01k|                Ok(buf) => {
+  440|  7.01k|                    if buf.is_empty() {
+  441|    101|                        return Ok(None);
+  442|  6.91k|                    }
+  443|  6.91k|                    let skipped = skip_whitespaces(buf);
+  444|  6.91k|                    if skipped == buf.len() {
+  445|     34|                        self.reader.consume(skipped);
+  446|     34|                    } else {
+  447|  6.88k|                        let result = Some(buf[skipped]);
+  448|  6.88k|                        self.reader.consume(skipped);
+  449|  6.88k|                        return Ok(result);
+  450|       |                    }
+  451|       |                }
+  452|      0|                Err(error) => {
+  453|      0|                    if error.kind() != ErrorKind::Interrupted {
+  454|      0|                        return Err(error);
+  455|      0|                    }
+  456|       |                }
+  457|       |            }
+  458|       |        }
+  459|  6.98k|    }
+_RNvNtCs5so91rueIzL_17json_event_parser4read16skip_whitespaces:
+  512|  6.91k|fn skip_whitespaces(buf: &[u8]) -> usize {
+  513|  9.15k|    for (i, c) in buf.iter().enumerate() {
+  514|  9.15k|        if !matches!(c, b' ' | b'\t' | b'\n' | b'\r') {
+  515|  6.88k|            return i;
+  516|  2.27k|        }
+  517|       |    }
+  518|     34|    buf.len()
+  519|  6.91k|}
+_RNvNtCs5so91rueIzL_17json_event_parser4read14read_hexa_char:
+  521|  1.66k|fn read_hexa_char(input: &[u8]) -> Result<u32> {
+  522|  1.66k|    let mut value = 0;
+  523|  6.64k|    for c in input.iter().copied() {
+  524|  6.64k|        value = value * 16
+  525|  6.64k|            + match c {
+  526|  6.64k|                b'0'..=b'9' => u32::from(c) - u32::from(b'0'),
+  527|    904|                b'a'..=b'f' => u32::from(c) - u32::from(b'a') + 10,
+  528|  1.76k|                b'A'..=b'F' => u32::from(c) - u32::from(b'A') + 10,
+  529|       |                _ => {
+  530|      8|                    return Err(Error::new(
+  531|      8|                        ErrorKind::InvalidData,
+  532|      8|                        "Unexpected character in a unicode escape",
+  533|      8|                    ))
+  534|       |                }
+  535|       |            }
+  536|       |    }
+  537|  1.65k|    Ok(value)
+  538|  1.66k|}
+
+_RINvNtCs5so91rueIzL_17json_event_parser5write25write_escaped_json_stringINtNtCs9lXrf61Tc6r_5alloc3vec3VechEECslt04TQWGvnL_13oxigraph_fuzz:
+  170|      8|    sink.write_all(b"\"")?;
+  171|      8|    let mut buffer = [b'\\', b'u', 0, 0, 0, 0];
+  172|     46|    for c in s.chars() {
+  173|     46|        match c {
+  174|      0|            '\\' => sink.write_all(b"\\\\"),
+  175|      0|            '"' => sink.write_all(b"\\\""),
+  176|     46|            c => {
+  177|     46|                if c < char::from(32) {
+  178|      0|                    match c {
+  179|      0|                        '\u{08}' => sink.write_all(b"\\b"),
+  180|      0|                        '\u{0C}' => sink.write_all(b"\\f"),
+  181|      0|                        '\n' => sink.write_all(b"\\n"),
+  182|      0|                        '\r' => sink.write_all(b"\\r"),
+  183|      0|                        '\t' => sink.write_all(b"\\t"),
+  184|      0|                        c => {
+  185|      0|                            let mut c = c as u8;
+  186|      0|                            for i in (2..6).rev() {
+  187|      0|                                let ch = c % 16;
+  188|      0|                                buffer[i] = ch + if ch < 10 { b'0' } else { b'A' };
+  189|      0|                                c /= 16;
+  190|       |                            }
+  191|      0|                            sink.write_all(&buffer)
+  192|       |                        }
+  193|       |                    }
+  194|       |                } else {
+  195|     46|                    sink.write_all(c.encode_utf8(&mut buffer[2..]).as_bytes())
+  196|       |                }
+  197|       |            }
+  198|      0|        }?;
+  199|       |    }
+  200|      8|    sink.write_all(b"\"")?;
+  201|      8|    Ok(())
+  202|      8|}
+_RNvMNtCs5so91rueIzL_17json_event_parser5writeINtB2_10JsonWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE11from_writerCslt04TQWGvnL_13oxigraph_fuzz:
+   27|      2|    pub fn from_writer(writer: W) -> Self {
+   28|      2|        Self {
+   29|      2|            writer,
+   30|      2|            state_stack: Vec::new(),
+   31|      2|            element_written: false,
+   32|      2|        }
+   33|      2|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser5writeINtB2_10JsonWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE10into_innerCslt04TQWGvnL_13oxigraph_fuzz:
+   35|      2|    pub fn into_inner(self) -> W {
+   36|      2|        self.writer
+   37|      2|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser5writeINtB2_10JsonWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE11write_eventCslt04TQWGvnL_13oxigraph_fuzz:
+   43|     30|    pub fn write_event(&mut self, event: JsonEvent<'_>) -> Result<()> {
+   44|     30|        match event {
+   45|      0|            JsonEvent::String(s) => {
+   46|      0|                self.before_value()?;
+   47|      0|                write_escaped_json_string(s, &mut self.writer)
+   48|       |            }
+   49|      0|            JsonEvent::Number(number) => {
+   50|      0|                self.before_value()?;
+   51|      0|                self.writer.write_all(number.as_bytes())
+   52|       |            }
+   53|      0|            JsonEvent::Boolean(b) => {
+   54|      0|                self.before_value()?;
+   55|      0|                self.writer.write_all(if b { b"true" } else { b"false" })
+   56|       |            }
+   57|       |            JsonEvent::Null => {
+   58|      0|                self.before_value()?;
+   59|      0|                self.writer.write_all(b"null")
+   60|       |            }
+   61|       |            JsonEvent::StartArray => {
+   62|      4|                self.before_value()?;
+   63|      4|                self.state_stack.push(JsonState::OpenArray);
+   64|      4|                self.writer.write_all(b"[")
+   65|       |            }
+   66|      4|            JsonEvent::EndArray => match self.state_stack.pop() {
+   67|       |                Some(JsonState::OpenArray) | Some(JsonState::ContinuationArray) => {
+   68|      4|                    self.writer.write_all(b"]")
+   69|       |                }
+   70|      0|                Some(s) => {
+   71|      0|                    self.state_stack.push(s);
+   72|      0|                    Err(Error::new(
+   73|      0|                        ErrorKind::InvalidInput,
+   74|      0|                        "Closing a not opened array",
+   75|      0|                    ))
+   76|       |                }
+   77|      0|                None => Err(Error::new(
+   78|      0|                    ErrorKind::InvalidInput,
+   79|      0|                    "Closing a not opened array",
+   80|      0|                )),
+   81|       |            },
+   82|       |            JsonEvent::StartObject => {
+   83|      7|                self.before_value()?;
+   84|      7|                self.state_stack.push(JsonState::OpenObject);
+   85|      7|                self.writer.write_all(b"{")
+   86|       |            }
+   87|      7|            JsonEvent::EndObject => match self.state_stack.pop() {
+   88|       |                Some(JsonState::OpenObject) | Some(JsonState::ContinuationObject) => {
+   89|      7|                    self.writer.write_all(b"}")
+   90|       |                }
+   91|      0|                Some(s) => {
+   92|      0|                    self.state_stack.push(s);
+   93|      0|                    Err(Error::new(
+   94|      0|                        ErrorKind::InvalidInput,
+   95|      0|                        "Closing a not opened object",
+   96|      0|                    ))
+   97|       |                }
+   98|      0|                None => Err(Error::new(
+   99|      0|                    ErrorKind::InvalidInput,
+  100|      0|                    "Closing a not opened object",
+  101|      0|                )),
+  102|       |            },
+  103|      8|            JsonEvent::ObjectKey(key) => {
+  104|      8|                match self.state_stack.pop() {
+  105|      6|                    Some(JsonState::OpenObject) => (),
+  106|      2|                    Some(JsonState::ContinuationObject) => self.writer.write_all(b",")?,
+  107|       |                    _ => {
+  108|      0|                        return Err(Error::new(
+  109|      0|                            ErrorKind::InvalidInput,
+  110|      0|                            "Trying to write an object key in an not object",
+  111|      0|                        ))
+  112|       |                    }
+  113|       |                }
+  114|      8|                self.state_stack.push(JsonState::ContinuationObject);
+  115|      8|                self.state_stack.push(JsonState::ObjectValue);
+  116|      8|                write_escaped_json_string(key, &mut self.writer)?;
+  117|      8|                self.writer.write_all(b":")
+  118|       |            }
+  119|      0|            JsonEvent::Eof => Err(Error::new(
+  120|      0|                ErrorKind::InvalidInput,
+  121|      0|                "EOF is not allowed in JSON writer",
+  122|      0|            )),
+  123|       |        }
+  124|     30|    }
+_RNvMNtCs5so91rueIzL_17json_event_parser5writeINtB2_10JsonWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE12before_valueCslt04TQWGvnL_13oxigraph_fuzz:
+  127|     11|        match self.state_stack.pop() {
+  128|       |            Some(JsonState::OpenArray) => {
+  129|      1|                self.state_stack.push(JsonState::ContinuationArray);
+  130|      1|                Ok(())
+  131|       |            }
+  132|       |            Some(JsonState::ContinuationArray) => {
+  133|      0|                self.state_stack.push(JsonState::ContinuationArray);
+  134|      0|                self.writer.write_all(b",")?;
+  135|      0|                Ok(())
+  136|       |            }
+  137|      0|            Some(last_state @ JsonState::OpenObject)
+  138|      0|            | Some(last_state @ JsonState::ContinuationObject) => {
+  139|      0|                self.state_stack.push(last_state);
+  140|      0|                Err(Error::new(
+  141|      0|                    ErrorKind::InvalidInput,
+  142|      0|                    "Object key expected, string found",
+  143|      0|                ))
+  144|       |            }
+  145|      8|            Some(JsonState::ObjectValue) => Ok(()),
+  146|       |            None => {
+  147|      2|                if self.element_written {
+  148|      0|                    Err(Error::new(
+  149|      0|                        ErrorKind::InvalidInput,
+  150|      0|                        "A root JSON value has already been written",
+  151|      0|                    ))
+  152|       |                } else {
+  153|      2|                    self.element_written = true;
+  154|      2|                    Ok(())
+  155|       |                }
+  156|       |            }
+  157|       |        }
+  158|     11|    }
+
+_RNvNvCsbZgjSkWkXrB_19sparql_results_json1__19___libfuzzer_sys_run:
+  241|    479|            fn __libfuzzer_sys_run($bytes: &[u8]) {
+  242|    479|                $body
+  243|    479|            }
+rust_fuzzer_test_input:
+  215|    479|                if let Some(path) = $crate::RUST_LIBFUZZER_DEBUG_PATH.get() {
+  216|       |                    use std::io::Write;
+  217|      0|                    let mut file = std::fs::File::create(path)
+  218|      0|                        .expect("failed to create `RUST_LIBFUZZER_DEBUG_PATH` file");
+  219|      0|                    writeln!(&mut file, "{:?}", bytes)
+  220|      0|                        .expect("failed to write to `RUST_LIBFUZZER_DEBUG_PATH` file");
+  221|      0|                    return 0;
+  222|    479|                }
+  223|    479|
+  224|    479|                __libfuzzer_sys_run(bytes);
+  225|    479|                0
+  226|    479|            }
+LLVMFuzzerTestOneInput:
+   58|    479|pub fn test_input_wrap(data: *const u8, size: usize) -> i32 {
+   59|    479|    let test_input = ::std::panic::catch_unwind(|| unsafe {
+   60|       |        let data_slice = ::std::slice::from_raw_parts(data, size);
+   61|       |        rust_fuzzer_test_input(data_slice)
+   62|    479|    });
+   63|    479|
+   64|    479|    match test_input {
+   65|    479|        Ok(i) => i,
+   66|       |        Err(_) => {
+   67|       |            // hopefully the custom panic hook will be called before and abort the
+   68|       |            // process before the stack frames are unwinded.
+   69|      0|            ::std::process::abort();
+   70|       |        }
+   71|       |    }
+   72|    479|}
+_RNCNvCs5rGtGqFKXa_13libfuzzer_sys15test_input_wrap0B3_:
+   59|    479|    let test_input = ::std::panic::catch_unwind(|| unsafe {
+   60|    479|        let data_slice = ::std::slice::from_raw_parts(data, size);
+   61|    479|        rust_fuzzer_test_input(data_slice)
+   62|    479|    });
+LLVMFuzzerInitialize:
+   79|      2|pub fn initialize(_argc: *const isize, _argv: *const *const *const u8) -> isize {
+   80|      2|    // Registers a panic hook that aborts the process before unwinding.
+   81|      2|    // It is useful to abort before unwinding so that the fuzzer will then be
+   82|      2|    // able to analyse the process stack frames to tell different bugs appart.
+   83|      2|    //
+   84|      2|    // HACK / FIXME: it would be better to use `-C panic=abort` but it's currently
+   85|      2|    // impossible to build code using compiler plugins with this flag.
+   86|      2|    // We will be able to remove this code when
+   87|      2|    // https://github.com/rust-lang/cargo/issues/5423 is fixed.
+   88|      2|    let default_hook = ::std::panic::take_hook();
+   89|      2|    ::std::panic::set_hook(Box::new(move |panic_info| {
+   90|       |        default_hook(panic_info);
+   91|       |        ::std::process::abort();
+   92|      2|    }));
+   93|       |
+   94|       |    // Initialize the `RUST_LIBFUZZER_DEBUG_PATH` cell with the path so it can be
+   95|       |    // reused with little overhead.
+   96|      2|    if let Ok(path) = std::env::var("RUST_LIBFUZZER_DEBUG_PATH") {
+   97|      0|        RUST_LIBFUZZER_DEBUG_PATH
+   98|      0|            .set(path)
+   99|      0|            .expect("Since this is initialize it is only called once so can never fail");
+  100|      2|    }
+  101|      2|    0
+  102|      2|}
+
+_RNvMs2_NtCs1ZGo2WHpFn6_9once_cell3impINtB5_8OnceCellNtNtCs9lXrf61Tc6r_5alloc6string6StringE14is_initializedCs5rGtGqFKXa_13libfuzzer_sys:
+   59|    479|    pub(crate) fn is_initialized(&self) -> bool {
+   60|    479|        // An `Acquire` load is enough because that makes all the initialization
+   61|    479|        // operations visible to us, and, this being a fast path, weaker
+   62|    479|        // ordering helps with performance. This `Acquire` synchronizes with
+   63|    479|        // `SeqCst` operations on the slow path.
+   64|    479|        self.queue.load(Ordering::Acquire) == COMPLETE_PTR
+   65|    479|    }
+
+_RNvMs4_NtCs1ZGo2WHpFn6_9once_cell4syncINtB5_8OnceCellNtNtCs9lXrf61Tc6r_5alloc6string6StringE3getCs5rGtGqFKXa_13libfuzzer_sys:
+  967|    479|        pub fn get(&self) -> Option<&T> {
+  968|    479|            if self.0.is_initialized() {
+  969|       |                // Safe b/c value is initialized.
+  970|      0|                Some(unsafe { self.get_unchecked() })
+  971|       |            } else {
+  972|    479|                None
+  973|       |            }
+  974|    479|        }
+
+_RNvNtCslt04TQWGvnL_13oxigraph_fuzz13result_format18fuzz_result_format:
+    6|    479|pub fn fuzz_result_format(format: QueryResultsFormat, data: &[u8]) {
+    7|    479|    let parser = QueryResultsParser::from_format(format);
+    8|    479|    let serializer = QueryResultsSerializer::from_format(format);
+    9|       |
+   10|    479|    let Ok(reader) = parser.read_results(data) else {
+   11|    471|        return;
+   12|       |    };
+   13|      8|    match reader {
+   14|      8|        QueryResultsReader::Solutions(solutions) => {
+   15|      8|            let Ok(solutions) = solutions.collect::<Result<Vec<_>, _>>() else {
+   16|      6|                return;
+   17|       |            };
+   18|       |
+   19|       |            // We try to write again
+   20|      2|            let mut writer = serializer
+   21|      2|                .solutions_writer(
+   22|      2|                    Vec::new(),
+   23|      2|                    solutions
+   24|      2|                        .get(0)
+   25|      2|                        .map_or_else(Vec::new, |s| s.variables().to_vec()),
+   26|      2|                )
+   27|      2|                .unwrap();
+   28|      3|            for solution in &solutions {
+   29|      1|                writer.write(solution).unwrap();
+   30|      1|            }
+   31|      2|            let serialized = String::from_utf8(writer.finish().unwrap()).unwrap();
+   32|       |
+   33|       |            // And to parse again
+   34|      2|            if let QueryResultsReader::Solutions(roundtrip_solutions) = parser
+   35|      2|                .read_results(serialized.as_bytes())
+   36|      2|                .with_context(|| format!("Parsing {:?}", &serialized))
+   37|      2|                .unwrap()
+   38|       |            {
+   39|      2|                assert_eq!(
+   40|      2|                    roundtrip_solutions
+   41|      2|                        .collect::<Result<Vec<_>, _>>()
+   42|      2|                        .with_context(|| format!("Parsing {:?}", &serialized))
+   43|      2|                        .unwrap(),
+   44|      2|                    solutions
+   45|      2|                )
+   46|      0|            }
+   47|       |        }
+   48|      0|        QueryResultsReader::Boolean(value) => {
+   49|      0|            // We try to write again
+   50|      0|            let mut serialized = Vec::new();
+   51|      0|            serializer
+   52|      0|                .write_boolean_result(&mut serialized, value)
+   53|      0|                .unwrap();
+   54|       |
+   55|       |            // And to parse again
+   56|      0|            if let QueryResultsReader::Boolean(roundtrip_value) =
+   57|      0|                parser.read_results(serialized.as_slice()).unwrap()
+   58|       |            {
+   59|      0|                assert_eq!(roundtrip_value, value)
+   60|      0|            }
+   61|       |        }
+   62|       |    }
+   63|    479|}
+_RNCNvNtCslt04TQWGvnL_13oxigraph_fuzz13result_format18fuzz_result_format0B5_:
+   25|      1|                        .map_or_else(Vec::new, |s| s.variables().to_vec()),
+
+_RINvMs4_NtCsdUl1VstNg53_10sparesults5errorNtB6_11SyntaxError3msgNtNtCs9lXrf61Tc6r_5alloc6string6StringECslt04TQWGvnL_13oxigraph_fuzz:
+   86|     12|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
+   87|     12|        Self {
+   88|     12|            inner: SyntaxErrorKind::Msg { msg: msg.into() },
+   89|     12|        }
+   90|     12|    }
+_RINvMs4_NtCsdUl1VstNg53_10sparesults5errorNtB6_11SyntaxError3msgReECslt04TQWGvnL_13oxigraph_fuzz:
+   86|     75|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
+   87|     75|        Self {
+   88|     75|            inner: SyntaxErrorKind::Msg { msg: msg.into() },
+   89|     75|        }
+   90|     75|    }
+_RNvXs1_NtCsdUl1VstNg53_10sparesults5errorNtB5_10ParseErrorINtNtCs9jyDXsa31Er_4core7convert4FromNtB5_11SyntaxErrorE4fromCslt04TQWGvnL_13oxigraph_fuzz:
+   43|     87|    fn from(error: SyntaxError) -> Self {
+   44|     87|        Self::Syntax(error)
+   45|     87|    }
+_RNvXs0_NtCsdUl1VstNg53_10sparesults5errorNtB5_10ParseErrorINtNtCs9jyDXsa31Er_4core7convert4FromNtNtNtCshCBl3zrtn9P_3std2io5error5ErrorE4fromCslt04TQWGvnL_13oxigraph_fuzz:
+   36|    390|    fn from(error: io::Error) -> Self {
+   37|    390|        Self::Io(error)
+   38|    390|    }
+
+_RINvNtCsdUl1VstNg53_10sparesults4json12ignore_valueRShECslt04TQWGvnL_13oxigraph_fuzz:
+  578|    482|fn ignore_value<R: BufRead>(
+  579|    482|    reader: &mut JsonReader<R>,
+  580|    482|    buffer: &mut Vec<u8>,
+  581|    482|) -> Result<(), ParseError> {
+  582|    482|    let mut nesting = 0;
+  583|       |    loop {
+  584|  2.08k|        match reader.read_event(buffer)? {
+  585|       |            JsonEvent::Boolean(_)
+  586|       |            | JsonEvent::Null
+  587|       |            | JsonEvent::Number(_)
+  588|       |            | JsonEvent::String(_) => {
+  589|    456|                if nesting == 0 {
+  590|    234|                    return Ok(());
+  591|    222|                }
+  592|       |            }
+  593|    556|            JsonEvent::ObjectKey(_) => (),
+  594|    717|            JsonEvent::StartArray | JsonEvent::StartObject => nesting += 1,
+  595|       |            JsonEvent::EndArray | JsonEvent::EndObject => {
+  596|    291|                nesting -= 1;
+  597|    291|                if nesting == 0 {
+  598|    179|                    return Ok(());
+  599|    112|                }
+  600|       |            }
+  601|      0|            JsonEvent::Eof => return Err(SyntaxError::msg("Unexpected end of file").into()),
+  602|       |        }
+  603|       |    }
+  604|    482|}
+_RNCNvMs0_NtCsdUl1VstNg53_10sparesults4jsonINtB7_19JsonSolutionsReaderRShE9read_next0Cslt04TQWGvnL_13oxigraph_fuzz:
+  288|      1|                            let k = *self.mapping.get(key).ok_or_else(|| {
+  289|      1|                                SyntaxError::msg(format!(
+  290|      1|                                    "The variable {key} has not been defined in the header"
+  291|      1|                                ))
+  292|      1|                            })?;
+_RINvNtCsdUl1VstNg53_10sparesults4json9read_headRShECslt04TQWGvnL_13oxigraph_fuzz:
+  516|    330|fn read_head<R: BufRead>(
+  517|    330|    reader: &mut JsonReader<R>,
+  518|    330|    buffer: &mut Vec<u8>,
+  519|    330|) -> Result<Vec<Variable>, ParseError> {
+  520|    330|    if reader.read_event(buffer)? != JsonEvent::StartObject {
+  521|      2|        return Err(SyntaxError::msg("head should be an object").into());
+  522|    318|    }
+  523|    318|    let mut variables = Vec::new();
+  524|       |    loop {
+  525|    661|        match reader.read_event(buffer)? {
+  526|    412|            JsonEvent::ObjectKey(key) => match key {
+  527|    412|                "vars" => {
+  528|      6|                    if reader.read_event(buffer)? != JsonEvent::StartArray {
+  529|      1|                        return Err(SyntaxError::msg("Variable list should be an array").into());
+  530|      4|                    }
+  531|       |                    loop {
+  532|      4|                        match reader.read_event(buffer)? {
+  533|      0|                            JsonEvent::String(s) => {
+  534|      0|                                let new_var = Variable::new(s).map_err(|e| {
+  535|       |                                    SyntaxError::msg(format!(
+  536|       |                                        "Invalid variable declaration '{s}': {e}"
+  537|       |                                    ))
+  538|      0|                                })?;
+  539|      0|                                if variables.contains(&new_var) {
+  540|      0|                                    return Err(SyntaxError::msg(format!(
+  541|      0|                                        "The variable {new_var} is declared twice"
+  542|      0|                                    ))
+  543|      0|                                    .into());
+  544|      0|                                }
+  545|      0|                                variables.push(new_var);
+  546|       |                            }
+  547|      2|                            JsonEvent::EndArray => break,
+  548|       |                            _ => {
+  549|      1|                                return Err(
+  550|      1|                                    SyntaxError::msg("Variable names should be strings").into()
+  551|      1|                                )
+  552|       |                            }
+  553|       |                        }
+  554|       |                    }
+  555|       |                }
+  556|    406|                "link" => {
+  557|      5|                    if reader.read_event(buffer)? != JsonEvent::StartArray {
+  558|      1|                        return Err(SyntaxError::msg("Variable list should be an array").into());
+  559|      3|                    }
+  560|       |                    loop {
+  561|      3|                        match reader.read_event(buffer)? {
+  562|      0|                            JsonEvent::String(_) => (),
+  563|      1|                            JsonEvent::EndArray => break,
+  564|       |                            _ => {
+  565|      1|                                return Err(SyntaxError::msg("Link names should be strings").into())
+  566|       |                            }
+  567|       |                        }
+  568|       |                    }
+  569|       |                }
+  570|    401|                _ => ignore_value(reader, buffer)?,
+  571|       |            },
+  572|    229|            JsonEvent::EndObject => return Ok(variables),
+  573|      2|            _ => return Err(SyntaxError::msg("Invalid head serialization").into()),
+  574|       |        }
+  575|       |    }
+  576|    330|}
+_RNvMNtCsdUl1VstNg53_10sparesults4jsonINtB2_19JsonSolutionsWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE6finishCslt04TQWGvnL_13oxigraph_fuzz:
+   67|      2|        self.writer.write_event(JsonEvent::EndArray)?;
+   68|      2|        self.writer.write_event(JsonEvent::EndObject)?;
+   69|      2|        self.writer.write_event(JsonEvent::EndObject)?;
+   70|      2|        let mut inner = self.writer.into_inner();
+   71|      2|        inner.flush()?;
+   72|      2|        Ok(inner)
+   73|      2|    }
+_RNvMs_NtCsdUl1VstNg53_10sparesults4jsonINtB4_22JsonQueryResultsReaderRShE4readCslt04TQWGvnL_13oxigraph_fuzz:
+  138|    481|    pub fn read(source: R) -> Result<Self, ParseError> {
+  139|    481|        let mut reader = JsonReader::from_reader(source);
+  140|    481|        let mut buffer = Vec::default();
+  141|    481|        let mut variables = None;
+  142|    481|        let mut buffered_bindings: Option<Vec<_>> = None;
+  143|    481|        let mut output_iter = None;
+  144|    481|
+  145|    481|        if reader.read_event(&mut buffer)? != JsonEvent::StartObject {
+  146|     51|            return Err(SyntaxError::msg("SPARQL JSON results should be an object").into());
+  147|    187|        }
+  148|       |
+  149|       |        loop {
+  150|    438|            let event = reader.read_event(&mut buffer)?;
+  151|    411|            match event {
+  152|    403|                JsonEvent::ObjectKey(key) => match key {
+  153|    403|                    "head" => {
+  154|    330|                        let extracted_variables = read_head(&mut reader, &mut buffer)?;
+  155|    229|                        if let Some(buffered_bindings) = buffered_bindings.take() {
+  156|      1|                            let mut mapping = BTreeMap::default();
+  157|      1|                            for (i, var) in extracted_variables.iter().enumerate() {
+  158|      0|                                mapping.insert(var.as_str().to_owned(), i);
+  159|      0|                            }
+  160|      1|                            output_iter = Some(Self::Solutions {
+  161|      1|                                variables: extracted_variables,
+  162|      1|                                solutions: JsonSolutionsReader {
+  163|      1|                                    kind: JsonSolutionsReaderKind::Buffered {
+  164|      1|                                        bindings: buffered_bindings.into_iter(),
+  165|      1|                                    },
+  166|      1|                                    mapping,
+  167|      1|                                },
+  168|      1|                            });
+  169|    228|                        } else {
+  170|    228|                            variables = Some(extracted_variables);
+  171|    228|                        }
+  172|       |                    }
+  173|     73|                    "results" => {
+  174|     67|                        if reader.read_event(&mut buffer)? != JsonEvent::StartObject {
+  175|      1|                            return Err(SyntaxError::msg("'results' should be an object").into());
+  176|     65|                        }
+  177|       |                        loop {
+  178|    138|                            match reader.read_event(&mut buffer)? {
+  179|    132|                                JsonEvent::ObjectKey("bindings") => break, // Found
+  180|     81|                                JsonEvent::ObjectKey(_) => ignore_value(&mut reader, &mut buffer)?,
+  181|       |                                _ => {
+  182|      3|                                    return Err(SyntaxError::msg(
+  183|      3|                                        "'results' should contain a 'bindings' key",
+  184|      3|                                    )
+  185|      3|                                    .into())
+  186|       |                                }
+  187|       |                            }
+  188|       |                        }
+  189|     51|                        if reader.read_event(&mut buffer)? != JsonEvent::StartArray {
+  190|      1|                            return Err(SyntaxError::msg("'bindings' should be an object").into());
+  191|     48|                        }
+  192|     48|                        if let Some(variables) = variables {
+  193|     10|                            let mut mapping = BTreeMap::default();
+  194|     10|                            for (i, var) in variables.iter().enumerate() {
+  195|      0|                                mapping.insert(var.as_str().to_owned(), i);
+  196|      0|                            }
+  197|     10|                            return Ok(Self::Solutions {
+  198|     10|                                variables,
+  199|     10|                                solutions: JsonSolutionsReader {
+  200|     10|                                    kind: JsonSolutionsReaderKind::Streaming { reader, buffer },
+  201|     10|                                    mapping,
+  202|     10|                                },
+  203|     10|                            });
+  204|     38|                        }
+  205|     38|                        // We buffer all results before being able to read the header
+  206|     38|                        let mut bindings = Vec::new();
+  207|     38|                        let mut variables = Vec::new();
+  208|     38|                        let mut values = Vec::new();
+  209|       |                        loop {
+  210|     64|                            match reader.read_event(&mut buffer)? {
+  211|     25|                                JsonEvent::StartObject => (),
+  212|      1|                                JsonEvent::EndObject => {
+  213|      1|                                    bindings.push((take(&mut variables), take(&mut values)));
+  214|      1|                                }
+  215|       |                                JsonEvent::EndArray | JsonEvent::Eof => {
+  216|     18|                                    buffered_bindings = Some(bindings);
+  217|     18|                                    break;
+  218|       |                                }
+  219|     13|                                JsonEvent::ObjectKey(key) => {
+  220|     13|                                    variables.push(key.to_owned());
+  221|     13|                                    values.push(read_value(&mut reader, &mut buffer, 0)?);
+  222|       |                                }
+  223|       |                                _ => {
+  224|      1|                                    return Err(
+  225|      1|                                        SyntaxError::msg("Invalid result serialization").into()
+  226|      1|                                    )
+  227|       |                                }
+  228|       |                            }
+  229|       |                        }
+  230|       |                    }
+  231|      6|                    "boolean" => {
+  232|      2|                        return if let JsonEvent::Boolean(v) = reader.read_event(&mut buffer)? {
+  233|      0|                            Ok(Self::Boolean(v))
+  234|       |                        } else {
+  235|      1|                            Err(SyntaxError::msg("Unexpected boolean value").into())
+  236|       |                        }
+  237|       |                    }
+  238|       |                    _ => {
+  239|      4|                        return Err(SyntaxError::msg(format!(
+  240|      4|                            "Expecting head or result key, found {key}"
+  241|      4|                        ))
+  242|      4|                        .into());
+  243|       |                    }
+  244|       |                },
+  245|      4|                JsonEvent::EndObject => (),
+  246|       |                JsonEvent::Eof => {
+  247|      2|                    return if let Some(output_iter) = output_iter {
+  248|      0|                        Ok(output_iter)
+  249|       |                    } else {
+  250|      2|                        Err(SyntaxError::msg(
+  251|      2|                            "Unexpected end of JSON object without 'results' or 'boolean' key",
+  252|      2|                        )
+  253|      2|                        .into())
+  254|       |                    }
+  255|       |                }
+  256|      2|                _ => return Err(SyntaxError::msg("Invalid SPARQL results serialization").into()),
+  257|       |            }
+  258|       |        }
+  259|    481|    }
+_RNvMs0_NtCsdUl1VstNg53_10sparesults4jsonINtB5_19JsonSolutionsReaderRShE9read_nextCslt04TQWGvnL_13oxigraph_fuzz:
+  278|     13|    pub fn read_next(&mut self) -> Result<Option<Vec<Option<Term>>>, ParseError> {
+  279|     13|        match &mut self.kind {
+  280|     13|            JsonSolutionsReaderKind::Streaming { reader, buffer } => {
+  281|     13|                let mut new_bindings = vec![None; self.mapping.len()];
+  282|       |                loop {
+  283|     26|                    match reader.read_event(buffer)? {
+  284|     13|                        JsonEvent::StartObject => (),
+  285|      3|                        JsonEvent::EndObject => return Ok(Some(new_bindings)),
+  286|      4|                        JsonEvent::EndArray | JsonEvent::Eof => return Ok(None),
+  287|      1|                        JsonEvent::ObjectKey(key) => {
+  288|      1|                            let k = *self.mapping.get(key).ok_or_else(|| {
+  289|       |                                SyntaxError::msg(format!(
+  290|       |                                    "The variable {key} has not been defined in the header"
+  291|       |                                ))
+  292|      1|                            })?;
+  293|      0|                            new_bindings[k] = Some(read_value(reader, buffer, 0)?)
+  294|       |                        }
+  295|      1|                        _ => return Err(SyntaxError::msg("Invalid result serialization").into()),
+  296|       |                    }
+  297|       |                }
+  298|       |            }
+  299|      0|            JsonSolutionsReaderKind::Buffered { bindings } => {
+  300|      0|                Ok(if let Some((variables, values)) = bindings.next() {
+  301|      0|                    let mut new_bindings = vec![None; self.mapping.len()];
+  302|      0|                    for (variable, value) in variables.into_iter().zip(values) {
+  303|      0|                        let k = *self.mapping.get(&variable).ok_or_else(|| {
+  304|       |                            SyntaxError::msg(format!(
+  305|       |                                "The variable {variable} has not been defined in the header"
+  306|       |                            ))
+  307|      0|                        })?;
+  308|      0|                        new_bindings[k] = Some(value)
+  309|       |                    }
+  310|      0|                    Some(new_bindings)
+  311|       |                } else {
+  312|      0|                    None
+  313|       |                })
+  314|       |            }
+  315|       |        }
+  316|     13|    }
+_RNvMNtCsdUl1VstNg53_10sparesults4jsonINtB2_19JsonSolutionsWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE5startCslt04TQWGvnL_13oxigraph_fuzz:
+   33|      2|    pub fn start(sink: W, variables: &[Variable]) -> io::Result<Self> {
+   34|      2|        let mut writer = JsonWriter::from_writer(sink);
+   35|      2|        writer.write_event(JsonEvent::StartObject)?;
+   36|      2|        writer.write_event(JsonEvent::ObjectKey("head"))?;
+   37|      2|        writer.write_event(JsonEvent::StartObject)?;
+   38|      2|        writer.write_event(JsonEvent::ObjectKey("vars"))?;
+   39|      2|        writer.write_event(JsonEvent::StartArray)?;
+   40|      2|        for variable in variables {
+   41|      0|            writer.write_event(JsonEvent::String(variable.as_str()))?;
+   42|       |        }
+   43|      2|        writer.write_event(JsonEvent::EndArray)?;
+   44|      2|        writer.write_event(JsonEvent::EndObject)?;
+   45|      2|        writer.write_event(JsonEvent::ObjectKey("results"))?;
+   46|      2|        writer.write_event(JsonEvent::StartObject)?;
+   47|      2|        writer.write_event(JsonEvent::ObjectKey("bindings"))?;
+   48|      2|        writer.write_event(JsonEvent::StartArray)?;
+   49|      2|        Ok(Self { writer })
+   50|      2|    }
+_RINvMNtCsdUl1VstNg53_10sparesults4jsonINtB3_19JsonSolutionsWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE5writeINtNtNtNtCs9jyDXsa31Er_4core4iter8adapters3map3MapNtNtB5_8solution4IterNCINvMs3_B5_INtB5_15SolutionsWriterB11_E5writeRNtNtCshLJnod01kra_5oxrdf8variable8VariableRNtNtB3F_6triple4TermRNtB2x_13QuerySolutionE0EECslt04TQWGvnL_13oxigraph_fuzz:
+   56|      1|        self.writer.write_event(JsonEvent::StartObject)?;
+   57|      1|        for (variable, value) in solution {
+   58|      0|            self.writer
+   59|      0|                .write_event(JsonEvent::ObjectKey(variable.as_str()))?;
+   60|      0|            write_json_term(value, &mut self.writer)?;
+   61|       |        }
+   62|      1|        self.writer.write_event(JsonEvent::EndObject)?;
+   63|      1|        Ok(())
+   64|      1|    }
+_RINvNtCsdUl1VstNg53_10sparesults4json10read_valueRShECslt04TQWGvnL_13oxigraph_fuzz:
+  319|     13|fn read_value<R: BufRead>(
+  320|     13|    reader: &mut JsonReader<R>,
+  321|     13|    buffer: &mut Vec<u8>,
+  322|     13|    number_of_recursive_calls: usize,
+  323|     13|) -> Result<Term, ParseError> {
+  324|     13|    enum Type {
+  325|     13|        Uri,
+  326|     13|        BNode,
+  327|     13|        Literal,
+  328|     13|        #[cfg(feature = "rdf-star")]
+  329|     13|        Triple,
+  330|     13|    }
+  331|     13|    #[derive(Eq, PartialEq)]
+  332|     13|    enum State {
+  333|     13|        Type,
+  334|     13|        Value,
+  335|     13|        Lang,
+  336|     13|        Datatype,
+  337|     13|    }
+  338|     13|
+  339|     13|    if number_of_recursive_calls == MAX_NUMBER_OF_NESTED_TRIPLES {
+  340|      0|        return Err(SyntaxError::msg(format!(
+  341|      0|            "Too many nested triples ({MAX_NUMBER_OF_NESTED_TRIPLES}). The parser fails here to avoid a stack overflow."
+  342|      0|        ))
+  343|      0|            .into());
+  344|     13|    }
+  345|     13|    let mut state = None;
+  346|     13|    let mut t = None;
+  347|     13|    let mut value = None;
+  348|     13|    let mut lang = None;
+  349|     13|    let mut datatype = None;
+  350|     13|    #[cfg(feature = "rdf-star")]
+  351|     13|    let mut subject = None;
+  352|     13|    #[cfg(feature = "rdf-star")]
+  353|     13|    let mut predicate = None;
+  354|     13|    #[cfg(feature = "rdf-star")]
+  355|     13|    let mut object = None;
+  356|     13|    if reader.read_event(buffer)? != JsonEvent::StartObject {
+  357|      1|        return Err(SyntaxError::msg("Term serializations should be an object").into());
+  358|     11|    }
+  359|       |    loop {
+  360|     11|        match reader.read_event(buffer)? {
+  361|      7|            JsonEvent::ObjectKey(key) => match key {
+  362|      7|                "type" => state = Some(State::Type),
+  363|      7|                "value" => state = Some(State::Value),
+  364|      7|                "xml:lang" => state = Some(State::Lang),
+  365|      7|                "datatype" => state = Some(State::Datatype),
+  366|       |                #[cfg(feature = "rdf-star")]
+  367|      7|                "subject" => {
+  368|      0|                    subject = Some(read_value(reader, buffer, number_of_recursive_calls + 1)?)
+  369|       |                }
+  370|       |                #[cfg(feature = "rdf-star")]
+  371|      7|                "predicate" => {
+  372|      0|                    predicate = Some(read_value(reader, buffer, number_of_recursive_calls + 1)?)
+  373|       |                }
+  374|       |                #[cfg(feature = "rdf-star")]
+  375|      7|                "object" => {
+  376|      0|                    object = Some(read_value(reader, buffer, number_of_recursive_calls + 1)?)
+  377|       |                }
+  378|       |                _ => {
+  379|      7|                    return Err(SyntaxError::msg(format!(
+  380|      7|                        "Unexpected key in term serialization: '{key}'"
+  381|      7|                    ))
+  382|      7|                    .into())
+  383|       |                }
+  384|       |            },
+  385|       |            JsonEvent::StartObject => {
+  386|      1|                if state != Some(State::Value) {
+  387|      1|                    return Err(
+  388|      1|                        SyntaxError::msg("Unexpected nested object in term serialization").into(),
+  389|      1|                    );
+  390|      0|                }
+  391|       |            }
+  392|      0|            JsonEvent::String(s) => match state {
+  393|       |                Some(State::Type) => {
+  394|      0|                    match s {
+  395|      0|                        "uri" => t = Some(Type::Uri),
+  396|      0|                        "bnode" => t = Some(Type::BNode),
+  397|      0|                        "literal" | "typed-literal" => t = Some(Type::Literal),
+  398|       |                        #[cfg(feature = "rdf-star")]
+  399|      0|                        "triple" => t = Some(Type::Triple),
+  400|       |                        _ => {
+  401|      0|                            return Err(
+  402|      0|                                SyntaxError::msg(format!("Unexpected term type: '{s}'")).into()
+  403|      0|                            )
+  404|       |                        }
+  405|       |                    };
+  406|      0|                    state = None;
+  407|       |                }
+  408|      0|                Some(State::Value) => {
+  409|      0|                    value = Some(s.to_owned());
+  410|      0|                    state = None;
+  411|      0|                }
+  412|      0|                Some(State::Lang) => {
+  413|      0|                    lang = Some(s.to_owned());
+  414|      0|                    state = None;
+  415|      0|                }
+  416|      0|                Some(State::Datatype) => {
+  417|      0|                    datatype = Some(
+  418|      0|                        NamedNode::new(s)
+  419|      0|                            .map_err(|e| SyntaxError::msg(format!("Invalid datatype IRI: {e}")))?,
+  420|       |                    );
+  421|      0|                    state = None;
+  422|       |                }
+  423|      0|                _ => (), // impossible
+  424|       |            },
+  425|       |            JsonEvent::EndObject => {
+  426|      1|                if let Some(s) = state {
+  427|      0|                    if s == State::Value {
+  428|      0|                        state = None; //End of triple
+  429|      0|                    } else {
+  430|      0|                        return Err(
+  431|      0|                            SyntaxError::msg("Term description values should be string").into()
+  432|      0|                        );
+  433|       |                    }
+  434|       |                } else {
+  435|      0|                    return match t {
+  436|      1|                        None => Err(SyntaxError::msg(
+  437|      1|                            "Term serialization should have a 'type' key",
+  438|      1|                        )
+  439|      1|                        .into()),
+  440|      0|                        Some(Type::Uri) => Ok(NamedNode::new(value.ok_or_else(|| {
+  441|       |                            SyntaxError::msg("uri serialization should have a 'value' key")
+  442|      0|                        })?)
+  443|      0|                        .map_err(|e| SyntaxError::msg(format!("Invalid uri value: {e}")))?
+  444|      0|                        .into()),
+  445|      0|                        Some(Type::BNode) => Ok(BlankNode::new(value.ok_or_else(|| {
+  446|       |                            SyntaxError::msg("bnode serialization should have a 'value' key")
+  447|      0|                        })?)
+  448|      0|                        .map_err(|e| SyntaxError::msg(format!("Invalid bnode value: {e}")))?
+  449|      0|                        .into()),
+  450|       |                        Some(Type::Literal) => {
+  451|      0|                            let value = value.ok_or_else(|| {
+  452|       |                                SyntaxError::msg("literal serialization should have a 'value' key")
+  453|      0|                            })?;
+  454|      0|                            Ok(match lang {
+  455|      0|                                Some(lang) => {
+  456|      0|                                    if let Some(datatype) = datatype {
+  457|      0|                                        if datatype.as_ref() != rdf::LANG_STRING {
+  458|      0|                                            return Err(SyntaxError::msg(format!(
+  459|      0|                                                "xml:lang value '{lang}' provided with the datatype {datatype}"
+  460|      0|                                            )).into())
+  461|      0|                                        }
+  462|      0|                                    }
+  463|      0|                                    Literal::new_language_tagged_literal(value, &lang).map_err(|e| {
+  464|       |                                        SyntaxError::msg(format!("Invalid xml:lang value '{lang}': {e}"))
+  465|      0|                                    })?
+  466|       |                                }
+  467|      0|                                None => if let Some(datatype) = datatype {
+  468|      0|                                    Literal::new_typed_literal(value, datatype)
+  469|       |                                } else {
+  470|      0|                                    Literal::new_simple_literal(value)
+  471|       |                                }
+  472|       |                            }
+  473|      0|                                .into())
+  474|       |                        }
+  475|       |                        #[cfg(feature = "rdf-star")]
+  476|       |                        Some(Type::Triple) => Ok(Triple::new(
+  477|      0|                            match subject.ok_or_else(|| {
+  478|       |                                SyntaxError::msg("triple serialization should have a 'subject' key")
+  479|      0|                            })? {
+  480|      0|                                Term::NamedNode(subject) => subject.into(),
+  481|      0|                                Term::BlankNode(subject) => subject.into(),
+  482|      0|                                Term::Triple(subject) => Subject::Triple(subject),
+  483|       |                                Term::Literal(_) => {
+  484|      0|                                    return Err(SyntaxError::msg(
+  485|      0|                                        "The 'subject' value should not be a literal",
+  486|      0|                                    )
+  487|      0|                                    .into())
+  488|       |                                }
+  489|       |                            },
+  490|      0|                            match predicate.ok_or_else(|| {
+  491|       |                                SyntaxError::msg(
+  492|       |                                    "triple serialization should have a 'predicate' key",
+  493|       |                                )
+  494|      0|                            })? {
+  495|      0|                                Term::NamedNode(predicate) => predicate,
+  496|       |                                _ => {
+  497|      0|                                    return Err(SyntaxError::msg(
+  498|      0|                                        "The 'predicate' value should be a uri",
+  499|      0|                                    )
+  500|      0|                                    .into())
+  501|       |                                }
+  502|       |                            },
+  503|      0|                            object.ok_or_else(|| {
+  504|       |                                SyntaxError::msg("triple serialization should have a 'object' key")
+  505|      0|                            })?,
+  506|       |                        )
+  507|      0|                        .into()),
+  508|       |                    };
+  509|       |                }
+  510|       |            }
+  511|      1|            _ => return Err(SyntaxError::msg("Invalid term serialization").into()),
+  512|       |        }
+  513|       |    }
+  514|     13|}
+
+_RINvMs_CsdUl1VstNg53_10sparesultsNtB5_18QueryResultsParser12read_resultsRShECslt04TQWGvnL_13oxigraph_fuzz:
+  193|    481|    pub fn read_results<R: BufRead>(&self, reader: R) -> Result<QueryResultsReader<R>, ParseError> {
+  194|    481|        Ok(match self.format {
+  195|      0|            QueryResultsFormat::Xml => match XmlQueryResultsReader::read(reader)? {
+  196|      0|                XmlQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
+  197|       |                XmlQueryResultsReader::Solutions {
+  198|      0|                    solutions,
+  199|      0|                    variables,
+  200|      0|                } => QueryResultsReader::Solutions(SolutionsReader {
+  201|      0|                    variables: Rc::new(variables),
+  202|      0|                    solutions: SolutionsReaderKind::Xml(solutions),
+  203|      0|                }),
+  204|       |            },
+  205|    481|            QueryResultsFormat::Json => match JsonQueryResultsReader::read(reader)? {
+  206|      0|                JsonQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
+  207|       |                JsonQueryResultsReader::Solutions {
+  208|     10|                    solutions,
+  209|     10|                    variables,
+  210|     10|                } => QueryResultsReader::Solutions(SolutionsReader {
+  211|     10|                    variables: Rc::new(variables),
+  212|     10|                    solutions: SolutionsReaderKind::Json(solutions),
+  213|     10|                }),
+  214|       |            },
+  215|      0|            QueryResultsFormat::Csv => return Err(SyntaxError::msg("CSV SPARQL results syntax is lossy and can't be parsed to a proper RDF representation").into()),
+  216|      0|            QueryResultsFormat::Tsv => match TsvQueryResultsReader::read(reader)? {
+  217|      0|                TsvQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
+  218|       |                TsvQueryResultsReader::Solutions {
+  219|      0|                    solutions,
+  220|      0|                    variables,
+  221|      0|                } => QueryResultsReader::Solutions(SolutionsReader {
+  222|      0|                    variables: Rc::new(variables),
+  223|      0|                    solutions: SolutionsReaderKind::Tsv(solutions),
+  224|      0|                }),
+  225|       |            },
+  226|       |        })
+  227|    481|    }
+_RNvMs3_CsdUl1VstNg53_10sparesultsINtB5_15SolutionsWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE6finishCslt04TQWGvnL_13oxigraph_fuzz:
+  490|      2|    pub fn finish(self) -> io::Result<W> {
+  491|      2|        match self.formatter {
+  492|      0|            SolutionsWriterKind::Xml(write) => write.finish(),
+  493|      2|            SolutionsWriterKind::Json(write) => write.finish(),
+  494|      0|            SolutionsWriterKind::Csv(write) => write.finish(),
+  495|      0|            SolutionsWriterKind::Tsv(write) => write.finish(),
+  496|       |        }
+  497|      2|    }
+_RNCNvXs1_CsdUl1VstNg53_10sparesultsINtB7_15SolutionsReaderRShENtNtNtNtCs9jyDXsa31Er_4core4iter6traits8iterator8Iterator4next0Cslt04TQWGvnL_13oxigraph_fuzz:
+  321|      3|            .map(|values| (Rc::clone(&self.variables), values).into()),
+_RINvMs3_CsdUl1VstNg53_10sparesultsINtB6_15SolutionsWriterINtNtCs9lXrf61Tc6r_5alloc3vec3VechEE5writeRNtNtCshLJnod01kra_5oxrdf8variable8VariableRNtNtB1E_6triple4TermRNtNtB6_8solution13QuerySolutionECslt04TQWGvnL_13oxigraph_fuzz:
+  476|      1|    pub fn write<'a>(
+  477|      1|        &mut self,
+  478|      1|        solution: impl IntoIterator<Item = (impl Into<VariableRef<'a>>, impl Into<TermRef<'a>>)>,
+  479|      1|    ) -> io::Result<()> {
+  480|      1|        let solution = solution.into_iter().map(|(v, s)| (v.into(), s.into()));
+  481|      1|        match &mut self.formatter {
+  482|      0|            SolutionsWriterKind::Xml(writer) => writer.write(solution),
+  483|      1|            SolutionsWriterKind::Json(writer) => writer.write(solution),
+  484|      0|            SolutionsWriterKind::Csv(writer) => writer.write(solution),
+  485|      0|            SolutionsWriterKind::Tsv(writer) => writer.write(solution),
+  486|       |        }
+  487|      1|    }
+_RINvMs2_CsdUl1VstNg53_10sparesultsNtB6_22QueryResultsSerializer16solutions_writerINtNtCs9lXrf61Tc6r_5alloc3vec3VechEECslt04TQWGvnL_13oxigraph_fuzz:
+  403|      2|    pub fn solutions_writer<W: Write>(
+  404|      2|        &self,
+  405|      2|        writer: W,
+  406|      2|        variables: Vec<Variable>,
+  407|      2|    ) -> io::Result<SolutionsWriter<W>> {
+  408|      2|        Ok(SolutionsWriter {
+  409|      2|            formatter: match self.format {
+  410|       |                QueryResultsFormat::Xml => {
+  411|      0|                    SolutionsWriterKind::Xml(XmlSolutionsWriter::start(writer, &variables)?)
+  412|       |                }
+  413|       |                QueryResultsFormat::Json => {
+  414|      2|                    SolutionsWriterKind::Json(JsonSolutionsWriter::start(writer, &variables)?)
+  415|       |                }
+  416|       |                QueryResultsFormat::Csv => {
+  417|      0|                    SolutionsWriterKind::Csv(CsvSolutionsWriter::start(writer, variables)?)
+  418|       |                }
+  419|       |                QueryResultsFormat::Tsv => {
+  420|      0|                    SolutionsWriterKind::Tsv(TsvSolutionsWriter::start(writer, variables)?)
+  421|       |                }
+  422|       |            },
+  423|       |        })
+  424|      2|    }
+_RNvXs1_CsdUl1VstNg53_10sparesultsINtB5_15SolutionsReaderRShENtNtNtNtCs9jyDXsa31Er_4core4iter6traits8iterator8Iterator4nextCslt04TQWGvnL_13oxigraph_fuzz:
+  313|     13|    fn next(&mut self) -> Option<Result<QuerySolution, ParseError>> {
+  314|     13|        Some(
+  315|     13|            match &mut self.solutions {
+  316|      0|                SolutionsReaderKind::Xml(reader) => reader.read_next(),
+  317|     13|                SolutionsReaderKind::Json(reader) => reader.read_next(),
+  318|      0|                SolutionsReaderKind::Tsv(reader) => reader.read_next(),
+  319|       |            }
+  320|     13|            .transpose()?
+  321|      9|            .map(|values| (Rc::clone(&self.variables), values).into()),
+  322|       |        )
+  323|     13|    }
+_RNvMs_CsdUl1VstNg53_10sparesultsNtB4_18QueryResultsParser11from_formatCslt04TQWGvnL_13oxigraph_fuzz:
+  166|    479|    pub fn from_format(format: QueryResultsFormat) -> Self {
+  167|    479|        Self { format }
+  168|    479|    }
+_RNvMs2_CsdUl1VstNg53_10sparesultsNtB5_22QueryResultsSerializer11from_formatCslt04TQWGvnL_13oxigraph_fuzz:
+  362|    479|    pub fn from_format(format: QueryResultsFormat) -> Self {
+  363|    479|        Self { format }
+  364|    479|    }
+
+_RNvXs_NtCsdUl1VstNg53_10sparesults8solutionNtB4_13QuerySolutionINtNtCs9jyDXsa31Er_4core7convert4FromTINtNtCs9lXrf61Tc6r_5alloc2rc2RcINtNtB1G_3vec3VecNtNtCshLJnod01kra_5oxrdf8variable8VariableEEIB27_INtNtB14_6option6OptionNtNtB2r_6triple4TermEEEE4fromCslt04TQWGvnL_13oxigraph_fuzz:
+  121|      3|    fn from((v, s): (V, S)) -> Self {
+  122|      3|        Self {
+  123|      3|            variables: v.into(),
+  124|      3|            values: s.into(),
+  125|      3|        }
+  126|      3|    }
+_RNvMNtCsdUl1VstNg53_10sparesults8solutionNtB2_13QuerySolution9variablesCslt04TQWGvnL_13oxigraph_fuzz:
+  114|      1|    pub fn variables(&self) -> &[Variable] {
+  115|      1|        &self.variables
+  116|      1|    }
+_RNvXs0_NtCsdUl1VstNg53_10sparesults8solutionRNtB5_13QuerySolutionNtNtNtNtCs9jyDXsa31Er_4core4iter6traits7collect12IntoIterator9into_iterCslt04TQWGvnL_13oxigraph_fuzz:
+  134|      1|    fn into_iter(self) -> Iter<'a> {
+  135|      1|        Iter {
+  136|      1|            inner: self.variables.iter().zip(&self.values),
+  137|      1|        }
+  138|      1|    }
+_RNvXs9_NtCsdUl1VstNg53_10sparesults8solutionNtB5_4IterNtNtNtNtCs9jyDXsa31Er_4core4iter6traits8iterator8Iterator4nextCslt04TQWGvnL_13oxigraph_fuzz:
+  229|      1|    fn next(&mut self) -> Option<(&'a Variable, &'a Term)> {
+  230|      1|        for (variable, value) in &mut self.inner {
+  231|      0|            if let Some(value) = value {
+  232|      0|                return Some((variable, value));
+  233|      0|            }
+  234|       |        }
+  235|      1|        None
+  236|      1|    }
+_RNvXs9_NtCsdUl1VstNg53_10sparesults8solutionNtB5_4IterNtNtNtNtCs9jyDXsa31Er_4core4iter6traits8iterator8Iterator4nextB7_:
+  229|      2|    fn next(&mut self) -> Option<(&'a Variable, &'a Term)> {
+  230|      2|        for (variable, value) in &mut self.inner {
+  231|      0|            if let Some(value) = value {
+  232|      0|                return Some((variable, value));
+  233|      0|            }
+  234|       |        }
+  235|      2|        None
+  236|      2|    }
+_RNvXs6_NtCsdUl1VstNg53_10sparesults8solutionNtB5_13QuerySolutionNtNtCs9jyDXsa31Er_4core3cmp9PartialEq2eq:
+  189|      1|    fn eq(&self, other: &Self) -> bool {
+  190|      1|        for (k, v) in self.iter() {
+  191|      0|            if other.get(k) != Some(v) {
+  192|      0|                return false;
+  193|      0|            }
+  194|       |        }
+  195|      1|        for (k, v) in other.iter() {
+  196|      0|            if self.get(k) != Some(v) {
+  197|      0|                return false;
+  198|      0|            }
+  199|       |        }
+  200|      1|        true
+  201|      1|    }
+_RNvMNtCsdUl1VstNg53_10sparesults8solutionNtB2_13QuerySolution4iterB4_:
+   86|      2|    pub fn iter(&self) -> impl Iterator<Item = (&Variable, &Term)> {
+   87|      2|        self.into_iter()
+   88|      2|    }
+_RNvXs0_NtCsdUl1VstNg53_10sparesults8solutionRNtB5_13QuerySolutionNtNtNtNtCs9jyDXsa31Er_4core4iter6traits7collect12IntoIterator9into_iterB7_:
+  134|      2|    fn into_iter(self) -> Iter<'a> {
+  135|      2|        Iter {
+  136|      2|            inner: self.variables.iter().zip(&self.values),
+  137|      2|        }
+  138|      2|    }
+
