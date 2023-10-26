@@ -113,61 +113,61 @@ _RNvMs4_NtCsjpi4asSQcac_9once_cell4syncINtB5_8OnceCellNtNtCshJIxznpEM8j_5alloc6s
 _RINvXsr_Cscrj2fheUbsw_10oxilangtagNtB6_16VoidOutputBufferINtNtNtNtCslATUeuPuGvJ_4core4iter6traits7collect6ExtendcE6extendINtNtNtB10_8adapters3map3MapNtNtNtB12_3str4iter5CharsNCINvB6_18parse_language_tagBw_Es_0EECsjBxrSotcyIg_5oxrdf:
   560|    388|    fn extend<T: IntoIterator<Item = char>>(&mut self, _: T) {}
 _RNvMCscrj2fheUbsw_10oxilangtagINtB2_11LanguageTagNtNtCshJIxznpEM8j_5alloc6string6StringE5parseCsjBxrSotcyIg_5oxrdf:
-   41|  5.70k|    pub fn parse(tag: T) -> Result<Self, LanguageTagParseError> {
-   42|  5.70k|        let positions = parse_language_tag(&tag, &mut VoidOutputBuffer::default())?;
-   43|  5.64k|        Ok(Self { tag, positions })
-   44|  5.70k|    }
+   41|  5.69k|    pub fn parse(tag: T) -> Result<Self, LanguageTagParseError> {
+   42|  5.69k|        let positions = parse_language_tag(&tag, &mut VoidOutputBuffer::default())?;
+   43|  5.63k|        Ok(Self { tag, positions })
+   44|  5.69k|    }
 _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotcyIg_5oxrdf:
-  621|  5.31k|fn parse_langtag(
-  622|  5.31k|    input: &str,
-  623|  5.31k|    output: &mut impl OutputBuffer,
-  624|  5.31k|) -> Result<TagElementsPositions, LanguageTagParseError> {
-  625|  5.31k|    #[derive(PartialEq, Eq)]
-  626|  5.31k|    enum State {
-  627|  5.31k|        Start,
-  628|  5.31k|        AfterLanguage,
-  629|  5.31k|        AfterExtLang,
-  630|  5.31k|        AfterScript,
-  631|  5.31k|        AfterRegion,
-  632|  5.31k|        InExtension { expected: bool },
-  633|  5.31k|        InPrivateUse { expected: bool },
-  634|  5.31k|    }
-  635|  5.31k|
-  636|  5.31k|    let mut state = State::Start;
-  637|  5.31k|    let mut language_end = 0;
-  638|  5.31k|    let mut extlang_end = 0;
-  639|  5.31k|    let mut script_end = 0;
-  640|  5.31k|    let mut region_end = 0;
-  641|  5.31k|    let mut variant_end = 0;
-  642|  5.31k|    let mut extension_end = 0;
-  643|  5.31k|    let mut extlangs_count = 0;
+  621|  5.30k|fn parse_langtag(
+  622|  5.30k|    input: &str,
+  623|  5.30k|    output: &mut impl OutputBuffer,
+  624|  5.30k|) -> Result<TagElementsPositions, LanguageTagParseError> {
+  625|  5.30k|    #[derive(PartialEq, Eq)]
+  626|  5.30k|    enum State {
+  627|  5.30k|        Start,
+  628|  5.30k|        AfterLanguage,
+  629|  5.30k|        AfterExtLang,
+  630|  5.30k|        AfterScript,
+  631|  5.30k|        AfterRegion,
+  632|  5.30k|        InExtension { expected: bool },
+  633|  5.30k|        InPrivateUse { expected: bool },
+  634|  5.30k|    }
+  635|  5.30k|
+  636|  5.30k|    let mut state = State::Start;
+  637|  5.30k|    let mut language_end = 0;
+  638|  5.30k|    let mut extlang_end = 0;
+  639|  5.30k|    let mut script_end = 0;
+  640|  5.30k|    let mut region_end = 0;
+  641|  5.30k|    let mut variant_end = 0;
+  642|  5.30k|    let mut extension_end = 0;
+  643|  5.30k|    let mut extlangs_count = 0;
   644|  15.4k|    for (subtag, end) in SubTagIterator::new(input) {
   645|  15.4k|        if subtag.is_empty() {
   646|     25|            return Err(LanguageTagParseError {
   647|     25|                kind: TagParseErrorKind::EmptySubtag,
   648|     25|            });
-  649|  15.4k|        }
-  650|  15.4k|        if subtag.len() > 8 {
+  649|  15.3k|        }
+  650|  15.3k|        if subtag.len() > 8 {
   651|      3|            return Err(LanguageTagParseError {
   652|      3|                kind: TagParseErrorKind::SubtagTooLong,
   653|      3|            });
-  654|  15.4k|        }
-  655|  15.4k|        if state == State::Start {
+  654|  15.3k|        }
+  655|  15.3k|        if state == State::Start {
   656|       |            // Primary language
   657|  5.29k|            if subtag.len() < 2 || !is_alphabetic(subtag) {
   658|      4|                return Err(LanguageTagParseError {
   659|      4|                    kind: TagParseErrorKind::InvalidLanguage,
   660|      4|                });
-  661|  5.29k|            }
-  662|  5.29k|            language_end = end;
-  663|  5.29k|            output.extend(to_lowercase(subtag));
-  664|  5.29k|            if subtag.len() < 4 {
-  665|  3.44k|                // extlangs are only allowed for short language tags
-  666|  3.44k|                state = State::AfterLanguage;
-  667|  3.44k|            } else {
+  661|  5.28k|            }
+  662|  5.28k|            language_end = end;
+  663|  5.28k|            output.extend(to_lowercase(subtag));
+  664|  5.28k|            if subtag.len() < 4 {
+  665|  3.43k|                // extlangs are only allowed for short language tags
+  666|  3.43k|                state = State::AfterLanguage;
+  667|  3.43k|            } else {
   668|  1.84k|                state = State::AfterExtLang;
   669|  1.84k|            }
-  670|  10.1k|        } else if let State::InPrivateUse { .. } = state {
+  670|  10.0k|        } else if let State::InPrivateUse { .. } = state {
   671|    523|            if !is_alphanumeric(subtag) {
   672|      0|                return Err(LanguageTagParseError {
   673|      0|                    kind: TagParseErrorKind::InvalidSubtag,
@@ -176,7 +176,7 @@ _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotc
   676|    523|            output.push('-');
   677|    523|            output.extend(to_lowercase(subtag));
   678|    523|            state = State::InPrivateUse { expected: false };
-  679|  9.58k|        } else if subtag == "x" || subtag == "X" {
+  679|  9.56k|        } else if subtag == "x" || subtag == "X" {
   680|       |            // We make sure extension is found
   681|    261|            if let State::InExtension { expected: true } = state {
   682|      1|                return Err(LanguageTagParseError {
@@ -186,7 +186,7 @@ _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotc
   686|    260|            output.push('-');
   687|    260|            output.push('x');
   688|    260|            state = State::InPrivateUse { expected: true };
-  689|  9.32k|        } else if subtag.len() == 1 && is_alphanumeric(subtag) {
+  689|  9.30k|        } else if subtag.len() == 1 && is_alphanumeric(subtag) {
   690|       |            // We make sure extension is found
   691|    920|            if let State::InExtension { expected: true } = state {
   692|     10|                return Err(LanguageTagParseError {
@@ -197,7 +197,7 @@ _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotc
   697|    910|            output.push('-');
   698|    910|            output.push(extension_tag);
   699|    910|            state = State::InExtension { expected: true };
-  700|  8.40k|        } else if let State::InExtension { .. } = state {
+  700|  8.38k|        } else if let State::InExtension { .. } = state {
   701|  2.00k|            if !is_alphanumeric(subtag) {
   702|      0|                return Err(LanguageTagParseError {
   703|      0|                    kind: TagParseErrorKind::InvalidSubtag,
@@ -207,18 +207,18 @@ _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotc
   707|  2.00k|            output.push('-');
   708|  2.00k|            output.extend(to_lowercase(subtag));
   709|  2.00k|            state = State::InExtension { expected: false };
-  710|  6.39k|        } else if state == State::AfterLanguage && subtag.len() == 3 && is_alphabetic(subtag) {
+  710|  6.38k|        } else if state == State::AfterLanguage && subtag.len() == 3 && is_alphabetic(subtag) {
   711|  2.13k|            extlangs_count += 1;
   712|  2.13k|            if extlangs_count > 3 {
   713|      1|                return Err(LanguageTagParseError {
   714|      1|                    kind: TagParseErrorKind::TooManyExtlangs,
   715|      1|                });
-  716|  2.13k|            }
-  717|  2.13k|            // valid extlangs
-  718|  2.13k|            extlang_end = end;
-  719|  2.13k|            output.push('-');
-  720|  2.13k|            output.extend(to_lowercase(subtag));
-  721|  4.26k|        } else if (state == State::AfterLanguage || state == State::AfterExtLang)
+  716|  2.12k|            }
+  717|  2.12k|            // valid extlangs
+  718|  2.12k|            extlang_end = end;
+  719|  2.12k|            output.push('-');
+  720|  2.12k|            output.extend(to_lowercase(subtag));
+  721|  4.25k|        } else if (state == State::AfterLanguage || state == State::AfterExtLang)
   722|  2.60k|            && subtag.len() == 4
   723|    839|            && is_alphabetic(subtag)
   724|    839|        {
@@ -227,7 +227,7 @@ _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotc
   727|    839|            output.push('-');
   728|    839|            output.extend(to_uppercase_first(subtag));
   729|    839|            state = State::AfterScript;
-  730|  3.42k|        } else if (state == State::AfterLanguage
+  730|  3.41k|        } else if (state == State::AfterLanguage
   731|  2.57k|            || state == State::AfterExtLang
   732|  1.65k|            || state == State::AfterScript)
   733|  2.50k|            && (subtag.len() == 2 && is_alphabetic(subtag)
@@ -263,56 +263,56 @@ _RINvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB2_16VoidOutputBufferECsjBxrSotc
   763|      4|        return Err(LanguageTagParseError {
   764|      4|            kind: TagParseErrorKind::EmptyExtension,
   765|      4|        });
-  766|  5.25k|    }
-  767|  5.25k|    if let State::InPrivateUse { expected: true } = state {
+  766|  5.24k|    }
+  767|  5.24k|    if let State::InPrivateUse { expected: true } = state {
   768|      1|        return Err(LanguageTagParseError {
   769|      1|            kind: TagParseErrorKind::EmptyPrivateUse,
   770|      1|        });
-  771|  5.25k|    }
-  772|  5.25k|
-  773|  5.25k|    //We make sure we have not skipped anyone
-  774|  5.25k|    if extlang_end < language_end {
+  771|  5.24k|    }
+  772|  5.24k|
+  773|  5.24k|    //We make sure we have not skipped anyone
+  774|  5.24k|    if extlang_end < language_end {
   775|  4.16k|        extlang_end = language_end;
   776|  4.16k|    }
-  777|  5.25k|    if script_end < extlang_end {
+  777|  5.24k|    if script_end < extlang_end {
   778|  4.41k|        script_end = extlang_end;
   779|  4.41k|    }
-  780|  5.25k|    if region_end < script_end {
-  781|  3.29k|        region_end = script_end;
-  782|  3.29k|    }
-  783|  5.25k|    if variant_end < region_end {
+  780|  5.24k|    if region_end < script_end {
+  781|  3.28k|        region_end = script_end;
+  782|  3.28k|    }
+  783|  5.24k|    if variant_end < region_end {
   784|  4.69k|        variant_end = region_end;
   785|  4.69k|    }
-  786|  5.25k|    if extension_end < variant_end {
+  786|  5.24k|    if extension_end < variant_end {
   787|  4.87k|        extension_end = variant_end;
   788|  4.87k|    }
   789|       |
-  790|  5.25k|    Ok(TagElementsPositions {
-  791|  5.25k|        language_end,
-  792|  5.25k|        extlang_end,
-  793|  5.25k|        script_end,
-  794|  5.25k|        region_end,
-  795|  5.25k|        variant_end,
-  796|  5.25k|        extension_end,
-  797|  5.25k|    })
-  798|  5.31k|}
+  790|  5.24k|    Ok(TagElementsPositions {
+  791|  5.24k|        language_end,
+  792|  5.24k|        extlang_end,
+  793|  5.24k|        script_end,
+  794|  5.24k|        region_end,
+  795|  5.24k|        variant_end,
+  796|  5.24k|        extension_end,
+  797|  5.24k|    })
+  798|  5.30k|}
 _RNvMCscrj2fheUbsw_10oxilangtagINtB2_11LanguageTagNtNtCshJIxznpEM8j_5alloc6string6StringE10into_innerCsjBxrSotcyIg_5oxrdf:
-   54|  5.64k|    pub fn into_inner(self) -> T {
-   55|  5.64k|        self.tag
-   56|  5.64k|    }
+   54|  5.63k|    pub fn into_inner(self) -> T {
+   55|  5.63k|        self.tag
+   56|  5.63k|    }
 _RINvXsr_Cscrj2fheUbsw_10oxilangtagNtB6_16VoidOutputBufferINtNtNtNtCslATUeuPuGvJ_4core4iter6traits7collect6ExtendcE6extendINtNtNtB10_8adapters3map3MapNtNtNtB12_3str4iter5CharsNCNvB6_12to_lowercase0EECsjBxrSotcyIg_5oxrdf:
-  560|  11.4k|    fn extend<T: IntoIterator<Item = char>>(&mut self, _: T) {}
+  560|  11.3k|    fn extend<T: IntoIterator<Item = char>>(&mut self, _: T) {}
 _RINvXsr_Cscrj2fheUbsw_10oxilangtagNtB6_16VoidOutputBufferINtNtNtNtCslATUeuPuGvJ_4core4iter6traits7collect6ExtendcE6extendINtNtNtB10_8adapters3map3MapNtNtNtB12_3str4iter5CharsNCNvB6_12to_uppercase0EECsjBxrSotcyIg_5oxrdf:
   560|  1.96k|    fn extend<T: IntoIterator<Item = char>>(&mut self, _: T) {}
 _RINvCscrj2fheUbsw_10oxilangtag18parse_language_tagNtB2_16VoidOutputBufferECsjBxrSotcyIg_5oxrdf:
-  576|  5.70k|fn parse_language_tag(
-  577|  5.70k|    input: &str,
-  578|  5.70k|    output: &mut impl OutputBuffer,
-  579|  5.70k|) -> Result<TagElementsPositions, LanguageTagParseError> {
+  576|  5.69k|fn parse_language_tag(
+  577|  5.69k|    input: &str,
+  578|  5.69k|    output: &mut impl OutputBuffer,
+  579|  5.69k|) -> Result<TagElementsPositions, LanguageTagParseError> {
   580|       |    //grandfathered tags
-  581|  5.70k|    if let Some(tag) = GRANDFATHEREDS
-  582|  5.70k|        .iter()
-  583|  5.70k|        .find(|record| record.eq_ignore_ascii_case(input))
+  581|  5.69k|    if let Some(tag) = GRANDFATHEREDS
+  582|  5.69k|        .iter()
+  583|  5.69k|        .find(|record| record.eq_ignore_ascii_case(input))
   584|       |    {
   585|      0|        output.push_str(tag);
   586|      0|        Ok(TagElementsPositions {
@@ -323,7 +323,7 @@ _RINvCscrj2fheUbsw_10oxilangtag18parse_language_tagNtB2_16VoidOutputBufferECsjBx
   591|      0|            variant_end: tag.len(),
   592|      0|            extension_end: tag.len(),
   593|      0|        })
-  594|  5.70k|    } else if input.starts_with("x-") || input.starts_with("X-") {
+  594|  5.69k|    } else if input.starts_with("x-") || input.starts_with("X-") {
   595|       |        // private use
   596|    389|        if !is_alphanumeric_or_dash(input) {
   597|      0|            Err(LanguageTagParseError {
@@ -345,9 +345,9 @@ _RINvCscrj2fheUbsw_10oxilangtag18parse_language_tagNtB2_16VoidOutputBufferECsjBx
   613|    388|            })
   614|       |        }
   615|       |    } else {
-  616|  5.31k|        parse_langtag(input, output)
+  616|  5.30k|        parse_langtag(input, output)
   617|       |    }
-  618|  5.70k|}
+  618|  5.69k|}
 _RINvXsr_Cscrj2fheUbsw_10oxilangtagNtB6_16VoidOutputBufferINtNtNtNtCslATUeuPuGvJ_4core4iter6traits7collect6ExtendcE6extendINtNtNtB10_8adapters5chain5ChainINtNtNtB10_7sources4once4OncecEINtNtB20_3map3MapNtNtNtB12_3str4iter5CharsNCNvB6_18to_uppercase_first0EEECsjBxrSotcyIg_5oxrdf:
   560|    839|    fn extend<T: IntoIterator<Item = char>>(&mut self, _: T) {}
 _RNCINvCscrj2fheUbsw_10oxilangtag18parse_language_tagNtB4_16VoidOutputBufferE0CsjBxrSotcyIg_5oxrdf:
@@ -364,11 +364,11 @@ _RNvXsw_Cscrj2fheUbsw_10oxilangtagNtB5_14SubTagIteratorNtNtNtNtCslATUeuPuGvJ_4co
   855|  15.4k|        Some((tag, tag_end))
   856|  20.6k|    }
 _RNvCscrj2fheUbsw_10oxilangtag12to_lowercaseCsjBxrSotcyIg_5oxrdf:
-  892|  11.4k|fn to_lowercase(s: &str) -> impl Iterator<Item = char> + '_ {
-  893|  11.4k|    s.chars().map(|c| c.to_ascii_lowercase())
-  894|  11.4k|}
+  892|  11.3k|fn to_lowercase(s: &str) -> impl Iterator<Item = char> + '_ {
+  893|  11.3k|    s.chars().map(|c| c.to_ascii_lowercase())
+  894|  11.3k|}
 _RNvXsE_Cscrj2fheUbsw_10oxilangtagNtB5_16VoidOutputBufferNtNtCslATUeuPuGvJ_4core7default7Default7defaultCsjBxrSotcyIg_5oxrdf:
-  547|  5.70k|#[derive(Default)]
+  547|  5.69k|#[derive(Default)]
 _RNvCscrj2fheUbsw_10oxilangtag10is_numericCsjBxrSotcyIg_5oxrdf:
   865|      4|fn is_numeric(s: &str) -> bool {
   866|      4|    s.chars().all(|x| x.is_ascii_digit())
@@ -378,18 +378,18 @@ _RNvCscrj2fheUbsw_10oxilangtag12to_uppercaseCsjBxrSotcyIg_5oxrdf:
   881|  1.96k|    s.chars().map(|c| c.to_ascii_uppercase())
   882|  1.96k|}
 _RNvMsv_Cscrj2fheUbsw_10oxilangtagNtB5_14SubTagIterator3newCsjBxrSotcyIg_5oxrdf:
-  839|  5.31k|    fn new(input: &'a str) -> Self {
-  840|  5.31k|        Self {
-  841|  5.31k|            split: input.split('-'),
-  842|  5.31k|            position: 0,
-  843|  5.31k|        }
-  844|  5.31k|    }
+  839|  5.30k|    fn new(input: &'a str) -> Self {
+  840|  5.30k|        Self {
+  841|  5.30k|            split: input.split('-'),
+  842|  5.30k|            position: 0,
+  843|  5.30k|        }
+  844|  5.30k|    }
 _RNvXs_NvCscrj2fheUbsw_10oxilangtag13parse_langtagNtB4_5StateNtNtCslATUeuPuGvJ_4core3cmp9PartialEq2eqCsjBxrSotcyIg_5oxrdf:
   625|  41.0k|    #[derive(PartialEq, Eq)]
 _RNvCscrj2fheUbsw_10oxilangtag15is_alphanumericCsjBxrSotcyIg_5oxrdf:
-  870|  4.90k|fn is_alphanumeric(s: &str) -> bool {
-  871|  4.90k|    s.chars().all(|x| x.is_ascii_alphanumeric())
-  872|  4.90k|}
+  870|  4.89k|fn is_alphanumeric(s: &str) -> bool {
+  871|  4.89k|    s.chars().all(|x| x.is_ascii_alphanumeric())
+  872|  4.89k|}
 _RNvCscrj2fheUbsw_10oxilangtag18to_uppercase_firstCsjBxrSotcyIg_5oxrdf:
   886|    839|fn to_uppercase_first(s: &str) -> impl Iterator<Item = char> + '_ {
   887|    839|    let mut chars = s.chars();
@@ -411,32 +411,32 @@ _RNCNvCscrj2fheUbsw_10oxilangtag10is_numeric0B3_:
   866|      4|    s.chars().all(|x| x.is_ascii_digit())
 
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE11parse_queryCsjBxrSotcyIg_5oxrdf:
- 1380|    623|    fn parse_query(&mut self) -> Result<(), IriParseError> {
- 1381|  6.79k|        while let Some(c) = self.input.next() {
- 1382|  6.27k|            if c == '#' {
+ 1380|    617|    fn parse_query(&mut self) -> Result<(), IriParseError> {
+ 1381|  6.63k|        while let Some(c) = self.input.next() {
+ 1382|  6.11k|            if c == '#' {
  1383|     92|                self.output_positions.query_end = self.output.len();
  1384|     92|                self.output.push('#');
  1385|     92|                return self.parse_fragment();
  1386|       |            } else {
- 1387|  6.18k|                self.read_url_query_codepoint_or_echar(c)?
+ 1387|  6.02k|                self.read_url_query_codepoint_or_echar(c)?
  1388|       |            }
  1389|       |        }
- 1390|    519|        self.output_positions.query_end = self.output.len();
- 1391|    519|        Ok(())
- 1392|    623|    }
+ 1390|    513|        self.output_positions.query_end = self.output.len();
+ 1391|    513|        Ok(())
+ 1392|    617|    }
 _RINvMs11_Csb12MtHvp2O_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferE11parse_erroruECsjBxrSotcyIg_5oxrdf:
  1454|    118|    fn parse_error<T>(&self, kind: IriParseErrorKind) -> Result<T, IriParseError> {
  1455|    118|        Err(IriParseError { kind })
  1456|    118|    }
 _RNvMsp_Csb12MtHvp2O_5oxiriINtB5_3IriNtNtCshJIxznpEM8j_5alloc6string6StringE5parseCsjBxrSotcyIg_5oxrdf:
-  501|  16.4k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
-  502|  16.4k|        IriRef::parse(iri)?.try_into()
-  503|  16.4k|    }
+  501|  16.3k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
+  502|  16.3k|        IriRef::parse(iri)?.try_into()
+  503|  16.3k|    }
 _RNvMCsb12MtHvp2O_5oxiriINtB2_6IriRefNtNtCshJIxznpEM8j_5alloc6string6StringE5parseCsjBxrSotcyIg_5oxrdf:
-   55|  16.4k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
-   56|  16.4k|        let positions = IriParser::parse(&iri, None, &mut VoidOutputBuffer::default())?;
+   55|  16.3k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
+   56|  16.3k|        let positions = IriParser::parse(&iri, None, &mut VoidOutputBuffer::default())?;
    57|  16.2k|        Ok(Self { iri, positions })
-   58|  16.4k|    }
+   58|  16.3k|    }
 _RNvMCsb12MtHvp2O_5oxiriINtB2_6IriRefNtNtCshJIxznpEM8j_5alloc6string6StringE11is_absoluteCsjBxrSotcyIg_5oxrdf:
   146|  16.2k|    pub fn is_absolute(&self) -> bool {
   147|  16.2k|        self.positions.scheme_end != 0
@@ -444,20 +444,20 @@ _RNvMCsb12MtHvp2O_5oxiriINtB2_6IriRefNtNtCshJIxznpEM8j_5alloc6string6StringE11is
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE15parse_authorityCsjBxrSotcyIg_5oxrdf:
  1231|  5.46k|    fn parse_authority(&mut self) -> Result<(), IriParseError> {
  1232|       |        // @ are not allowed in IRI authorities so not need to take care of ambiguities
- 1233|  47.2k|        loop {
- 1234|  47.2k|            let c = self.input.next();
- 1235|  47.2k|            match c {
+ 1233|  47.1k|        loop {
+ 1234|  47.1k|            let c = self.input.next();
+ 1235|  47.1k|            match c {
  1236|       |                Some('@') => {
  1237|    482|                    self.output.push('@');
  1238|    482|                    return self.parse_host();
  1239|       |                }
  1240|       |                None | Some('[') | Some('/') | Some('?') | Some('#') => {
- 1241|  4.98k|                    self.input = ParserInput {
- 1242|  4.98k|                        value: self.iri[self.input_scheme_end + 2..].chars(),
- 1243|  4.98k|                        position: self.input_scheme_end + 2,
- 1244|  4.98k|                    };
- 1245|  4.98k|                    self.output.truncate(self.output_positions.scheme_end + 2);
- 1246|  4.98k|                    return self.parse_host();
+ 1241|  4.97k|                    self.input = ParserInput {
+ 1242|  4.97k|                        value: self.iri[self.input_scheme_end + 2..].chars(),
+ 1243|  4.97k|                        position: self.input_scheme_end + 2,
+ 1244|  4.97k|                    };
+ 1245|  4.97k|                    self.output.truncate(self.output_positions.scheme_end + 2);
+ 1246|  4.97k|                    return self.parse_host();
  1247|       |                }
  1248|  41.7k|                Some(c) => {
  1249|  41.7k|                    self.read_url_codepoint_or_echar(c)?;
@@ -478,8 +478,8 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE12parse_sche
  1109|  15.8k|    fn parse_scheme(&mut self) -> Result<(), IriParseError> {
  1110|  47.6k|        loop {
  1111|  47.6k|            let c = self.input.next();
- 1112|  47.6k|            match c {
- 1113|  47.6k|                Some(c) if c.is_ascii_alphanumeric() || c == '+' || c == '-' || c == '.' => {
+ 1112|  47.5k|            match c {
+ 1113|  47.5k|                Some(c) if c.is_ascii_alphanumeric() || c == '+' || c == '-' || c == '.' => {
  1114|  31.7k|                    self.output.push(c)
  1115|       |                }
  1116|       |                Some(':') => {
@@ -487,9 +487,9 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE12parse_sche
  1118|  15.8k|                    self.output_positions.scheme_end = self.output.len();
  1119|  15.8k|                    self.input_scheme_end = self.input.position;
  1120|  15.8k|                    return if self.input.starts_with('/') {
- 1121|  5.56k|                        self.input.next();
- 1122|  5.56k|                        self.output.push('/');
- 1123|  5.56k|                        self.parse_path_or_authority()
+ 1121|  5.55k|                        self.input.next();
+ 1122|  5.55k|                        self.output.push('/');
+ 1123|  5.55k|                        self.parse_path_or_authority()
  1124|       |                    } else {
  1125|  10.2k|                        self.output_positions.authority_end = self.output.len();
  1126|  10.2k|                        self.parse_path()
@@ -508,8 +508,8 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE12parse_sche
  1139|  15.8k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_portCsjBxrSotcyIg_5oxrdf:
  1301|  1.11k|    fn parse_port(&mut self) -> Result<(), IriParseError> {
- 1302|  1.82k|        loop {
- 1303|  1.82k|            let c = self.input.next();
+ 1302|  1.81k|        loop {
+ 1303|  1.81k|            let c = self.input.next();
  1304|  1.14k|            match c {
  1305|  1.14k|                Some(c) if c.is_ascii_digit() => self.output.push(c),
  1306|       |                Some('/') | Some('?') | Some('#') | None => {
@@ -546,14 +546,14 @@ _RNvXsV_Csb12MtHvp2O_5oxiriINtB5_3IriNtNtCshJIxznpEM8j_5alloc6string6StringEINtN
   872|  16.2k|        if iri.is_absolute() {
   873|  15.8k|            Ok(Self(iri))
   874|       |        } else {
-  875|    480|            Err(IriParseError {
-  876|    480|                kind: IriParseErrorKind::NoScheme,
-  877|    480|            })
+  875|    475|            Err(IriParseError {
+  876|    475|                kind: IriParseErrorKind::NoScheme,
+  877|    475|            })
   878|       |        }
   879|  16.2k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE14parse_relativeCsjBxrSotcyIg_5oxrdf:
- 1152|    594|    fn parse_relative(&mut self) -> Result<(), IriParseError> {
- 1153|    594|        if let Some(base) = self.base {
+ 1152|    589|    fn parse_relative(&mut self) -> Result<(), IriParseError> {
+ 1153|    589|        if let Some(base) = self.base {
  1154|      0|            match self.input.front() {
  1155|       |                None => {
  1156|      0|                    self.output.push_str(&base.iri[..base.positions.query_end]);
@@ -600,23 +600,23 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE14parse_rela
  1197|       |                }
  1198|       |            }
  1199|       |        } else {
- 1200|    594|            self.output_positions.scheme_end = 0;
- 1201|    594|            self.input_scheme_end = 0;
- 1202|    594|            if self.input.starts_with('/') {
+ 1200|    589|            self.output_positions.scheme_end = 0;
+ 1201|    589|            self.input_scheme_end = 0;
+ 1202|    589|            if self.input.starts_with('/') {
  1203|    187|                self.input.next();
  1204|    187|                self.output.push('/');
  1205|    187|                self.parse_path_or_authority()
  1206|       |            } else {
- 1207|    407|                self.output_positions.authority_end = 0;
- 1208|    407|                self.parse_path()
+ 1207|    402|                self.output_positions.authority_end = 0;
+ 1208|    402|                self.parse_path()
  1209|       |            }
  1210|       |        }
- 1211|    594|    }
+ 1211|    589|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_pathCsjBxrSotcyIg_5oxrdf:
  1344|  14.4k|    fn parse_path(&mut self) -> Result<(), IriParseError> {
- 1345|  70.9k|        loop {
- 1346|  70.9k|            let c = self.input.next();
- 1347|  70.9k|            match c {
+ 1345|  70.8k|        loop {
+ 1346|  70.8k|            let c = self.input.next();
+ 1347|  70.8k|            match c {
  1348|       |                None | Some('/') | Some('?') | Some('#') => {
  1349|  18.2k|                    if self.output.as_str().ends_with("/..") {
  1350|      0|                        self.remove_last_segment();
@@ -630,9 +630,9 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_path
  1358|  14.4k|                    }
  1359|       |
  1360|  18.2k|                    if c == Some('?') {
- 1361|    482|                        self.output_positions.path_end = self.output.len();
- 1362|    482|                        self.output.push('?');
- 1363|    482|                        return self.parse_query();
+ 1361|    476|                        self.output_positions.path_end = self.output.len();
+ 1362|    476|                        self.output.push('?');
+ 1363|    476|                        return self.parse_query();
  1364|  17.7k|                    } else if c == Some('#') {
  1365|  3.40k|                        self.output_positions.path_end = self.output.len();
  1366|  3.40k|                        self.output_positions.query_end = self.output.len();
@@ -644,7 +644,7 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_path
  1372|  10.5k|                        return Ok(());
  1373|  3.76k|                    }
  1374|       |                }
- 1375|  52.7k|                Some(c) => self.read_url_codepoint_or_echar(c)?,
+ 1375|  52.6k|                Some(c) => self.read_url_codepoint_or_echar(c)?,
  1376|       |            }
  1377|       |        }
  1378|  14.4k|    }
@@ -668,46 +668,46 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10read_echar
  1450|       |        }
  1451|  2.44k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE5parseCsjBxrSotcyIg_5oxrdf:
- 1076|  16.4k|    fn parse(
- 1077|  16.4k|        iri: &'a str,
- 1078|  16.4k|        base: Option<IriRef<&'a str>>,
- 1079|  16.4k|        output: &'a mut O,
- 1080|  16.4k|    ) -> Result<IriElementsPositions, IriParseError> {
- 1081|  16.4k|        let mut parser = Self {
- 1082|  16.4k|            iri,
- 1083|  16.4k|            base,
- 1084|  16.4k|            input: ParserInput {
- 1085|  16.4k|                value: iri.chars(),
- 1086|  16.4k|                position: 0,
- 1087|  16.4k|            },
- 1088|  16.4k|            output,
- 1089|  16.4k|            output_positions: IriElementsPositions {
- 1090|  16.4k|                scheme_end: 0,
- 1091|  16.4k|                authority_end: 0,
- 1092|  16.4k|                path_end: 0,
- 1093|  16.4k|                query_end: 0,
- 1094|  16.4k|            },
- 1095|  16.4k|            input_scheme_end: 0,
- 1096|  16.4k|        };
- 1097|  16.4k|        parser.parse_scheme_start()?;
+ 1076|  16.3k|    fn parse(
+ 1077|  16.3k|        iri: &'a str,
+ 1078|  16.3k|        base: Option<IriRef<&'a str>>,
+ 1079|  16.3k|        output: &'a mut O,
+ 1080|  16.3k|    ) -> Result<IriElementsPositions, IriParseError> {
+ 1081|  16.3k|        let mut parser = Self {
+ 1082|  16.3k|            iri,
+ 1083|  16.3k|            base,
+ 1084|  16.3k|            input: ParserInput {
+ 1085|  16.3k|                value: iri.chars(),
+ 1086|  16.3k|                position: 0,
+ 1087|  16.3k|            },
+ 1088|  16.3k|            output,
+ 1089|  16.3k|            output_positions: IriElementsPositions {
+ 1090|  16.3k|                scheme_end: 0,
+ 1091|  16.3k|                authority_end: 0,
+ 1092|  16.3k|                path_end: 0,
+ 1093|  16.3k|                query_end: 0,
+ 1094|  16.3k|            },
+ 1095|  16.3k|            input_scheme_end: 0,
+ 1096|  16.3k|        };
+ 1097|  16.3k|        parser.parse_scheme_start()?;
  1098|  16.2k|        Ok(parser.output_positions)
- 1099|  16.4k|    }
+ 1099|  16.3k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE18parse_scheme_startCsjBxrSotcyIg_5oxrdf:
- 1101|  16.4k|    fn parse_scheme_start(&mut self) -> Result<(), IriParseError> {
- 1102|  16.4k|        match self.input.front() {
+ 1101|  16.3k|    fn parse_scheme_start(&mut self) -> Result<(), IriParseError> {
+ 1102|  16.3k|        match self.input.front() {
  1103|      1|            Some(':') => self.parse_error(IriParseErrorKind::NoScheme),
- 1104|  16.4k|            Some(c) if c.is_ascii_alphabetic() => self.parse_scheme(),
- 1105|    546|            _ => self.parse_relative(),
+ 1104|  16.3k|            Some(c) if c.is_ascii_alphabetic() => self.parse_scheme(),
+ 1105|    541|            _ => self.parse_relative(),
  1106|       |        }
- 1107|  16.4k|    }
+ 1107|  16.3k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_hostCsjBxrSotcyIg_5oxrdf:
  1255|  5.46k|    fn parse_host(&mut self) -> Result<(), IriParseError> {
  1256|  5.46k|        if self.input.starts_with('[') {
  1257|       |            // IP v6
  1258|     43|            let start_position = self.input.position;
  1259|  1.02k|            while let Some(c) = self.input.next() {
- 1260|    986|                self.output.push(c);
- 1261|    986|                if c == ']' {
+ 1260|    985|                self.output.push(c);
+ 1261|    985|                if c == ']' {
  1262|      2|                    let ip = &self.iri[start_position + 1..self.input.position - 1];
  1263|      2|                    if let Err(error) = Ipv6Addr::from_str(ip) {
  1264|      2|                        return self.parse_error(IriParseErrorKind::InvalidHostIp(error));
@@ -725,7 +725,7 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_host
  1276|       |                        }
  1277|      0|                        Some(c) => self.parse_error(IriParseErrorKind::InvalidHostCharacter(c)),
  1278|       |                    };
- 1279|    984|                }
+ 1279|    983|                }
  1280|       |            }
  1281|     41|            self.parse_error(IriParseErrorKind::InvalidHostCharacter('['))
  1282|       |        } else {
@@ -738,8 +738,8 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_host
  1289|  1.11k|                        return self.parse_port();
  1290|       |                    }
  1291|       |                    None | Some('/') | Some('?') | Some('#') => {
- 1292|  4.30k|                        self.output_positions.authority_end = self.output.len();
- 1293|  4.30k|                        return self.parse_path_start(c);
+ 1292|  4.29k|                        self.output_positions.authority_end = self.output.len();
+ 1293|  4.29k|                        return self.parse_path_start(c);
  1294|       |                    }
  1295|  39.3k|                    Some(c) => self.read_url_codepoint_or_echar(c)?,
  1296|       |                }
@@ -747,27 +747,27 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE10parse_host
  1298|       |        }
  1299|  5.46k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE23parse_path_or_authorityCsjBxrSotcyIg_5oxrdf:
- 1141|  5.75k|    fn parse_path_or_authority(&mut self) -> Result<(), IriParseError> {
- 1142|  5.75k|        if self.input.starts_with('/') {
+ 1141|  5.74k|    fn parse_path_or_authority(&mut self) -> Result<(), IriParseError> {
+ 1142|  5.74k|        if self.input.starts_with('/') {
  1143|  5.46k|            self.input.next();
  1144|  5.46k|            self.output.push('/');
  1145|  5.46k|            self.parse_authority()
  1146|       |        } else {
- 1147|    283|            self.output_positions.authority_end = self.output.len() - 1;
- 1148|    283|            self.parse_path()
+ 1147|    279|            self.output_positions.authority_end = self.output.len() - 1;
+ 1148|    279|            self.parse_path()
  1149|       |        }
- 1150|  5.75k|    }
+ 1150|  5.74k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE33read_url_query_codepoint_or_echarCsjBxrSotcyIg_5oxrdf:
- 1422|  6.18k|    fn read_url_query_codepoint_or_echar(&mut self, c: char) -> Result<(), IriParseError> {
- 1423|  6.18k|        if c == '%' {
+ 1422|  6.02k|    fn read_url_query_codepoint_or_echar(&mut self, c: char) -> Result<(), IriParseError> {
+ 1423|  6.02k|        if c == '%' {
  1424|    284|            self.read_echar()
- 1425|  5.89k|        } else if is_url_query_code_point(c) {
- 1426|  5.88k|            self.output.push(c);
- 1427|  5.88k|            Ok(())
+ 1425|  5.74k|        } else if is_url_query_code_point(c) {
+ 1426|  5.73k|            self.output.push(c);
+ 1427|  5.73k|            Ok(())
  1428|       |        } else {
  1429|     11|            self.parse_error(IriParseErrorKind::InvalidIriCodePoint(c))
  1430|       |        }
- 1431|  6.18k|    }
+ 1431|  6.02k|    }
 _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE16parse_path_startCsjBxrSotcyIg_5oxrdf:
  1315|  5.39k|    fn parse_path_start(&mut self, c: Option<char>) -> Result<(), IriParseError> {
  1316|  5.39k|        match c {
@@ -798,9 +798,9 @@ _RNvMs11_Csb12MtHvp2O_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferE16parse_path
  1341|       |        }
  1342|  5.39k|    }
 _RNvMs10_Csb12MtHvp2O_5oxiriNtB6_11ParserInput5frontCsjBxrSotcyIg_5oxrdf:
- 1053|  16.4k|    fn front(&self) -> Option<char> {
- 1054|  16.4k|        self.value.clone().next()
- 1055|  16.4k|    }
+ 1053|  16.3k|    fn front(&self) -> Option<char> {
+ 1054|  16.3k|        self.value.clone().next()
+ 1055|  16.3k|    }
 _RNvXsY_Csb12MtHvp2O_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer5clearCsjBxrSotcyIg_5oxrdf:
   985|     48|    fn clear(&mut self) {
   986|     48|        self.len = 0;
@@ -810,11 +810,11 @@ _RNvMs10_Csb12MtHvp2O_5oxiriNtB6_11ParserInput11starts_withCsjBxrSotcyIg_5oxrdf:
  1059|  27.6k|        self.value.as_str().starts_with(c)
  1060|  27.6k|    }
 _RNvXs1b_Csb12MtHvp2O_5oxiriNtB6_16VoidOutputBufferNtNtCslATUeuPuGvJ_4core7default7Default7defaultCsjBxrSotcyIg_5oxrdf:
-  968|  16.4k|#[derive(Default)]
+  968|  16.3k|#[derive(Default)]
 _RNvXsY_Csb12MtHvp2O_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer8truncateCsjBxrSotcyIg_5oxrdf:
-  990|  4.98k|    fn truncate(&mut self, new_len: usize) {
-  991|  4.98k|        self.len = new_len;
-  992|  4.98k|    }
+  990|  4.97k|    fn truncate(&mut self, new_len: usize) {
+  991|  4.97k|        self.len = new_len;
+  992|  4.97k|    }
 _RNvXsY_Csb12MtHvp2O_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer3lenCsjBxrSotcyIg_5oxrdf:
   995|  64.3k|    fn len(&self) -> usize {
   996|  64.3k|        self.len
@@ -833,15 +833,15 @@ _RNvMs10_Csb12MtHvp2O_5oxiriNtB6_11ParserInput4nextCsjBxrSotcyIg_5oxrdf:
  1045|   246k|            self.position += head.len_utf8();
  1046|   246k|            Some(head)
  1047|       |        } else {
- 1048|  17.4k|            None
+ 1048|  17.3k|            None
  1049|       |        }
  1050|   263k|    }
 _RNvCsb12MtHvp2O_5oxiri17is_url_code_point:
  1459|   161k|fn is_url_code_point(c: char) -> bool {
  1460|   161k|    matches!(c,
- 1461|  92.2k|        'a'..='z'
- 1462|  19.5k|        | 'A'..='Z'
- 1463|  38.0k|        | '0'..='9'
+ 1461|  92.1k|        'a'..='z'
+ 1462|  19.3k|        | 'A'..='Z'
+ 1463|  37.8k|        | '0'..='9'
  1464|       |        | '!'
  1465|       |        | '$'
  1466|       |        | '&'
@@ -881,10 +881,10 @@ _RNvCsb12MtHvp2O_5oxiri17is_url_code_point:
  1500|       |    )
  1501|   161k|}
 _RNvCsb12MtHvp2O_5oxiri23is_url_query_code_point:
- 1503|  5.89k|fn is_url_query_code_point(c: char) -> bool {
- 1504|  5.89k|    is_url_code_point(c)
+ 1503|  5.74k|fn is_url_query_code_point(c: char) -> bool {
+ 1504|  5.74k|    is_url_code_point(c)
  1505|     91|        || matches!(c, '\u{E000}'..='\u{F8FF}' | '\u{F0000}'..='\u{FFFFD}' | '\u{100000}'..='\u{10FFFD}')
- 1506|  5.89k|}
+ 1506|  5.74k|}
 
 _RNvNtCslJpPQeq9aeN_13oxigraph_fuzz13result_format18fuzz_result_format:
     6|  2.98k|pub fn fuzz_result_format(format: QueryResultsFormat, data: &[u8]) {
@@ -894,7 +894,7 @@ _RNvNtCslJpPQeq9aeN_13oxigraph_fuzz13result_format18fuzz_result_format:
    10|  2.98k|    let Ok(reader) = parser.read_results(data) else {
    11|    178|        return;
    12|       |    };
-   13|  2.81k|    match reader {
+   13|  2.80k|    match reader {
    14|  2.80k|        QueryResultsReader::Solutions(solutions) => {
    15|  2.80k|            let Ok(solutions) = solutions.collect::<Result<Vec<_>, _>>() else {
    16|  1.36k|                return;
@@ -1057,7 +1057,7 @@ _RNvNtCsjBxrSotcyIg_5oxrdf10blank_node13to_integer_idB3_:
   330|  15.0k|    }
   331|   153k|    for digit in digits {
   332|   143k|        value = value.checked_mul(16)?.checked_add(
-  333|   143k|            match *digit {
+  333|   142k|            match *digit {
   334|   142k|                b'0'..=b'9' => digit - b'0',
   335|  11.0k|                b'a'..=b'f' => digit - b'a' + 10,
   336|  4.08k|                _ => return None,
@@ -1088,7 +1088,7 @@ _RNCNvMs7_NtCsjBxrSotcyIg_5oxrdf10blank_nodeNtB7_5IdStr6as_str0B9_:
 _RNvMst_NtCsjBxrSotcyIg_5oxrdf7literalNtB5_10LiteralRef5valueCslJpPQeq9aeN_13oxigraph_fuzz:
   491|  15.5k|    pub fn value(self) -> &'a str {
   492|  15.5k|        match self.0 {
-  493|    787|            LiteralRefContent::String(value)
+  493|    789|            LiteralRefContent::String(value)
   494|  2.46k|            | LiteralRefContent::LanguageTaggedString { value, .. }
   495|  15.5k|            | LiteralRefContent::TypedLiteral { value, .. } => value,
   496|  15.5k|        }
@@ -1103,7 +1103,7 @@ _RNvMst_NtCsjBxrSotcyIg_5oxrdf7literalNtB5_10LiteralRef8languageCslJpPQeq9aeN_13
 _RNvMst_NtCsjBxrSotcyIg_5oxrdf7literalNtB5_10LiteralRef8datatypeCslJpPQeq9aeN_13oxigraph_fuzz:
   516|  13.0k|    pub fn datatype(self) -> NamedNodeRef<'a> {
   517|  13.0k|        match self.0 {
-  518|    787|            LiteralRefContent::String(_) => xsd::STRING,
+  518|    789|            LiteralRefContent::String(_) => xsd::STRING,
   519|      0|            LiteralRefContent::LanguageTaggedString { .. } => rdf::LANG_STRING,
   520|  12.2k|            LiteralRefContent::TypedLiteral { datatype, .. } => datatype,
   521|       |        }
@@ -1111,7 +1111,7 @@ _RNvMst_NtCsjBxrSotcyIg_5oxrdf7literalNtB5_10LiteralRef8datatypeCslJpPQeq9aeN_13
 _RNvMNtCsjBxrSotcyIg_5oxrdf7literalNtB2_7Literal6as_refCslJpPQeq9aeN_13oxigraph_fuzz:
   132|  15.5k|    pub fn as_ref(&self) -> LiteralRef<'_> {
   133|  15.5k|        LiteralRef(match &self.0 {
-  134|    787|            LiteralContent::String(value) => LiteralRefContent::String(value),
+  134|    789|            LiteralContent::String(value) => LiteralRefContent::String(value),
   135|  2.46k|            LiteralContent::LanguageTaggedString { value, language } => {
   136|  2.46k|                LiteralRefContent::LanguageTaggedString { value, language }
   137|       |            }
@@ -1126,41 +1126,41 @@ _RNvXsD_NtCsjBxrSotcyIg_5oxrdf7literalNtB5_7LiteralNtNtCslATUeuPuGvJ_4core3cmp9P
 _RNvXsI_NtCsjBxrSotcyIg_5oxrdf7literalNtB5_14LiteralContentNtNtCslATUeuPuGvJ_4core3cmp9PartialEq2eqCsg8uSglfjx6w_10sparesults:
    40|  31.0k|#[derive(PartialEq, Eq, Debug, Clone, Hash)]
 _RINvMNtCsjBxrSotcyIg_5oxrdf7literalNtB3_7Literal18new_simple_literalNtNtCshJIxznpEM8j_5alloc6string6StringEB5_:
-   50|  1.60k|    pub fn new_simple_literal(value: impl Into<String>) -> Self {
-   51|  1.60k|        Self(LiteralContent::String(value.into()))
-   52|  1.60k|    }
+   50|  1.61k|    pub fn new_simple_literal(value: impl Into<String>) -> Self {
+   51|  1.61k|        Self(LiteralContent::String(value.into()))
+   52|  1.61k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf7literalNtB3_7Literal17new_typed_literalNtNtCshJIxznpEM8j_5alloc6string6StringNtNtB5_10named_node9NamedNodeEB5_:
-   56|  3.42k|    pub fn new_typed_literal(value: impl Into<String>, datatype: impl Into<NamedNode>) -> Self {
-   57|  3.42k|        let value = value.into();
-   58|  3.42k|        let datatype = datatype.into();
-   59|  3.42k|        Self(if datatype == xsd::STRING {
+   56|  3.41k|    pub fn new_typed_literal(value: impl Into<String>, datatype: impl Into<NamedNode>) -> Self {
+   57|  3.41k|        let value = value.into();
+   58|  3.41k|        let datatype = datatype.into();
+   59|  3.41k|        Self(if datatype == xsd::STRING {
    60|      1|            LiteralContent::String(value)
    61|       |        } else {
-   62|  3.42k|            LiteralContent::TypedLiteral { value, datatype }
+   62|  3.41k|            LiteralContent::TypedLiteral { value, datatype }
    63|       |        })
-   64|  3.42k|    }
+   64|  3.41k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf7literalNtB3_7Literal37new_language_tagged_literal_uncheckedNtNtCshJIxznpEM8j_5alloc6string6StringB1n_EB5_:
-   88|  5.64k|    pub fn new_language_tagged_literal_unchecked(
-   89|  5.64k|        value: impl Into<String>,
-   90|  5.64k|        language: impl Into<String>,
-   91|  5.64k|    ) -> Self {
-   92|  5.64k|        Self(LiteralContent::LanguageTaggedString {
-   93|  5.64k|            value: value.into(),
-   94|  5.64k|            language: language.into(),
-   95|  5.64k|        })
-   96|  5.64k|    }
+   88|  5.63k|    pub fn new_language_tagged_literal_unchecked(
+   89|  5.63k|        value: impl Into<String>,
+   90|  5.63k|        language: impl Into<String>,
+   91|  5.63k|    ) -> Self {
+   92|  5.63k|        Self(LiteralContent::LanguageTaggedString {
+   93|  5.63k|            value: value.into(),
+   94|  5.63k|            language: language.into(),
+   95|  5.63k|        })
+   96|  5.63k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf7literalNtB3_7Literal27new_language_tagged_literalNtNtCshJIxznpEM8j_5alloc6string6StringReEB5_:
-   68|  5.70k|    pub fn new_language_tagged_literal(
-   69|  5.70k|        value: impl Into<String>,
-   70|  5.70k|        language: impl Into<String>,
-   71|  5.70k|    ) -> Result<Self, LanguageTagParseError> {
-   72|  5.70k|        let mut language = language.into();
-   73|  5.70k|        language.make_ascii_lowercase();
-   74|  5.70k|        Ok(Self::new_language_tagged_literal_unchecked(
-   75|  5.70k|            value,
-   76|  5.70k|            LanguageTag::parse(language)?.into_inner(),
+   68|  5.69k|    pub fn new_language_tagged_literal(
+   69|  5.69k|        value: impl Into<String>,
+   70|  5.69k|        language: impl Into<String>,
+   71|  5.69k|    ) -> Result<Self, LanguageTagParseError> {
+   72|  5.69k|        let mut language = language.into();
+   73|  5.69k|        language.make_ascii_lowercase();
+   74|  5.69k|        Ok(Self::new_language_tagged_literal_unchecked(
+   75|  5.69k|            value,
+   76|  5.69k|            LanguageTag::parse(language)?.into_inner(),
    77|       |        ))
-   78|  5.70k|    }
+   78|  5.69k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf7literalNtB3_7Literal17new_typed_literalReNtNtB5_10named_node12NamedNodeRefEB5_:
    56|  22.2k|    pub fn new_typed_literal(value: impl Into<String>, datatype: impl Into<NamedNode>) -> Self {
    57|  22.2k|        let value = value.into();
@@ -1177,23 +1177,23 @@ _RNvMs4_NtCsjBxrSotcyIg_5oxrdf10named_nodeNtB5_12NamedNodeRef6as_strCslJpPQeq9ae
   134|  8.58k|        self.iri
   135|  8.58k|    }
 _RNvMNtCsjBxrSotcyIg_5oxrdf10named_nodeNtB2_9NamedNode6as_refCslJpPQeq9aeN_13oxigraph_fuzz:
-   54|  17.6k|    pub fn as_ref(&self) -> NamedNodeRef<'_> {
-   55|  17.6k|        NamedNodeRef::new_unchecked(&self.iri)
-   56|  17.6k|    }
+   54|  17.5k|    pub fn as_ref(&self) -> NamedNodeRef<'_> {
+   55|  17.5k|        NamedNodeRef::new_unchecked(&self.iri)
+   56|  17.5k|    }
 _RNvMs4_NtCsjBxrSotcyIg_5oxrdf10named_nodeNtB5_12NamedNodeRef13new_uncheckedCslJpPQeq9aeN_13oxigraph_fuzz:
-  128|  17.6k|    pub const fn new_unchecked(iri: &'a str) -> Self {
-  129|  17.6k|        Self { iri }
-  130|  17.6k|    }
+  128|  17.5k|    pub const fn new_unchecked(iri: &'a str) -> Self {
+  129|  17.5k|        Self { iri }
+  130|  17.5k|    }
 _RNvXsj_NtCsjBxrSotcyIg_5oxrdf10named_nodeNtB5_9NamedNodeNtNtCslATUeuPuGvJ_4core3cmp9PartialEq2eqCsg8uSglfjx6w_10sparesults:
-   17|  35.2k|#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Clone, Hash)]
+   17|  35.1k|#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Clone, Hash)]
 _RINvMNtCsjBxrSotcyIg_5oxrdf10named_nodeNtB3_9NamedNode13new_uncheckedReEB5_:
    39|  22.2k|    pub fn new_unchecked(iri: impl Into<String>) -> Self {
    40|  22.2k|        Self { iri: iri.into() }
    41|  22.2k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf10named_nodeNtB3_9NamedNode3newReEB5_:
-   24|  16.4k|    pub fn new(iri: impl Into<String>) -> Result<Self, IriParseError> {
-   25|  16.4k|        Ok(Self::new_from_iri(Iri::parse(iri.into())?))
-   26|  16.4k|    }
+   24|  16.3k|    pub fn new(iri: impl Into<String>) -> Result<Self, IriParseError> {
+   25|  16.3k|        Ok(Self::new_from_iri(Iri::parse(iri.into())?))
+   26|  16.3k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf10named_nodeNtB3_9NamedNode13new_uncheckedNtNtCshJIxznpEM8j_5alloc6string6StringEB5_:
    39|  15.8k|    pub fn new_unchecked(iri: impl Into<String>) -> Self {
    40|  15.8k|        Self { iri: iri.into() }
@@ -1242,58 +1242,58 @@ _RNvXs3_NtCsjBxrSotcyIg_5oxrdf6parserNtB5_14TermParseErrorNtNtCslATUeuPuGvJ_4cor
   429|       |        }
   430|    115|    }
 _RNvXs1_NtCsjBxrSotcyIg_5oxrdf6parserNtNtB7_6triple4TermNtNtNtCslATUeuPuGvJ_4core3str6traits7FromStr8from_str:
-  103|  48.5k|    fn from_str(s: &str) -> Result<Self, TermParseError> {
-  104|  48.5k|        let (term, left) = read_term(s, 0)?;
+  103|  48.4k|    fn from_str(s: &str) -> Result<Self, TermParseError> {
+  104|  48.4k|        let (term, left) = read_term(s, 0)?;
   105|  47.3k|        if !left.is_empty() {
   106|     69|            return Err(TermParseError::msg("Invalid term serialization"));
   107|  47.2k|        }
   108|  47.2k|        Ok(term)
-  109|  48.5k|    }
+  109|  48.4k|    }
 _RNvNtCsjBxrSotcyIg_5oxrdf6parser12read_literal:
   184|  33.2k|fn read_literal(s: &str) -> Result<(Literal, &str), TermParseError> {
   185|  33.2k|    let s = s.trim();
   186|  33.2k|    if let Some(s) = s.strip_prefix('"') {
   187|  10.8k|        let mut value = String::with_capacity(s.len());
   188|  10.8k|        let mut chars = s.chars();
-  189|  72.7k|        while let Some(c) = chars.next() {
-  190|  72.6k|            match c {
+  189|  72.6k|        while let Some(c) = chars.next() {
+  190|  72.5k|            match c {
   191|       |                '"' => {
   192|  10.7k|                    let remain = chars.as_str();
   193|  10.7k|                    return if let Some(remain) = remain.strip_prefix('@') {
-  194|  5.70k|                        let end = remain
-  195|  5.70k|                            .find(|v| !matches!(v, 'a'..='z' | 'A'..='Z' | '-'))
-  196|  5.70k|                            .unwrap_or(remain.len());
-  197|  5.70k|                        let (language, remain) = remain.split_at(end);
-  198|  5.70k|                        Ok((
-  199|  5.70k|                            Literal::new_language_tagged_literal(value, language).map_err(
-  200|  5.70k|                                |error| TermParseError {
+  194|  5.69k|                        let end = remain
+  195|  5.69k|                            .find(|v| !matches!(v, 'a'..='z' | 'A'..='Z' | '-'))
+  196|  5.69k|                            .unwrap_or(remain.len());
+  197|  5.69k|                        let (language, remain) = remain.split_at(end);
+  198|  5.69k|                        Ok((
+  199|  5.69k|                            Literal::new_language_tagged_literal(value, language).map_err(
+  200|  5.69k|                                |error| TermParseError {
   201|       |                                    kind: TermParseErrorKind::LanguageTag {
   202|       |                                        value: language.to_owned(),
   203|       |                                        error,
   204|       |                                    },
-  205|  5.70k|                                },
-  206|  5.70k|                            )?,
-  207|  5.64k|                            remain,
+  205|  5.69k|                                },
+  206|  5.69k|                            )?,
+  207|  5.63k|                            remain,
   208|       |                        ))
   209|  5.03k|                    } else if let Some(remain) = remain.strip_prefix("^^") {
   210|  3.42k|                        let (datatype, remain) = read_named_node(remain)?;
-  211|  3.42k|                        Ok((Literal::new_typed_literal(value, datatype), remain))
+  211|  3.41k|                        Ok((Literal::new_typed_literal(value, datatype), remain))
   212|       |                    } else {
-  213|  1.60k|                        Ok((Literal::new_simple_literal(value), remain))
+  213|  1.61k|                        Ok((Literal::new_simple_literal(value), remain))
   214|       |                    };
   215|       |                }
   216|       |                '\\' => {
-  217|  7.41k|                    if let Some(c) = chars.next() {
+  217|  7.40k|                    if let Some(c) = chars.next() {
   218|  7.40k|                        value.push(match c {
   219|    746|                            't' => '\t',
-  220|    239|                            'b' => '\u{8}',
+  220|    237|                            'b' => '\u{8}',
   221|    688|                            'n' => '\n',
-  222|    953|                            'r' => '\r',
-  223|    196|                            'f' => '\u{C}',
+  222|    954|                            'r' => '\r',
+  223|    195|                            'f' => '\u{C}',
   224|    579|                            '"' => '"',
   225|    194|                            '\'' => '\'',
   226|  3.00k|                            '\\' => '\\',
-  227|    387|                            'u' => read_hexa_char(&mut chars, 4)?,
+  227|    384|                            'u' => read_hexa_char(&mut chars, 4)?,
   228|    415|                            'U' => read_hexa_char(&mut chars, 8)?,
   229|      6|                            _ => return Err(TermParseError::msg("Unexpected escaped char")),
   230|       |                        })
@@ -1310,19 +1310,19 @@ _RNvNtCsjBxrSotcyIg_5oxrdf6parser12read_literal:
   241|  20.9k|    } else if let Some(remain) = s.strip_prefix("false") {
   242|    559|        Ok((Literal::new_typed_literal("false", xsd::BOOLEAN), remain))
   243|       |    } else {
-  244|  20.4k|        let input = s.as_bytes();
-  245|  20.4k|        if input.is_empty() {
+  244|  20.3k|        let input = s.as_bytes();
+  245|  20.3k|        if input.is_empty() {
   246|     44|            return Err(TermParseError::msg("Empty term serialization"));
   247|  20.3k|        }
   248|       |
   249|  20.3k|        let mut cursor = match input.first() {
-  250|  1.68k|            Some(b'+' | b'-') => 1,
+  250|  1.67k|            Some(b'+' | b'-') => 1,
   251|  18.6k|            _ => 0,
   252|       |        };
   253|  20.3k|        let mut with_dot = false;
   254|  20.3k|
   255|  20.3k|        let mut count_before: usize = 0;
-  256|  80.5k|        while cursor < input.len() && b'0' <= input[cursor] && input[cursor] <= b'9' {
+  256|  80.4k|        while cursor < input.len() && b'0' <= input[cursor] && input[cursor] <= b'9' {
   257|  60.1k|            count_before += 1;
   258|  60.1k|            cursor += 1;
   259|  60.1k|        }
@@ -1341,7 +1341,7 @@ _RNvNtCsjBxrSotcyIg_5oxrdf6parser12read_literal:
   272|  3.16k|            cursor += 1;
   273|  3.16k|            cursor += match input.get(cursor) {
   274|    163|                Some(b'+' | b'-') => 1,
-  275|  3.00k|                _ => 0,
+  275|  2.99k|                _ => 0,
   276|       |            };
   277|  3.16k|            let mut count_exponent = 0;
   278|  13.5k|            while cursor < input.len() && b'0' <= input[cursor] && input[cursor] <= b'9' {
@@ -1355,9 +1355,9 @@ _RNvNtCsjBxrSotcyIg_5oxrdf6parser12read_literal:
   286|     10|                    "Double serialization with an invalid exponent",
   287|     10|                ))
   288|       |            }
-  289|  17.2k|        } else if with_dot {
+  289|  17.1k|        } else if with_dot {
   290|  4.85k|            if count_after > 0 {
-  291|  4.84k|                Ok((Literal::new_typed_literal(s, xsd::DECIMAL), &s[cursor..]))
+  291|  4.85k|                Ok((Literal::new_typed_literal(s, xsd::DECIMAL), &s[cursor..]))
   292|       |            } else {
   293|      3|                Err(TermParseError::msg(
   294|      3|                    "Decimal serialization without floating part",
@@ -1440,7 +1440,7 @@ _RNvNtCsjBxrSotcyIg_5oxrdf6parser9read_term:
   347|       |            Err(TermParseError::msg("RDF-star is not supported"))
   348|       |        }
   349|  55.4k|    } else if s.starts_with('<') {
-  350|  6.03k|        let (term, remain) = read_named_node(s)?;
+  350|  6.02k|        let (term, remain) = read_named_node(s)?;
   351|  5.41k|        Ok((term.into(), remain))
   352|  49.4k|    } else if s.starts_with('_') {
   353|  16.1k|        let (term, remain) = read_blank_node(s)?;
@@ -1451,15 +1451,15 @@ _RNvNtCsjBxrSotcyIg_5oxrdf6parser9read_term:
   358|       |    }
   359|  65.4k|}
 _RNvNtCsjBxrSotcyIg_5oxrdf6parser14read_hexa_char:
-  361|    802|fn read_hexa_char(input: &mut Chars<'_>, len: usize) -> Result<char, TermParseError> {
-  362|    802|    let mut value = 0;
-  363|    802|    for _ in 0..len {
-  364|  4.70k|        if let Some(c) = input.next() {
-  365|  4.68k|            value = value * 16
-  366|  4.68k|                + match c {
-  367|  4.68k|                    '0'..='9' => u32::from(c) - u32::from('0'),
-  368|    308|                    'a'..='f' => u32::from(c) - u32::from('a') + 10,
-  369|    745|                    'A'..='F' => u32::from(c) - u32::from('A') + 10,
+  361|    799|fn read_hexa_char(input: &mut Chars<'_>, len: usize) -> Result<char, TermParseError> {
+  362|    799|    let mut value = 0;
+  363|    799|    for _ in 0..len {
+  364|  4.69k|        if let Some(c) = input.next() {
+  365|  4.67k|            value = value * 16
+  366|  4.67k|                + match c {
+  367|  4.66k|                    '0'..='9' => u32::from(c) - u32::from('0'),
+  368|    306|                    'a'..='f' => u32::from(c) - u32::from('a') + 10,
+  369|    744|                    'A'..='F' => u32::from(c) - u32::from('A') + 10,
   370|       |                    _ => {
   371|     12|                        return Err(TermParseError::msg(
   372|     12|                            "Unexpected character in a unicode escape",
@@ -1470,30 +1470,30 @@ _RNvNtCsjBxrSotcyIg_5oxrdf6parser14read_hexa_char:
   377|     24|            return Err(TermParseError::msg("Unexpected literal string end"));
   378|       |        }
   379|       |    }
-  380|    766|    char::from_u32(value).ok_or_else(|| TermParseError::msg("Invalid encoded unicode code point"))
-  381|    802|}
+  380|    763|    char::from_u32(value).ok_or_else(|| TermParseError::msg("Invalid encoded unicode code point"))
+  381|    799|}
 _RNvNtCsjBxrSotcyIg_5oxrdf6parser15read_named_node:
-  138|  16.5k|fn read_named_node(s: &str) -> Result<(NamedNode, &str), TermParseError> {
-  139|  16.5k|    let s = s.trim();
-  140|  16.5k|    if let Some(remain) = s.strip_prefix('<') {
+  138|  16.4k|fn read_named_node(s: &str) -> Result<(NamedNode, &str), TermParseError> {
+  139|  16.4k|    let s = s.trim();
+  140|  16.4k|    if let Some(remain) = s.strip_prefix('<') {
   141|  16.4k|        let end = remain
   142|  16.4k|            .find('>')
   143|  16.4k|            .ok_or_else(|| TermParseError::msg("Named node serialization should end with a >"))?;
-  144|  16.4k|        let (value, remain) = remain.split_at(end);
-  145|  16.4k|        let remain = &remain[1..];
-  146|  16.4k|        let term = NamedNode::new(value).map_err(|error| TermParseError {
+  144|  16.3k|        let (value, remain) = remain.split_at(end);
+  145|  16.3k|        let remain = &remain[1..];
+  146|  16.3k|        let term = NamedNode::new(value).map_err(|error| TermParseError {
   147|       |            kind: TermParseErrorKind::Iri {
   148|       |                value: value.to_owned(),
   149|       |                error,
   150|       |            },
-  151|  16.4k|        })?;
+  151|  16.3k|        })?;
   152|  15.8k|        Ok((term, remain))
   153|       |    } else {
   154|     51|        Err(TermParseError::msg(
   155|     51|            "Named node serialization should start with a <",
   156|     51|        ))
   157|       |    }
-  158|  16.5k|}
+  158|  16.4k|}
 _RNvMs5_NtCsjBxrSotcyIg_5oxrdf6parserNtB5_14TermParseError3msg:
   436|    605|    pub(crate) fn msg(msg: &'static str) -> Self {
   437|    605|        Self {
@@ -1522,14 +1522,14 @@ _RNCNvNtCsjBxrSotcyIg_5oxrdf6parser15read_blank_nodes_0B5_:
   174|     55|            },
   175|     55|        })?;
 _RNCNvNtCsjBxrSotcyIg_5oxrdf6parser12read_literal0B5_:
-  195|  66.8k|                            .find(|v| !matches!(v, 'a'..='z' | 'A'..='Z' | '-'))
+  195|  66.7k|                            .find(|v| !matches!(v, 'a'..='z' | 'A'..='Z' | '-'))
 _RNCNvNtCsjBxrSotcyIg_5oxrdf6parser15read_named_nodes_0B5_:
-  146|    598|        let term = NamedNode::new(value).map_err(|error| TermParseError {
-  147|    598|            kind: TermParseErrorKind::Iri {
-  148|    598|                value: value.to_owned(),
-  149|    598|                error,
-  150|    598|            },
-  151|    598|        })?;
+  146|    593|        let term = NamedNode::new(value).map_err(|error| TermParseError {
+  147|    593|            kind: TermParseErrorKind::Iri {
+  148|    593|                value: value.to_owned(),
+  149|    593|                error,
+  150|    593|            },
+  151|    593|        })?;
 _RNCNvNtCsjBxrSotcyIg_5oxrdf6parser14read_hexa_char0B5_:
   380|      2|    char::from_u32(value).ok_or_else(|| TermParseError::msg("Invalid encoded unicode code point"))
 _RNCNvNtCsjBxrSotcyIg_5oxrdf6parser15read_blank_node0B5_:
@@ -1652,9 +1652,9 @@ _RNvMNtCsjBxrSotcyIg_5oxrdf8variableNtB2_8Variable6as_strCslJpPQeq9aeN_13oxigrap
 _RNvXsm_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_11VariableRefNtNtCslATUeuPuGvJ_4core3cmp9PartialEq2eqCslJpPQeq9aeN_13oxigraph_fuzz:
    78|  23.4k|#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Clone, Copy, Hash)]
 _RNvMNtCsjBxrSotcyIg_5oxrdf8variableNtB2_8Variable6as_refCslJpPQeq9aeN_13oxigraph_fuzz:
-   54|  46.4k|    pub fn as_ref(&self) -> VariableRef<'_> {
-   55|  46.4k|        VariableRef { name: &self.name }
-   56|  46.4k|    }
+   54|  46.3k|    pub fn as_ref(&self) -> VariableRef<'_> {
+   55|  46.3k|        VariableRef { name: &self.name }
+   56|  46.3k|    }
 _RNvXs8_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_22VariableNameParseErrorNtNtCslATUeuPuGvJ_4core3fmt7Display3fmtCslJpPQeq9aeN_13oxigraph_fuzz:
   226|     15|    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
   227|     15|        write!(f, "The variable name is invalid")
@@ -1672,9 +1672,9 @@ _RNvXs5_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_8VariableINtNtCslATUeuPuGvJ_4core3cm
 _RNvXsh_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_8VariableNtNtCslATUeuPuGvJ_4core5clone5Clone5cloneCslJpPQeq9aeN_13oxigraph_fuzz:
    17|  1.43k|#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Clone, Hash)]
 _RNvMNtCsjBxrSotcyIg_5oxrdf8variableNtB2_8Variable6as_refCsg8uSglfjx6w_10sparesults:
-   54|  92.8k|    pub fn as_ref(&self) -> VariableRef<'_> {
-   55|  92.8k|        VariableRef { name: &self.name }
-   56|  92.8k|    }
+   54|  92.7k|    pub fn as_ref(&self) -> VariableRef<'_> {
+   55|  92.7k|        VariableRef { name: &self.name }
+   56|  92.7k|    }
 _RNvXs5_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_8VariableINtNtCslATUeuPuGvJ_4core3cmp9PartialEqNtB5_11VariableRefE2eqCsg8uSglfjx6w_10sparesults:
   151|  46.8k|    fn eq(&self, other: &VariableRef<'_>) -> bool {
   152|  46.8k|        self.as_ref() == *other
@@ -1682,21 +1682,21 @@ _RNvXs5_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_8VariableINtNtCslATUeuPuGvJ_4core3cm
 _RNvXsm_NtCsjBxrSotcyIg_5oxrdf8variableNtB5_11VariableRefNtNtCslATUeuPuGvJ_4core3cmp9PartialEq2eqCsg8uSglfjx6w_10sparesults:
    78|  46.8k|#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Clone, Copy, Hash)]
 _RINvMNtCsjBxrSotcyIg_5oxrdf8variableNtB3_8Variable13new_uncheckedNtNtCshJIxznpEM8j_5alloc6string6StringEB5_:
-   39|  3.26k|    pub fn new_unchecked(name: impl Into<String>) -> Self {
-   40|  3.26k|        Self { name: name.into() }
-   41|  3.26k|    }
+   39|  3.25k|    pub fn new_unchecked(name: impl Into<String>) -> Self {
+   40|  3.25k|        Self { name: name.into() }
+   41|  3.25k|    }
 _RINvMNtCsjBxrSotcyIg_5oxrdf8variableNtB3_8Variable3newReEB5_:
    26|  3.27k|    pub fn new(name: impl Into<String>) -> Result<Self, VariableNameParseError> {
    27|  3.27k|        let name = name.into();
    28|  3.27k|        validate_variable_identifier(&name)?;
-   29|  3.26k|        Ok(Self::new_unchecked(name))
+   29|  3.25k|        Ok(Self::new_unchecked(name))
    30|  3.27k|    }
 _RNvNtCsjBxrSotcyIg_5oxrdf8variable28validate_variable_identifier:
   170|  3.27k|fn validate_variable_identifier(id: &str) -> Result<(), VariableNameParseError> {
   171|  3.27k|    let mut chars = id.chars();
   172|  3.27k|    let front = chars.next().ok_or(VariableNameParseError {})?;
-  173|  3.27k|    match front {
-  174|  3.27k|        '0'..='9'
+  173|  3.26k|    match front {
+  174|  3.26k|        '0'..='9'
   175|       |        | '_'
   176|       |        | ':'
   177|  1.91k|        | 'A'..='Z'
@@ -1712,7 +1712,7 @@ _RNvNtCsjBxrSotcyIg_5oxrdf8variable28validate_variable_identifier:
   187|     27|        | '\u{3001}'..='\u{D7FF}'
   188|     11|        | '\u{F900}'..='\u{FDCF}'
   189|     11|        | '\u{FDF0}'..='\u{FFFD}'
-  190|  3.27k|        | '\u{10000}'..='\u{EFFFF}' => (),
+  190|  3.26k|        | '\u{10000}'..='\u{EFFFF}' => (),
   191|      1|        _ => return Err(VariableNameParseError {}),
   192|       |    }
   193|  8.03k|    for c in chars {
@@ -1722,8 +1722,8 @@ _RNvNtCsjBxrSotcyIg_5oxrdf8variable28validate_variable_identifier:
   197|    410|            | '\u{00300}'..='\u{036F}'
   198|    205|            | '\u{203F}'..='\u{2040}'
   199|       |            | '_'
-  200|  2.36k|            | 'A'..='Z'
-  201|  1.28k|            | 'a'..='z'
+  200|  2.35k|            | 'A'..='Z'
+  201|  1.27k|            | 'a'..='z'
   202|    412|            | '\u{00C0}'..='\u{00D6}'
   203|    412|            | '\u{00D8}'..='\u{00F6}'
   204|    410|            | '\u{00F8}'..='\u{02FF}'
@@ -1739,7 +1739,7 @@ _RNvNtCsjBxrSotcyIg_5oxrdf8variable28validate_variable_identifier:
   214|      9|            _ => return Err(VariableNameParseError {}),
   215|       |        }
   216|       |    }
-  217|  3.26k|    Ok(())
+  217|  3.25k|    Ok(())
   218|  3.27k|}
 
 _RINvNtCsg8uSglfjx6w_10sparesults3csv14write_tsv_termRNtNtCsjBxrSotcyIg_5oxrdf10named_node9NamedNodeINtNtCshJIxznpEM8j_5alloc3vec3VechEECslJpPQeq9aeN_13oxigraph_fuzz:
@@ -1793,31 +1793,31 @@ _RNCNvMs0_NtCsg8uSglfjx6w_10sparesults3csvINtB7_21TsvQueryResultsReaderRShE4read
 _RNCNvMs0_NtCsg8uSglfjx6w_10sparesults3csvINtB7_21TsvQueryResultsReaderRShE4read0CslJpPQeq9aeN_13oxigraph_fuzz:
   294|  11.6k|            .trim_matches(|c| matches!(c, ' ' | '\r' | '\n'));
 _RNvMs0_NtCsg8uSglfjx6w_10sparesults3csvINtB5_21TsvQueryResultsReaderRShE4readCslJpPQeq9aeN_13oxigraph_fuzz:
-  287|  4.43k|    pub fn read(mut source: R) -> Result<Self, ParseError> {
-  288|  4.43k|        let mut buffer = String::new();
-  289|  4.43k|
-  290|  4.43k|        // We read the header
-  291|  4.43k|        source.read_line(&mut buffer)?;
-  292|  4.43k|        let line = buffer
-  293|  4.43k|            .as_str()
-  294|  4.43k|            .trim_matches(|c| matches!(c, ' ' | '\r' | '\n'));
-  295|  4.43k|        if line.eq_ignore_ascii_case("true") {
+  287|  4.42k|    pub fn read(mut source: R) -> Result<Self, ParseError> {
+  288|  4.42k|        let mut buffer = String::new();
+  289|  4.42k|
+  290|  4.42k|        // We read the header
+  291|  4.42k|        source.read_line(&mut buffer)?;
+  292|  4.42k|        let line = buffer
+  293|  4.42k|            .as_str()
+  294|  4.42k|            .trim_matches(|c| matches!(c, ' ' | '\r' | '\n'));
+  295|  4.42k|        if line.eq_ignore_ascii_case("true") {
   296|      2|            return Ok(Self::Boolean(true));
-  297|  4.43k|        }
-  298|  4.43k|        if line.eq_ignore_ascii_case("false") {
+  297|  4.42k|        }
+  298|  4.42k|        if line.eq_ignore_ascii_case("false") {
   299|      4|            return Ok(Self::Boolean(false));
   300|  4.42k|        }
   301|  4.42k|        let mut variables = Vec::new();
   302|  4.42k|        if !line.is_empty() {
-  303|  3.43k|            for v in line.split('\t') {
-  304|  3.43k|                let v = v.trim();
-  305|  3.43k|                if v.is_empty() {
+  303|  3.42k|            for v in line.split('\t') {
+  304|  3.42k|                let v = v.trim();
+  305|  3.42k|                if v.is_empty() {
   306|     54|                    return Err(SyntaxError::msg("Empty column on the first row. The first row should be a list of variables like ?foo or $bar").into());
   307|  3.37k|                }
   308|  3.37k|                let variable = Variable::from_str(v).map_err(|e| {
   309|       |                    SyntaxError::msg(format!("Invalid variable declaration '{v}': {e}"))
   310|  3.37k|                })?;
-  311|  3.26k|                if variables.contains(&variable) {
+  311|  3.25k|                if variables.contains(&variable) {
   312|      8|                    return Err(SyntaxError::msg(format!(
   313|      8|                        "The variable {variable} is declared twice"
   314|      8|                    ))
@@ -1826,16 +1826,16 @@ _RNvMs0_NtCsg8uSglfjx6w_10sparesults3csvINtB5_21TsvQueryResultsReaderRShE4readCs
   317|  3.25k|                variables.push(variable);
   318|       |            }
   319|  1.39k|        }
-  320|  4.25k|        let column_len = variables.len();
-  321|  4.25k|        Ok(Self::Solutions {
-  322|  4.25k|            variables,
-  323|  4.25k|            solutions: TsvSolutionsReader {
-  324|  4.25k|                source,
-  325|  4.25k|                buffer,
-  326|  4.25k|                column_len,
-  327|  4.25k|            },
-  328|  4.25k|        })
-  329|  4.43k|    }
+  320|  4.24k|        let column_len = variables.len();
+  321|  4.24k|        Ok(Self::Solutions {
+  322|  4.24k|            variables,
+  323|  4.24k|            solutions: TsvSolutionsReader {
+  324|  4.24k|                source,
+  325|  4.24k|                buffer,
+  326|  4.24k|                column_len,
+  327|  4.24k|            },
+  328|  4.24k|        })
+  329|  4.42k|    }
 _RNvMs1_NtCsg8uSglfjx6w_10sparesults3csvINtB5_18TsvSolutionsReaderRShE9read_nextCslJpPQeq9aeN_13oxigraph_fuzz:
   339|  75.4k|    pub fn read_next(&mut self) -> Result<Option<Vec<Option<Term>>>, ParseError> {
   340|  75.4k|        self.buffer.clear();
@@ -1856,8 +1856,8 @@ _RNvMs1_NtCsg8uSglfjx6w_10sparesults3csvINtB5_18TsvSolutionsReaderRShE9read_next
   355|       |                }
   356|  72.5k|            })
   357|  72.5k|            .collect::<Result<Vec<_>, ParseError>>()?;
-  358|  71.3k|        if elements.len() == self.column_len {
-  359|  70.1k|            Ok(Some(elements))
+  358|  71.2k|        if elements.len() == self.column_len {
+  359|  70.0k|            Ok(Some(elements))
   360|  1.23k|        } else if self.column_len == 0 && elements == [None] {
   361|  1.09k|            Ok(Some(Vec::new())) // Zero columns case
   362|       |        } else {
@@ -1939,14 +1939,14 @@ _RINvNtCsg8uSglfjx6w_10sparesults3csv14write_tsv_termNtNtCsjBxrSotcyIg_5oxrdf6tr
   159|  13.3k|        TermRef::Literal(literal) => {
   160|  13.3k|            let value = literal.value();
   161|  13.3k|            if let Some(language) = literal.language() {
-  162|  2.29k|                write_tsv_quoted_str(value, sink)?;
-  163|  2.29k|                write!(sink, "@{language}")
+  162|  2.28k|                write_tsv_quoted_str(value, sink)?;
+  163|  2.28k|                write!(sink, "@{language}")
   164|       |            } else {
   165|  11.0k|                match literal.datatype() {
   166|  11.0k|                    xsd::BOOLEAN if is_turtle_boolean(value) => sink.write_all(value.as_bytes()),
   167|  10.1k|                    xsd::INTEGER if is_turtle_integer(value) => sink.write_all(value.as_bytes()),
   168|  5.16k|                    xsd::DECIMAL if is_turtle_decimal(value) => sink.write_all(value.as_bytes()),
-  169|  2.93k|                    xsd::DOUBLE if is_turtle_double(value) => sink.write_all(value.as_bytes()),
+  169|  2.92k|                    xsd::DOUBLE if is_turtle_double(value) => sink.write_all(value.as_bytes()),
   170|  2.09k|                    xsd::STRING => write_tsv_quoted_str(value, sink),
   171|  1.44k|                    datatype => {
   172|  1.44k|                        write_tsv_quoted_str(value, sink)?;
@@ -2011,9 +2011,9 @@ _RNCNvMs1_NtCsg8uSglfjx6w_10sparesults3csvINtB7_18TsvSolutionsReaderRShE9read_ne
   349|  74.6k|                if v.is_empty() {
   350|  26.1k|                    Ok(None)
   351|       |                } else {
-  352|  48.5k|                    Ok(Some(Term::from_str(v).map_err(|e| SyntaxError {
+  352|  48.4k|                    Ok(Some(Term::from_str(v).map_err(|e| SyntaxError {
   353|       |                        inner: SyntaxErrorKind::Term(e),
-  354|  48.5k|                    })?))
+  354|  48.4k|                    })?))
   355|       |                }
   356|  74.6k|            })
 _RINvMs_NtCsg8uSglfjx6w_10sparesults3csvINtB5_18TsvSolutionsWriterINtNtCshJIxznpEM8j_5alloc3vec3VechEE5writeINtNtNtNtCslATUeuPuGvJ_4core4iter8adapters3map3MapNtNtB7_8solution4IterNCINvMs3_B7_INtB7_15SolutionsWriterB11_E5writeRNtNtCsjBxrSotcyIg_5oxrdf8variable8VariableRNtNtB3F_6triple4TermRNtB2x_13QuerySolutionE0EECslJpPQeq9aeN_13oxigraph_fuzz:
@@ -2028,10 +2028,10 @@ _RINvMs_NtCsg8uSglfjx6w_10sparesults3csvINtB5_18TsvSolutionsWriterINtNtCshJIxznp
   133|  22.9k|            }
   134|       |        }
   135|  34.5k|        let mut start_binding = true;
-  136|  69.3k|        for value in values {
+  136|  69.2k|        for value in values {
   137|  34.7k|            if start_binding {
-  138|  34.1k|                start_binding = false;
-  139|  34.1k|            } else {
+  138|  34.0k|                start_binding = false;
+  139|  34.0k|            } else {
   140|    655|                self.sink.write_all(b"\t")?;
   141|       |            }
   142|  34.7k|            if let Some(value) = value {
@@ -2043,11 +2043,11 @@ _RINvMs_NtCsg8uSglfjx6w_10sparesults3csvINtB5_18TsvSolutionsWriterINtNtCshJIxznp
 _RINvNtCsg8uSglfjx6w_10sparesults3csv20write_tsv_quoted_strINtNtCshJIxznpEM8j_5alloc3vec3VechEECslJpPQeq9aeN_13oxigraph_fuzz:
   192|  6.52k|fn write_tsv_quoted_str(string: &str, f: &mut impl Write) -> io::Result<()> {
   193|  6.52k|    f.write_all(b"\"")?;
-  194|  43.3k|    for c in string.bytes() {
-  195|  43.3k|        match c {
+  194|  43.2k|    for c in string.bytes() {
+  195|  43.2k|        match c {
   196|    370|            b'\t' => f.write_all(b"\\t"),
   197|    320|            b'\n' => f.write_all(b"\\n"),
-  198|    949|            b'\r' => f.write_all(b"\\r"),
+  198|    950|            b'\r' => f.write_all(b"\\r"),
   199|    284|            b'"' => f.write_all(b"\\\""),
   200|  1.41k|            b'\\' => f.write_all(b"\\\\"),
   201|  39.9k|            c => f.write_all(&[c]),
@@ -2064,7 +2064,7 @@ _RNvNtCsg8uSglfjx6w_10sparesults3csv17is_turtle_integer:
   212|  6.68k|    // [19] 	INTEGER 	::= 	[+-]? [0-9]+
   213|  6.68k|    let mut value = value.as_bytes();
   214|  6.68k|    if let Some(v) = value.strip_prefix(b"+") {
-  215|    122|        value = v;
+  215|    121|        value = v;
   216|  6.56k|    } else if let Some(v) = value.strip_prefix(b"-") {
   217|     80|        value = v;
   218|  6.48k|    }
@@ -2077,7 +2077,7 @@ _RNvNtCsg8uSglfjx6w_10sparesults3csv17is_turtle_decimal:
   225|  2.27k|    if let Some(v) = value.strip_prefix(b"+") {
   226|    295|        value = v;
   227|  1.97k|    } else if let Some(v) = value.strip_prefix(b"-") {
-  228|    210|        value = v;
+  228|    209|        value = v;
   229|  1.76k|    }
   230|  6.83k|    while value.first().map_or(false, u8::is_ascii_digit) {
   231|  4.56k|        value = &value[1..];
@@ -2090,42 +2090,42 @@ _RNvNtCsg8uSglfjx6w_10sparesults3csv17is_turtle_decimal:
   238|  2.24k|    !value.is_empty() && value.iter().all(u8::is_ascii_digit)
   239|  2.27k|}
 _RNvNtCsg8uSglfjx6w_10sparesults3csv16is_turtle_double:
-  241|  2.25k|fn is_turtle_double(value: &str) -> bool {
-  242|  2.25k|    // [21] 	DOUBLE 	::= 	[+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)
-  243|  2.25k|    // [154s] 	EXPONENT 	::= 	[eE] [+-]? [0-9]+
-  244|  2.25k|    let mut value = value.as_bytes();
-  245|  2.25k|    if let Some(v) = value.strip_prefix(b"+") {
+  241|  2.24k|fn is_turtle_double(value: &str) -> bool {
+  242|  2.24k|    // [21] 	DOUBLE 	::= 	[+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)
+  243|  2.24k|    // [154s] 	EXPONENT 	::= 	[eE] [+-]? [0-9]+
+  244|  2.24k|    let mut value = value.as_bytes();
+  245|  2.24k|    if let Some(v) = value.strip_prefix(b"+") {
   246|    141|        value = v;
-  247|  2.11k|    } else if let Some(v) = value.strip_prefix(b"-") {
+  247|  2.10k|    } else if let Some(v) = value.strip_prefix(b"-") {
   248|     69|        value = v;
-  249|  2.04k|    }
-  250|  2.25k|    let mut with_before = false;
+  249|  2.03k|    }
+  250|  2.24k|    let mut with_before = false;
   251|  6.07k|    while value.first().map_or(false, u8::is_ascii_digit) {
   252|  3.82k|        value = &value[1..];
   253|  3.82k|        with_before = true;
   254|  3.82k|    }
-  255|  2.25k|    let mut with_after = false;
-  256|  2.25k|    if let Some(v) = value.strip_prefix(b".") {
-  257|    766|        value = v;
+  255|  2.24k|    let mut with_after = false;
+  256|  2.24k|    if let Some(v) = value.strip_prefix(b".") {
+  257|    763|        value = v;
   258|  4.72k|        while value.first().map_or(false, u8::is_ascii_digit) {
   259|  3.96k|            value = &value[1..];
   260|  3.96k|            with_after = true;
   261|  3.96k|        }
   262|  1.48k|    }
-  263|  2.25k|    if let Some(v) = value.strip_prefix(b"e") {
+  263|  2.24k|    if let Some(v) = value.strip_prefix(b"e") {
   264|  1.39k|        value = v;
   265|  1.39k|    } else if let Some(v) = value.strip_prefix(b"E") {
-  266|    823|        value = v;
-  267|    823|    } else {
+  266|    820|        value = v;
+  267|    820|    } else {
   268|     36|        return false;
   269|       |    }
   270|  2.21k|    if let Some(v) = value.strip_prefix(b"+") {
   271|     69|        value = v;
   272|  2.14k|    } else if let Some(v) = value.strip_prefix(b"-") {
   273|     66|        value = v;
-  274|  2.08k|    }
+  274|  2.07k|    }
   275|  2.21k|    (with_before || with_after) && !value.is_empty() && value.iter().all(u8::is_ascii_digit)
-  276|  2.25k|}
+  276|  2.24k|}
 
 _RINvMs4_NtCsg8uSglfjx6w_10sparesults5errorNtB6_11SyntaxError3msgNtNtCshJIxznpEM8j_5alloc6string6StringECslJpPQeq9aeN_13oxigraph_fuzz:
    86|    259|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
@@ -2140,9 +2140,9 @@ _RINvMs4_NtCsg8uSglfjx6w_10sparesults5errorNtB6_11SyntaxError3msgReECslJpPQeq9ae
    89|     54|        }
    90|     54|    }
 _RNvXs1_NtCsg8uSglfjx6w_10sparesults5errorNtB5_10ParseErrorINtNtCslATUeuPuGvJ_4core7convert4FromNtB5_11SyntaxErrorE4fromCslJpPQeq9aeN_13oxigraph_fuzz:
-   43|  1.53k|    fn from(error: SyntaxError) -> Self {
-   44|  1.53k|        Self::Syntax(error)
-   45|  1.53k|    }
+   43|  1.52k|    fn from(error: SyntaxError) -> Self {
+   44|  1.52k|        Self::Syntax(error)
+   45|  1.52k|    }
 _RNvXs0_NtCsg8uSglfjx6w_10sparesults5errorNtB5_10ParseErrorINtNtCslATUeuPuGvJ_4core7convert4FromNtNtNtCs9a1gyOJxq9I_3std2io5error5ErrorE4fromCslJpPQeq9aeN_13oxigraph_fuzz:
    36|     13|    fn from(error: io::Error) -> Self {
    37|     13|        Self::Io(error)
@@ -2159,8 +2159,8 @@ _RNvMs2_Csg8uSglfjx6w_10sparesultsNtB5_22QueryResultsSerializer11from_formatCslJ
 _RNCNvXs1_Csg8uSglfjx6w_10sparesultsINtB7_15SolutionsReaderRShENtNtNtNtCslATUeuPuGvJ_4core4iter6traits8iterator8Iterator4next0CslJpPQeq9aeN_13oxigraph_fuzz:
   321|  71.1k|            .map(|values| (Rc::clone(&self.variables), values).into()),
 _RINvMs_Csg8uSglfjx6w_10sparesultsNtB5_18QueryResultsParser12read_resultsRShECslJpPQeq9aeN_13oxigraph_fuzz:
-  193|  4.43k|    pub fn read_results<R: BufRead>(&self, reader: R) -> Result<QueryResultsReader<R>, ParseError> {
-  194|  4.43k|        Ok(match self.format {
+  193|  4.42k|    pub fn read_results<R: BufRead>(&self, reader: R) -> Result<QueryResultsReader<R>, ParseError> {
+  194|  4.42k|        Ok(match self.format {
   195|      0|            QueryResultsFormat::Xml => match XmlQueryResultsReader::read(reader)? {
   196|      0|                XmlQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
   197|       |                XmlQueryResultsReader::Solutions {
@@ -2182,18 +2182,18 @@ _RINvMs_Csg8uSglfjx6w_10sparesultsNtB5_18QueryResultsParser12read_resultsRShECsl
   213|      0|                }),
   214|       |            },
   215|      0|            QueryResultsFormat::Csv => return Err(SyntaxError::msg("CSV SPARQL results syntax is lossy and can't be parsed to a proper RDF representation").into()),
-  216|  4.43k|            QueryResultsFormat::Tsv => match TsvQueryResultsReader::read(reader)? {
+  216|  4.42k|            QueryResultsFormat::Tsv => match TsvQueryResultsReader::read(reader)? {
   217|      6|                TsvQueryResultsReader::Boolean(r) => QueryResultsReader::Boolean(r),
   218|       |                TsvQueryResultsReader::Solutions {
-  219|  4.25k|                    solutions,
-  220|  4.25k|                    variables,
-  221|  4.25k|                } => QueryResultsReader::Solutions(SolutionsReader {
-  222|  4.25k|                    variables: Rc::new(variables),
-  223|  4.25k|                    solutions: SolutionsReaderKind::Tsv(solutions),
-  224|  4.25k|                }),
+  219|  4.24k|                    solutions,
+  220|  4.24k|                    variables,
+  221|  4.24k|                } => QueryResultsReader::Solutions(SolutionsReader {
+  222|  4.24k|                    variables: Rc::new(variables),
+  223|  4.24k|                    solutions: SolutionsReaderKind::Tsv(solutions),
+  224|  4.24k|                }),
   225|       |            },
   226|       |        })
-  227|  4.43k|    }
+  227|  4.42k|    }
 _RNvMs3_Csg8uSglfjx6w_10sparesultsINtB5_15SolutionsWriterINtNtCshJIxznpEM8j_5alloc3vec3VechEE6finishCslJpPQeq9aeN_13oxigraph_fuzz:
   490|  1.44k|    pub fn finish(self) -> io::Result<W> {
   491|  1.44k|        match self.formatter {
@@ -2282,7 +2282,7 @@ _RNvXs0_NtCsg8uSglfjx6w_10sparesults8solutionRNtB5_13QuerySolutionNtNtNtNtCslATU
   138|  34.5k|    }
 _RNvXs9_NtCsg8uSglfjx6w_10sparesults8solutionNtB5_4IterNtNtNtNtCslATUeuPuGvJ_4core4iter6traits8iterator8Iterator4nextCslJpPQeq9aeN_13oxigraph_fuzz:
   229|  57.5k|    fn next(&mut self) -> Option<(&'a Variable, &'a Term)> {
-  230|  69.3k|        for (variable, value) in &mut self.inner {
+  230|  69.2k|        for (variable, value) in &mut self.inner {
   231|  34.7k|            if let Some(value) = value {
   232|  22.9k|                return Some((variable, value));
   233|  11.7k|            }
@@ -2298,11 +2298,11 @@ _RNCNvXsc_NtCsg8uSglfjx6w_10sparesults8solutionNtNtCsjBxrSotcyIg_5oxrdf8variable
 _RNvXs9_NtCsg8uSglfjx6w_10sparesults8solutionNtB5_4IterNtNtNtNtCslATUeuPuGvJ_4core4iter6traits8iterator8Iterator4nextB7_:
   229|   115k|    fn next(&mut self) -> Option<(&'a Variable, &'a Term)> {
   230|   138k|        for (variable, value) in &mut self.inner {
-  231|  69.5k|            if let Some(value) = value {
+  231|  69.4k|            if let Some(value) = value {
   232|  45.9k|                return Some((variable, value));
   233|  23.5k|            }
   234|       |        }
-  235|  69.1k|        None
+  235|  69.0k|        None
   236|   115k|    }
 _RNvXs6_NtCsg8uSglfjx6w_10sparesults8solutionNtB5_13QuerySolutionNtNtCslATUeuPuGvJ_4core3cmp9PartialEq2eq:
   189|  34.5k|    fn eq(&self, other: &Self) -> bool {
@@ -2319,15 +2319,15 @@ _RNvXs6_NtCsg8uSglfjx6w_10sparesults8solutionNtB5_13QuerySolutionNtNtCslATUeuPuG
   200|  34.5k|        true
   201|  34.5k|    }
 _RNvMNtCsg8uSglfjx6w_10sparesults8solutionNtB2_13QuerySolution4iterB4_:
-   86|  69.1k|    pub fn iter(&self) -> impl Iterator<Item = (&Variable, &Term)> {
-   87|  69.1k|        self.into_iter()
-   88|  69.1k|    }
+   86|  69.0k|    pub fn iter(&self) -> impl Iterator<Item = (&Variable, &Term)> {
+   87|  69.0k|        self.into_iter()
+   88|  69.0k|    }
 _RNvXs0_NtCsg8uSglfjx6w_10sparesults8solutionRNtB5_13QuerySolutionNtNtNtNtCslATUeuPuGvJ_4core4iter6traits7collect12IntoIterator9into_iterB7_:
-  134|  69.1k|    fn into_iter(self) -> Iter<'a> {
-  135|  69.1k|        Iter {
-  136|  69.1k|            inner: self.variables.iter().zip(&self.values),
-  137|  69.1k|        }
-  138|  69.1k|    }
+  134|  69.0k|    fn into_iter(self) -> Iter<'a> {
+  135|  69.0k|        Iter {
+  136|  69.0k|            inner: self.variables.iter().zip(&self.values),
+  137|  69.0k|        }
+  138|  69.0k|    }
 _RNvXsd_NtCsg8uSglfjx6w_10sparesults8solutionRNtNtCsjBxrSotcyIg_5oxrdf8variable8VariableNtB5_21VariableSolutionIndex5indexB7_:
   274|  45.9k|    fn index(self, solution: &QuerySolution) -> Option<usize> {
   275|  45.9k|        self.as_ref().index(solution)
