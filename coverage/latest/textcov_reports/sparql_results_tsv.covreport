@@ -119,9 +119,120 @@ _RINvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCs9nhK3FOW4
   423|   105k|        if mask.has_non_zero() {
   424|  85.1k|            Some(cur.add(mask_to_offset(mask)))
   425|       |        } else {
-  426|  20.8k|            None
+  426|  20.7k|            None
   427|       |        }
   428|   105k|    }
+_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newB8_:
+  111|   119k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
+  112|   119k|        One { s1: needle, v1: V::splat(needle) }
+  113|   119k|    }
+_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newB8_:
+  111|   119k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
+  112|   119k|        One { s1: needle, v1: V::splat(needle) }
+  113|   119k|    }
+_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawB8_:
+  143|  99.2k|    pub(crate) unsafe fn find_raw(
+  144|  99.2k|        &self,
+  145|  99.2k|        start: *const u8,
+  146|  99.2k|        end: *const u8,
+  147|  99.2k|    ) -> Option<*const u8> {
+  148|       |        // If we want to support vectors bigger than 256 bits, we probably
+  149|       |        // need to move up to using a u64 for the masks used below. Currently
+  150|       |        // they are 32 bits, which means we're SOL for vectors that need masks
+  151|       |        // bigger than 32 bits. Overall unclear until there's a use case.
+  152|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+  153|       |
+  154|  99.2k|        let topos = V::Mask::first_offset;
+  155|  99.2k|        let len = end.distance(start);
+  156|       |        debug_assert!(
+  157|      0|            len >= V::BYTES,
+  158|      0|            "haystack has length {}, but must be at least {}",
+  159|       |            len,
+  160|       |            V::BYTES
+  161|       |        );
+  162|       |
+  163|       |        // Search a possibly unaligned chunk at `start`. This covers any part
+  164|       |        // of the haystack prior to where aligned loads can start.
+  165|  99.2k|        if let Some(cur) = self.search_chunk(start, topos) {
+  166|  82.7k|            return Some(cur);
+  167|  16.5k|        }
+  168|  16.5k|        // Set `cur` to the first V-aligned pointer greater than `start`.
+  169|  16.5k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+  170|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+  171|  16.5k|        if len >= Self::LOOP_SIZE {
+  172|  63.5k|            while cur <= end.sub(Self::LOOP_SIZE) {
+  173|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  174|       |
+  175|  62.3k|                let a = V::load_aligned(cur);
+  176|  62.3k|                let b = V::load_aligned(cur.add(1 * V::BYTES));
+  177|  62.3k|                let c = V::load_aligned(cur.add(2 * V::BYTES));
+  178|  62.3k|                let d = V::load_aligned(cur.add(3 * V::BYTES));
+  179|  62.3k|                let eqa = self.v1.cmpeq(a);
+  180|  62.3k|                let eqb = self.v1.cmpeq(b);
+  181|  62.3k|                let eqc = self.v1.cmpeq(c);
+  182|  62.3k|                let eqd = self.v1.cmpeq(d);
+  183|  62.3k|                let or1 = eqa.or(eqb);
+  184|  62.3k|                let or2 = eqc.or(eqd);
+  185|  62.3k|                let or3 = or1.or(or2);
+  186|  62.3k|                if or3.movemask_will_have_non_zero() {
+  187|  12.7k|                    let mask = eqa.movemask();
+  188|  12.7k|                    if mask.has_non_zero() {
+  189|  6.22k|                        return Some(cur.add(topos(mask)));
+  190|  6.53k|                    }
+  191|  6.53k|
+  192|  6.53k|                    let mask = eqb.movemask();
+  193|  6.53k|                    if mask.has_non_zero() {
+  194|  5.71k|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+  195|    818|                    }
+  196|    818|
+  197|    818|                    let mask = eqc.movemask();
+  198|    818|                    if mask.has_non_zero() {
+  199|    333|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+  200|    485|                    }
+  201|    485|
+  202|    485|                    let mask = eqd.movemask();
+  203|      0|                    debug_assert!(mask.has_non_zero());
+  204|    485|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+  205|  49.6k|                }
+  206|  49.6k|                cur = cur.add(Self::LOOP_SIZE);
+  207|       |            }
+  208|  2.62k|        }
+  209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
+  210|       |        // loads here, but I believe we are guaranteed that they are aligned
+  211|       |        // since `cur` is aligned.
+  212|  6.75k|        while cur <= end.sub(V::BYTES) {
+  213|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
+  214|  4.55k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  215|  1.57k|                return Some(cur);
+  216|  2.98k|            }
+  217|  2.98k|            cur = cur.add(V::BYTES);
+  218|       |        }
+  219|       |        // Finally handle any remaining bytes less than the size of V. In this
+  220|       |        // case, our pointer may indeed be unaligned and the load may overlap
+  221|       |        // with the previous one. But that's okay since we know the previous
+  222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
+  223|  2.19k|        if cur < end {
+  224|      0|            debug_assert!(end.distance(cur) < V::BYTES);
+  225|  2.05k|            cur = cur.sub(V::BYTES - end.distance(cur));
+  226|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  227|  2.05k|            return self.search_chunk(cur, topos);
+  228|    134|        }
+  229|    134|        None
+  230|  99.2k|    }
+_RINvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
+  416|  6.40k|    unsafe fn search_chunk(
+  417|  6.40k|        &self,
+  418|  6.40k|        cur: *const u8,
+  419|  6.40k|        mask_to_offset: impl Fn(V::Mask) -> usize,
+  420|  6.40k|    ) -> Option<*const u8> {
+  421|  6.40k|        let chunk = V::load_unaligned(cur);
+  422|  6.40k|        let mask = self.v1.cmpeq(chunk).movemask();
+  423|  6.40k|        if mask.has_non_zero() {
+  424|  4.33k|            Some(cur.add(mask_to_offset(mask)))
+  425|       |        } else {
+  426|  2.07k|            None
+  427|       |        }
+  428|  6.40k|    }
 _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE8find_rawB8_:
   143|  5.06k|    pub(crate) unsafe fn find_raw(
   144|  5.06k|        &self,
@@ -194,10 +305,10 @@ _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46
   211|       |        // since `cur` is aligned.
   212|  1.47k|        while cur <= end.sub(V::BYTES) {
   213|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  214|    402|            if let Some(cur) = self.search_chunk(cur, topos) {
+  214|    401|            if let Some(cur) = self.search_chunk(cur, topos) {
   215|     89|                return Some(cur);
-  216|    313|            }
-  217|    313|            cur = cur.add(V::BYTES);
+  216|    312|            }
+  217|    312|            cur = cur.add(V::BYTES);
   218|       |        }
   219|       |        // Finally handle any remaining bytes less than the size of V. In this
   220|       |        // case, our pointer may indeed be unaligned and the load may overlap
@@ -205,123 +316,12 @@ _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46
   222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
   223|  1.07k|        if cur < end {
   224|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  225|    942|            cur = cur.sub(V::BYTES - end.distance(cur));
+  225|    941|            cur = cur.sub(V::BYTES - end.distance(cur));
   226|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  227|    942|            return self.search_chunk(cur, topos);
-  228|    129|        }
-  229|    129|        None
+  227|    941|            return self.search_chunk(cur, topos);
+  228|    130|        }
+  229|    130|        None
   230|  5.06k|    }
-_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newB8_:
-  111|   119k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
-  112|   119k|        One { s1: needle, v1: V::splat(needle) }
-  113|   119k|    }
-_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawB8_:
-  143|  99.2k|    pub(crate) unsafe fn find_raw(
-  144|  99.2k|        &self,
-  145|  99.2k|        start: *const u8,
-  146|  99.2k|        end: *const u8,
-  147|  99.2k|    ) -> Option<*const u8> {
-  148|       |        // If we want to support vectors bigger than 256 bits, we probably
-  149|       |        // need to move up to using a u64 for the masks used below. Currently
-  150|       |        // they are 32 bits, which means we're SOL for vectors that need masks
-  151|       |        // bigger than 32 bits. Overall unclear until there's a use case.
-  152|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
-  153|       |
-  154|  99.2k|        let topos = V::Mask::first_offset;
-  155|  99.2k|        let len = end.distance(start);
-  156|       |        debug_assert!(
-  157|      0|            len >= V::BYTES,
-  158|      0|            "haystack has length {}, but must be at least {}",
-  159|       |            len,
-  160|       |            V::BYTES
-  161|       |        );
-  162|       |
-  163|       |        // Search a possibly unaligned chunk at `start`. This covers any part
-  164|       |        // of the haystack prior to where aligned loads can start.
-  165|  99.2k|        if let Some(cur) = self.search_chunk(start, topos) {
-  166|  82.7k|            return Some(cur);
-  167|  16.5k|        }
-  168|  16.5k|        // Set `cur` to the first V-aligned pointer greater than `start`.
-  169|  16.5k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
-  170|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-  171|  16.5k|        if len >= Self::LOOP_SIZE {
-  172|  63.5k|            while cur <= end.sub(Self::LOOP_SIZE) {
-  173|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
-  174|       |
-  175|  62.3k|                let a = V::load_aligned(cur);
-  176|  62.3k|                let b = V::load_aligned(cur.add(1 * V::BYTES));
-  177|  62.3k|                let c = V::load_aligned(cur.add(2 * V::BYTES));
-  178|  62.3k|                let d = V::load_aligned(cur.add(3 * V::BYTES));
-  179|  62.3k|                let eqa = self.v1.cmpeq(a);
-  180|  62.3k|                let eqb = self.v1.cmpeq(b);
-  181|  62.3k|                let eqc = self.v1.cmpeq(c);
-  182|  62.3k|                let eqd = self.v1.cmpeq(d);
-  183|  62.3k|                let or1 = eqa.or(eqb);
-  184|  62.3k|                let or2 = eqc.or(eqd);
-  185|  62.3k|                let or3 = or1.or(or2);
-  186|  62.3k|                if or3.movemask_will_have_non_zero() {
-  187|  12.7k|                    let mask = eqa.movemask();
-  188|  12.7k|                    if mask.has_non_zero() {
-  189|  6.36k|                        return Some(cur.add(topos(mask)));
-  190|  6.41k|                    }
-  191|  6.41k|
-  192|  6.41k|                    let mask = eqb.movemask();
-  193|  6.41k|                    if mask.has_non_zero() {
-  194|  5.62k|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
-  195|    794|                    }
-  196|    794|
-  197|    794|                    let mask = eqc.movemask();
-  198|    794|                    if mask.has_non_zero() {
-  199|    288|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
-  200|    506|                    }
-  201|    506|
-  202|    506|                    let mask = eqd.movemask();
-  203|      0|                    debug_assert!(mask.has_non_zero());
-  204|    506|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
-  205|  49.6k|                }
-  206|  49.6k|                cur = cur.add(Self::LOOP_SIZE);
-  207|       |            }
-  208|  2.62k|        }
-  209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
-  210|       |        // loads here, but I believe we are guaranteed that they are aligned
-  211|       |        // since `cur` is aligned.
-  212|  6.87k|        while cur <= end.sub(V::BYTES) {
-  213|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  214|  4.66k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  215|  1.54k|                return Some(cur);
-  216|  3.12k|            }
-  217|  3.12k|            cur = cur.add(V::BYTES);
-  218|       |        }
-  219|       |        // Finally handle any remaining bytes less than the size of V. In this
-  220|       |        // case, our pointer may indeed be unaligned and the load may overlap
-  221|       |        // with the previous one. But that's okay since we know the previous
-  222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  223|  2.20k|        if cur < end {
-  224|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  225|  2.02k|            cur = cur.sub(V::BYTES - end.distance(cur));
-  226|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  227|  2.02k|            return self.search_chunk(cur, topos);
-  228|    175|        }
-  229|    175|        None
-  230|  99.2k|    }
-_RINvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
-  416|  6.40k|    unsafe fn search_chunk(
-  417|  6.40k|        &self,
-  418|  6.40k|        cur: *const u8,
-  419|  6.40k|        mask_to_offset: impl Fn(V::Mask) -> usize,
-  420|  6.40k|    ) -> Option<*const u8> {
-  421|  6.40k|        let chunk = V::load_unaligned(cur);
-  422|  6.40k|        let mask = self.v1.cmpeq(chunk).movemask();
-  423|  6.40k|        if mask.has_non_zero() {
-  424|  4.32k|            Some(cur.add(mask_to_offset(mask)))
-  425|       |        } else {
-  426|  2.07k|            None
-  427|       |        }
-  428|  6.40k|    }
-_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newB8_:
-  111|   119k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
-  112|   119k|        One { s1: needle, v1: V::splat(needle) }
-  113|   119k|    }
 _RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMNtNtNtB6_6x86_644avx26memchrNtB1a_3One8find_raw0EB8_:
  1148|  6.75k|pub(crate) unsafe fn fwd_byte_by_byte<F: Fn(u8) -> bool>(
  1149|  6.75k|    start: *const u8,
@@ -333,8 +333,8 @@ _RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMNtNtN
  1155|  31.3k|    while ptr < end {
  1156|  29.3k|        if confirm(*ptr) {
  1157|  4.71k|            return Some(ptr);
- 1158|  24.6k|        }
- 1159|  24.6k|        ptr = ptr.offset(1);
+ 1158|  24.5k|        }
+ 1159|  24.5k|        ptr = ptr.offset(1);
  1160|       |    }
  1161|  2.04k|    None
  1162|  6.75k|}
@@ -581,10 +581,6 @@ _RNvMNtCsezyNti1ZN2c_6memchr6vectorNtB2_16SensibleMoveMask14get_for_offset:
   135|   102k|            self.0
   136|   102k|        }
   137|   102k|    }
-_RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector5cmpeq:
-  230|  6.40k|        unsafe fn cmpeq(self, vector2: Self) -> __m128i {
-  231|  6.40k|            _mm_cmpeq_epi8(self, vector2)
-  232|  6.40k|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector8movemask:
   225|  6.40k|        unsafe fn movemask(self) -> SensibleMoveMask {
   226|  6.40k|            SensibleMoveMask(_mm_movemask_epi8(self) as u32)
@@ -593,6 +589,10 @@ _RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask12has_
   148|   194k|    fn has_non_zero(self) -> bool {
   149|   194k|        self.0 != 0
   150|   194k|    }
+_RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector5cmpeq:
+  230|  6.40k|        unsafe fn cmpeq(self, vector2: Self) -> __m128i {
+  231|  6.40k|            _mm_cmpeq_epi8(self, vector2)
+  232|  6.40k|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector8movemask:
   275|   188k|        unsafe fn movemask(self) -> SensibleMoveMask {
   276|   188k|            SensibleMoveMask(_mm256_movemask_epi8(self) as u32)
@@ -1025,10 +1025,10 @@ _RNvMs10_CsbOXESBDtkxG_5oxiriNtB6_11ParserInput4nextCsaAh6yFmIely_5oxrdf:
  1147|       |        }
  1148|   951k|    }
 _RNvCsbOXESBDtkxG_5oxiri23is_url_query_code_pointCsaAh6yFmIely_5oxrdf:
- 1629|  7.76k|fn is_url_query_code_point(c: char) -> bool {
- 1630|  7.76k|    is_url_code_point(c)
+ 1629|  7.75k|fn is_url_query_code_point(c: char) -> bool {
+ 1630|  7.75k|    is_url_code_point(c)
  1631|    272|        || matches!(c, '\u{E000}'..='\u{F8FF}' | '\u{F0000}'..='\u{FFFFD}' | '\u{100000}'..='\u{10FFFD}')
- 1632|  7.76k|}
+ 1632|  7.75k|}
 _RNvMs10_CsbOXESBDtkxG_5oxiriNtB6_11ParserInput5frontCsaAh6yFmIely_5oxrdf:
  1151|  37.0k|    fn front(&self) -> Option<char> {
  1152|  37.0k|        self.value.clone().next()
@@ -1055,9 +1055,9 @@ _RNvMs11_CsbOXESBDtkxG_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E10parse
  1482|  34.4k|                    }
  1483|       |
  1484|  50.7k|                    if c == Some('?') {
- 1485|    708|                        self.output_positions.path_end = self.output.len();
- 1486|    708|                        self.output.push('?');
- 1487|    708|                        return self.parse_query();
+ 1485|    706|                        self.output_positions.path_end = self.output.len();
+ 1486|    706|                        self.output.push('?');
+ 1487|    706|                        return self.parse_query();
  1488|  50.0k|                    } else if c == Some('#') {
  1489|  15.7k|                        self.output_positions.path_end = self.output.len();
  1490|  15.7k|                        self.output_positions.query_end = self.output.len();
@@ -1347,29 +1347,29 @@ _RNvMsp_CsbOXESBDtkxG_5oxiriINtB5_3IriNtNtCsjOdcKtOMjJI_5alloc6string6StringE10i
   666|  36.6k|        self.0.into_inner()
   667|  36.6k|    }
 _RNvMs11_CsbOXESBDtkxG_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E33read_url_query_codepoint_or_echarCsaAh6yFmIely_5oxrdf:
- 1546|  7.76k|    fn read_url_query_codepoint_or_echar(&mut self, c: char) -> Result<(), IriParseError> {
- 1547|  7.76k|        if UNCHECKED || is_url_query_code_point(c) {
- 1548|  7.56k|            self.output.push(c);
- 1549|  7.56k|            Ok(())
+ 1546|  7.75k|    fn read_url_query_codepoint_or_echar(&mut self, c: char) -> Result<(), IriParseError> {
+ 1547|  7.75k|        if UNCHECKED || is_url_query_code_point(c) {
+ 1548|  7.54k|            self.output.push(c);
+ 1549|  7.54k|            Ok(())
  1550|    206|        } else if c == '%' {
  1551|    203|            self.read_echar()
  1552|       |        } else {
  1553|      3|            self.parse_error(IriParseErrorKind::InvalidIriCodePoint(c))
  1554|       |        }
- 1555|  7.76k|    }
+ 1555|  7.75k|    }
 _RNvMs11_CsbOXESBDtkxG_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E11parse_queryCsaAh6yFmIely_5oxrdf:
  1504|  1.01k|    fn parse_query(&mut self) -> Result<(), IriParseError> {
- 1505|  8.77k|        while let Some(c) = self.input.next() {
- 1506|  7.84k|            if c == '#' {
+ 1505|  8.76k|        while let Some(c) = self.input.next() {
+ 1506|  7.83k|            if c == '#' {
  1507|     77|                self.output_positions.query_end = self.output.len();
  1508|     77|                self.output.push('#');
  1509|     77|                return self.parse_fragment();
  1510|       |            } else {
- 1511|  7.76k|                self.read_url_query_codepoint_or_echar(c)?
+ 1511|  7.75k|                self.read_url_query_codepoint_or_echar(c)?
  1512|       |            }
  1513|       |        }
- 1514|    931|        self.output_positions.query_end = self.output.len();
- 1515|    931|        Ok(())
+ 1514|    929|        self.output_positions.query_end = self.output.len();
+ 1515|    929|        Ok(())
  1516|  1.01k|    }
 _RNvMs11_CsbOXESBDtkxG_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E18parse_scheme_startCsaAh6yFmIely_5oxrdf:
  1199|  37.0k|    fn parse_scheme_start(&mut self) -> Result<(), IriParseError> {
@@ -1430,9 +1430,9 @@ _RNvMs11_CsbOXESBDtkxG_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E10parse
  1400|       |            }
  1401|       |        } else {
  1402|       |            // Other host
- 1403|   173k|            loop {
- 1404|   173k|                let c = self.input.next();
- 1405|   173k|                match c {
+ 1403|   172k|            loop {
+ 1404|   172k|                let c = self.input.next();
+ 1405|   172k|                match c {
  1406|       |                    Some(':') => {
  1407|  1.15k|                        self.output.push(':');
  1408|  1.15k|                        return self.parse_port();
@@ -1523,22 +1523,22 @@ _RNCNvNtCscRK81dOKCuv_13oxigraph_fuzz13result_format18fuzz_result_format0B5_:
    25|  1.67k|                        .map_or_else(Vec::new, |s| s.variables().to_vec()),
 
 _RNvMs1_NtCsaAh6yFmIely_5oxrdf10blank_nodeNtB5_12BlankNodeRef6as_strCscRK81dOKCuv_13oxigraph_fuzz:
-  175|  8.74k|    pub const fn as_str(self) -> &'a str {
-  176|  8.74k|        match self.0 {
+  175|  8.73k|    pub const fn as_str(self) -> &'a str {
+  176|  8.73k|        match self.0 {
   177|  2.17k|            BlankNodeRefContent::Named(id) => id,
   178|  6.56k|            BlankNodeRefContent::Anonymous { str, .. } => str,
   179|       |        }
-  180|  8.74k|    }
+  180|  8.73k|    }
 _RNvMNtCsaAh6yFmIely_5oxrdf10blank_nodeNtB2_9BlankNode6as_refCscRK81dOKCuv_13oxigraph_fuzz:
-   87|  8.74k|    pub fn as_ref(&self) -> BlankNodeRef<'_> {
-   88|  8.74k|        BlankNodeRef(match &self.0 {
+   87|  8.73k|    pub fn as_ref(&self) -> BlankNodeRef<'_> {
+   88|  8.73k|        BlankNodeRef(match &self.0 {
    89|  2.17k|            BlankNodeContent::Named(id) => BlankNodeRefContent::Named(id.as_str()),
    90|  6.56k|            BlankNodeContent::Anonymous { id, str } => BlankNodeRefContent::Anonymous {
    91|  6.56k|                id: *id,
    92|  6.56k|                str: str.as_str(),
    93|  6.56k|            },
    94|       |        })
-   95|  8.74k|    }
+   95|  8.73k|    }
 _RNvMs7_NtCsaAh6yFmIely_5oxrdf10blank_nodeNtB5_5IdStr6as_strCscRK81dOKCuv_13oxigraph_fuzz:
   261|  6.56k|    fn as_str(&self) -> &str {
   262|  6.56k|        let len = self.0.iter().position(|x| x == &0).unwrap_or(32);
@@ -1616,7 +1616,7 @@ _RNvNtCsaAh6yFmIely_5oxrdf10blank_node30validate_blank_node_identifier:
   316|       |    }
   317|       |
   318|       |    // Could not end with a dot
-  319|  18.1k|    if id.ends_with('.') {
+  319|  18.0k|    if id.ends_with('.') {
   320|      5|        Err(BlankNodeIdParseError)
   321|       |    } else {
   322|  18.0k|        Ok(())
@@ -1629,7 +1629,7 @@ _RNvNtCsaAh6yFmIely_5oxrdf10blank_node13to_integer_idB3_:
   330|  18.0k|    if let None | Some(b'0') = digits.first() {
   331|  1.20k|        return None; // No empty string or leading zeros
   332|  16.8k|    }
-  333|   193k|    for digit in digits {
+  333|   192k|    for digit in digits {
   334|   179k|        value = value.checked_mul(16)?.checked_add(
   335|   179k|            match *digit {
   336|   179k|                b'0'..=b'9' => digit - b'0',
@@ -1966,22 +1966,22 @@ _RNvNtCsaAh6yFmIely_5oxrdf6parser12read_literal:
   274|  28.6k|        let input = s.as_bytes();
   275|  28.6k|        if input.is_empty() {
   276|     30|            return Err(TermParseError::msg("Empty term serialization"));
-  277|  28.6k|        }
+  277|  28.5k|        }
   278|       |
-  279|  28.6k|        let mut cursor = match input.first() {
+  279|  28.5k|        let mut cursor = match input.first() {
   280|  4.87k|            Some(b'+' | b'-') => 1,
   281|  23.7k|            _ => 0,
   282|       |        };
-  283|  28.6k|        let mut with_dot = false;
-  284|  28.6k|
-  285|  28.6k|        let mut count_before: usize = 0;
+  283|  28.5k|        let mut with_dot = false;
+  284|  28.5k|
+  285|  28.5k|        let mut count_before: usize = 0;
   286|  70.5k|        while cursor < input.len() && b'0' <= input[cursor] && input[cursor] <= b'9' {
   287|  41.9k|            count_before += 1;
   288|  41.9k|            cursor += 1;
   289|  41.9k|        }
   290|       |
-  291|  28.6k|        let mut count_after: usize = 0;
-  292|  28.6k|        if cursor < input.len() && input[cursor] == b'.' {
+  291|  28.5k|        let mut count_after: usize = 0;
+  292|  28.5k|        if cursor < input.len() && input[cursor] == b'.' {
   293|  4.68k|            with_dot = true;
   294|  4.68k|            cursor += 1;
   295|  12.8k|            while cursor < input.len() && b'0' <= input[cursor] && input[cursor] <= b'9' {
@@ -1990,7 +1990,7 @@ _RNvNtCsaAh6yFmIely_5oxrdf6parser12read_literal:
   298|  8.14k|            }
   299|  23.9k|        }
   300|       |
-  301|  28.6k|        if cursor < input.len() && (input[cursor] == b'e' || input[cursor] == b'E') {
+  301|  28.5k|        if cursor < input.len() && (input[cursor] == b'e' || input[cursor] == b'E') {
   302|  11.5k|            cursor += 1;
   303|  11.5k|            cursor += match input.get(cursor) {
   304|    214|                Some(b'+' | b'-') => 1,
@@ -2056,15 +2056,15 @@ _RNvNtCsaAh6yFmIely_5oxrdf6parser15read_blank_node:
   211|       |    }
   212|  18.1k|}
 _RNvNtCsaAh6yFmIely_5oxrdf6parser9read_term:
-  335|  94.6k|fn read_term(s: &str, number_of_recursive_calls: usize) -> Result<(Term, &str), TermParseError> {
-  336|  94.6k|    if number_of_recursive_calls == MAX_NUMBER_OF_NESTED_TRIPLES {
+  335|  94.5k|fn read_term(s: &str, number_of_recursive_calls: usize) -> Result<(Term, &str), TermParseError> {
+  336|  94.5k|    if number_of_recursive_calls == MAX_NUMBER_OF_NESTED_TRIPLES {
   337|      1|        return Err(TermParseError::msg(
   338|      1|            "Too many nested triples. The parser fails here to avoid a stack overflow.",
   339|      1|        ));
-  340|  94.6k|    }
-  341|  94.6k|    let s = s.trim();
+  340|  94.5k|    }
+  341|  94.5k|    let s = s.trim();
   342|       |    #[allow(unused_variables)]
-  343|  94.6k|    if let Some(remain) = s.strip_prefix("<<") {
+  343|  94.5k|    if let Some(remain) = s.strip_prefix("<<") {
   344|       |        #[cfg(feature = "rdf-star")]
   345|       |        {
   346|  14.2k|            let (subject, remain) = read_term(remain, number_of_recursive_calls + 1)?;
@@ -2110,7 +2110,7 @@ _RNvNtCsaAh6yFmIely_5oxrdf6parser9read_term:
   386|  52.6k|        let (term, remain) = read_literal(s)?;
   387|  52.2k|        Ok((term.into(), remain))
   388|       |    }
-  389|  94.6k|}
+  389|  94.5k|}
 
 _RNvXs14_NtCsaAh6yFmIely_5oxrdf6tripleNtB6_7TermRefINtNtCs9nhK3FOW46N_4core7convert4FromRNtB6_4TermE4fromCscRK81dOKCuv_13oxigraph_fuzz:
   751|  37.6k|    fn from(node: &'a Term) -> Self {
