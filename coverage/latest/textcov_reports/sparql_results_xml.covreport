@@ -1,42 +1,42 @@
 _RNvNvCskUUu0UHCiKd_18sparql_results_xml1__19___libfuzzer_sys_run:
-  241|  1.10k|            fn __libfuzzer_sys_run($bytes: &[u8]) {
-  242|  1.10k|                $body
-  243|  1.10k|            }
+  241|  1.11k|            fn __libfuzzer_sys_run($bytes: &[u8]) {
+  242|  1.11k|                $body
+  243|  1.11k|            }
 rust_fuzzer_test_input:
-  209|  1.10k|            pub extern "C" fn rust_fuzzer_test_input(bytes: &[u8]) -> i32 {
+  209|  1.11k|            pub extern "C" fn rust_fuzzer_test_input(bytes: &[u8]) -> i32 {
   210|       |                // When `RUST_LIBFUZZER_DEBUG_PATH` is set, write the debug
   211|       |                // formatting of the input to that file. This is only intended for
   212|       |                // `cargo fuzz`'s use!
   213|       |
   214|       |                // `RUST_LIBFUZZER_DEBUG_PATH` is set in initialization.
-  215|  1.10k|                if let Some(path) = $crate::RUST_LIBFUZZER_DEBUG_PATH.get() {
+  215|  1.11k|                if let Some(path) = $crate::RUST_LIBFUZZER_DEBUG_PATH.get() {
   216|       |                    use std::io::Write;
   217|      0|                    let mut file = std::fs::File::create(path)
   218|      0|                        .expect("failed to create `RUST_LIBFUZZER_DEBUG_PATH` file");
   219|      0|                    writeln!(&mut file, "{:?}", bytes)
   220|      0|                        .expect("failed to write to `RUST_LIBFUZZER_DEBUG_PATH` file");
   221|      0|                    return 0;
-  222|  1.10k|                }
-  223|  1.10k|
-  224|  1.10k|                __libfuzzer_sys_run(bytes);
-  225|  1.10k|                0
-  226|  1.10k|            }
+  222|  1.11k|                }
+  223|  1.11k|
+  224|  1.11k|                __libfuzzer_sys_run(bytes);
+  225|  1.11k|                0
+  226|  1.11k|            }
 LLVMFuzzerTestOneInput:
-   58|  1.10k|pub fn test_input_wrap(data: *const u8, size: usize) -> i32 {
-   59|  1.10k|    let test_input = ::std::panic::catch_unwind(|| unsafe {
+   58|  1.11k|pub fn test_input_wrap(data: *const u8, size: usize) -> i32 {
+   59|  1.11k|    let test_input = ::std::panic::catch_unwind(|| unsafe {
    60|       |        let data_slice = ::std::slice::from_raw_parts(data, size);
    61|       |        rust_fuzzer_test_input(data_slice)
-   62|  1.10k|    });
-   63|  1.10k|
-   64|  1.10k|    match test_input {
-   65|  1.10k|        Ok(i) => i,
+   62|  1.11k|    });
+   63|  1.11k|
+   64|  1.11k|    match test_input {
+   65|  1.11k|        Ok(i) => i,
    66|       |        Err(_) => {
    67|       |            // hopefully the custom panic hook will be called before and abort the
    68|       |            // process before the stack frames are unwinded.
    69|      0|            ::std::process::abort();
    70|       |        }
    71|       |    }
-   72|  1.10k|}
+   72|  1.11k|}
 LLVMFuzzerInitialize:
    79|      2|pub fn initialize(_argc: *const isize, _argv: *const *const *const u8) -> isize {
    80|      2|    // Registers a panic hook that aborts the process before unwinding.
@@ -63,16 +63,16 @@ LLVMFuzzerInitialize:
   101|      2|    0
   102|      2|}
 _RNCNvCs4JyNK9ak0xV_13libfuzzer_sys15test_input_wrap0B3_:
-   59|  1.10k|    let test_input = ::std::panic::catch_unwind(|| unsafe {
-   60|  1.10k|        let data_slice = ::std::slice::from_raw_parts(data, size);
-   61|  1.10k|        rust_fuzzer_test_input(data_slice)
-   62|  1.10k|    });
+   59|  1.11k|    let test_input = ::std::panic::catch_unwind(|| unsafe {
+   60|  1.11k|        let data_slice = ::std::slice::from_raw_parts(data, size);
+   61|  1.11k|        rust_fuzzer_test_input(data_slice)
+   62|  1.11k|    });
 
 _RINvMs3_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrNtB6_4Iter4nextNCNvXs_NtBc_6memchrNtB1d_6MemchrNtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0ECscEMhoEbPSQt_13oxigraph_fuzz:
- 1044|  25.6k|    pub(crate) unsafe fn next(
- 1045|  25.6k|        &mut self,
- 1046|  25.6k|        mut find_raw: impl FnMut(*const u8, *const u8) -> Option<*const u8>,
- 1047|  25.6k|    ) -> Option<usize> {
+ 1044|  26.2k|    pub(crate) unsafe fn next(
+ 1045|  26.2k|        &mut self,
+ 1046|  26.2k|        mut find_raw: impl FnMut(*const u8, *const u8) -> Option<*const u8>,
+ 1047|  26.2k|    ) -> Option<usize> {
  1048|       |        // SAFETY: Pointers are derived directly from the same &[u8] haystack.
  1049|       |        // We only ever modify start/end corresponding to a matching offset
  1050|       |        // found between start and end. Thus all changes to start/end maintain
@@ -81,20 +81,20 @@ _RINvMs3_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrNtB6_4Iter4nextNCNvXs_Nt
  1053|       |        // The only other assumption we rely on is that the pointer returned
  1054|       |        // by `find_raw` satisfies `self.start <= found < self.end`, and that
  1055|       |        // safety contract is forwarded to the caller.
- 1056|  25.6k|        let found = find_raw(self.start, self.end)?;
- 1057|  25.4k|        let result = found.distance(self.original_start);
- 1058|  25.4k|        self.start = found.add(1);
- 1059|  25.4k|        Some(result)
- 1060|  25.6k|    }
+ 1056|  26.2k|        let found = find_raw(self.start, self.end)?;
+ 1057|  26.0k|        let result = found.distance(self.original_start);
+ 1058|  26.0k|        self.start = found.add(1);
+ 1059|  26.0k|        Some(result)
+ 1060|  26.2k|    }
 _RNvMs3_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrNtB5_4Iter3new:
- 1027|  20.5k|    pub(crate) fn new(haystack: &'h [u8]) -> Iter<'h> {
- 1028|  20.5k|        Iter {
- 1029|  20.5k|            original_start: haystack.as_ptr(),
- 1030|  20.5k|            start: haystack.as_ptr(),
- 1031|  20.5k|            end: haystack.as_ptr().wrapping_add(haystack.len()),
- 1032|  20.5k|            haystack: core::marker::PhantomData,
- 1033|  20.5k|        }
- 1034|  20.5k|    }
+ 1027|  20.9k|    pub(crate) fn new(haystack: &'h [u8]) -> Iter<'h> {
+ 1028|  20.9k|        Iter {
+ 1029|  20.9k|            original_start: haystack.as_ptr(),
+ 1030|  20.9k|            start: haystack.as_ptr(),
+ 1031|  20.9k|            end: haystack.as_ptr().wrapping_add(haystack.len()),
+ 1032|  20.9k|            haystack: core::marker::PhantomData,
+ 1033|  20.9k|        }
+ 1034|  20.9k|    }
 _RINvMs3_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrNtB6_4Iter4nextNCNvXs7_NtBc_6memchrNtB1e_7Memchr3NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0ECscEMhoEbPSQt_13oxigraph_fuzz:
  1044|  1.96k|    pub(crate) unsafe fn next(
  1045|  1.96k|        &mut self,
@@ -140,10 +140,10 @@ _RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr21search_slice_with_rawNCNvN
  1135|      3|    Some(found.distance(start))
  1136|     95|}
 _RINvMs3_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrNtB6_4Iter4nextNCNvXs3_NtBc_6memchrNtB1e_7Memchr2NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0ECsdBczmAo6fNM_9quick_xml:
- 1044|  1.24M|    pub(crate) unsafe fn next(
- 1045|  1.24M|        &mut self,
- 1046|  1.24M|        mut find_raw: impl FnMut(*const u8, *const u8) -> Option<*const u8>,
- 1047|  1.24M|    ) -> Option<usize> {
+ 1044|  1.29M|    pub(crate) unsafe fn next(
+ 1045|  1.29M|        &mut self,
+ 1046|  1.29M|        mut find_raw: impl FnMut(*const u8, *const u8) -> Option<*const u8>,
+ 1047|  1.29M|    ) -> Option<usize> {
  1048|       |        // SAFETY: Pointers are derived directly from the same &[u8] haystack.
  1049|       |        // We only ever modify start/end corresponding to a matching offset
  1050|       |        // found between start and end. Thus all changes to start/end maintain
@@ -152,29 +152,491 @@ _RINvMs3_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrNtB6_4Iter4nextNCNvXs3_N
  1053|       |        // The only other assumption we rely on is that the pointer returned
  1054|       |        // by `find_raw` satisfies `self.start <= found < self.end`, and that
  1055|       |        // safety contract is forwarded to the caller.
- 1056|  1.24M|        let found = find_raw(self.start, self.end)?;
- 1057|  1.23M|        let result = found.distance(self.original_start);
- 1058|  1.23M|        self.start = found.add(1);
- 1059|  1.23M|        Some(result)
- 1060|  1.24M|    }
+ 1056|  1.29M|        let found = find_raw(self.start, self.end)?;
+ 1057|  1.28M|        let result = found.distance(self.original_start);
+ 1058|  1.28M|        self.start = found.add(1);
+ 1059|  1.28M|        Some(result)
+ 1060|  1.29M|    }
 _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle1B8_:
-  117|  5.24k|    pub(crate) fn needle1(&self) -> u8 {
-  118|  5.24k|        self.s1
-  119|  5.24k|    }
+  117|  5.27k|    pub(crate) fn needle1(&self) -> u8 {
+  118|  5.27k|        self.s1
+  119|  5.27k|    }
+_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawBb_:
+  765|  1.31k|    pub(crate) unsafe fn find_raw(
+  766|  1.31k|        &self,
+  767|  1.31k|        start: *const u8,
+  768|  1.31k|        end: *const u8,
+  769|  1.31k|    ) -> Option<*const u8> {
+  770|       |        // If we want to support vectors bigger than 256 bits, we probably
+  771|       |        // need to move up to using a u64 for the masks used below. Currently
+  772|       |        // they are 32 bits, which means we're SOL for vectors that need masks
+  773|       |        // bigger than 32 bits. Overall unclear until there's a use case.
+  774|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+  775|       |
+  776|  1.31k|        let topos = V::Mask::first_offset;
+  777|  1.31k|        let len = end.distance(start);
+  778|       |        debug_assert!(
+  779|      0|            len >= V::BYTES,
+  780|      0|            "haystack has length {}, but must be at least {}",
+  781|       |            len,
+  782|       |            V::BYTES
+  783|       |        );
+  784|       |
+  785|       |        // Search a possibly unaligned chunk at `start`. This covers any part
+  786|       |        // of the haystack prior to where aligned loads can start.
+  787|  1.31k|        if let Some(cur) = self.search_chunk(start, topos) {
+  788|  1.07k|            return Some(cur);
+  789|    243|        }
+  790|    243|        // Set `cur` to the first V-aligned pointer greater than `start`.
+  791|    243|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+  792|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+  793|    243|        if len >= Self::LOOP_SIZE {
+  794|    328|            while cur <= end.sub(Self::LOOP_SIZE) {
+  795|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  796|       |
+  797|    315|                let a = V::load_aligned(cur);
+  798|    315|                let b = V::load_aligned(cur.add(V::BYTES));
+  799|    315|                let eqa1 = self.v1.cmpeq(a);
+  800|    315|                let eqb1 = self.v1.cmpeq(b);
+  801|    315|                let eqa2 = self.v2.cmpeq(a);
+  802|    315|                let eqb2 = self.v2.cmpeq(b);
+  803|    315|                let eqa3 = self.v3.cmpeq(a);
+  804|    315|                let eqb3 = self.v3.cmpeq(b);
+  805|    315|                let or1 = eqa1.or(eqb1);
+  806|    315|                let or2 = eqa2.or(eqb2);
+  807|    315|                let or3 = eqa3.or(eqb3);
+  808|    315|                let or4 = or1.or(or2);
+  809|    315|                let or5 = or3.or(or4);
+  810|    315|                if or5.movemask_will_have_non_zero() {
+  811|    224|                    let mask = eqa1
+  812|    224|                        .movemask()
+  813|    224|                        .or(eqa2.movemask())
+  814|    224|                        .or(eqa3.movemask());
+  815|    224|                    if mask.has_non_zero() {
+  816|    151|                        return Some(cur.add(topos(mask)));
+  817|     73|                    }
+  818|     73|
+  819|     73|                    let mask = eqb1
+  820|     73|                        .movemask()
+  821|     73|                        .or(eqb2.movemask())
+  822|     73|                        .or(eqb3.movemask());
+  823|      0|                    debug_assert!(mask.has_non_zero());
+  824|     73|                    return Some(cur.add(V::BYTES).add(topos(mask)));
+  825|     91|                }
+  826|     91|                cur = cur.add(Self::LOOP_SIZE);
+  827|       |            }
+  828|      6|        }
+  829|       |        // Handle any leftovers after the aligned loop above. We use unaligned
+  830|       |        // loads here, but I believe we are guaranteed that they are aligned
+  831|       |        // since `cur` is aligned.
+  832|     25|        while cur <= end.sub(V::BYTES) {
+  833|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
+  834|      8|            if let Some(cur) = self.search_chunk(cur, topos) {
+  835|      2|                return Some(cur);
+  836|      6|            }
+  837|      6|            cur = cur.add(V::BYTES);
+  838|       |        }
+  839|       |        // Finally handle any remaining bytes less than the size of V. In this
+  840|       |        // case, our pointer may indeed be unaligned and the load may overlap
+  841|       |        // with the previous one. But that's okay since we know the previous
+  842|       |        // load didn't lead to a match (otherwise we wouldn't be here).
+  843|     17|        if cur < end {
+  844|      0|            debug_assert!(end.distance(cur) < V::BYTES);
+  845|     11|            cur = cur.sub(V::BYTES - end.distance(cur));
+  846|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  847|     11|            return self.search_chunk(cur, topos);
+  848|      6|        }
+  849|      6|        None
+  850|  1.31k|    }
+_RINvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtBb_6vector16SensibleMoveMaskNtB26_8MoveMask12first_offsetEBb_:
+  670|  58.7k|    unsafe fn search_chunk(
+  671|  58.7k|        &self,
+  672|  58.7k|        cur: *const u8,
+  673|  58.7k|        mask_to_offset: impl Fn(V::Mask) -> usize,
+  674|  58.7k|    ) -> Option<*const u8> {
+  675|  58.7k|        let chunk = V::load_unaligned(cur);
+  676|  58.7k|        let eq1 = self.v1.cmpeq(chunk);
+  677|  58.7k|        let eq2 = self.v2.cmpeq(chunk);
+  678|  58.7k|        let mask = eq1.or(eq2).movemask();
+  679|  58.7k|        if mask.has_non_zero() {
+  680|  55.3k|            let mask1 = eq1.movemask();
+  681|  55.3k|            let mask2 = eq2.movemask();
+  682|  55.3k|            Some(cur.add(mask_to_offset(mask1.or(mask2))))
+  683|       |        } else {
+  684|  3.48k|            None
+  685|       |        }
+  686|  58.7k|    }
+_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newB8_:
+  111|  30.6k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
+  112|  30.6k|        One { s1: needle, v1: V::splat(needle) }
+  113|  30.6k|    }
+_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle2Ba_:
+  467|  88.4k|    pub(crate) fn needle2(&self) -> u8 {
+  468|  88.4k|        self.s2
+  469|  88.4k|    }
+_RINvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE12search_chunkNvYNtNtBb_6vector16SensibleMoveMaskNtB26_8MoveMask12first_offsetEBb_:
+  670|  1.16M|    unsafe fn search_chunk(
+  671|  1.16M|        &self,
+  672|  1.16M|        cur: *const u8,
+  673|  1.16M|        mask_to_offset: impl Fn(V::Mask) -> usize,
+  674|  1.16M|    ) -> Option<*const u8> {
+  675|  1.16M|        let chunk = V::load_unaligned(cur);
+  676|  1.16M|        let eq1 = self.v1.cmpeq(chunk);
+  677|  1.16M|        let eq2 = self.v2.cmpeq(chunk);
+  678|  1.16M|        let mask = eq1.or(eq2).movemask();
+  679|  1.16M|        if mask.has_non_zero() {
+  680|  1.13M|            let mask1 = eq1.movemask();
+  681|  1.13M|            let mask2 = eq2.movemask();
+  682|  1.13M|            Some(cur.add(mask_to_offset(mask1.or(mask2))))
+  683|       |        } else {
+  684|  20.7k|            None
+  685|       |        }
+  686|  1.16M|    }
+_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newB8_:
+  111|  30.6k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
+  112|  30.6k|        One { s1: needle, v1: V::splat(needle) }
+  113|  30.6k|    }
+_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawBa_:
+  493|  1.15M|    pub(crate) unsafe fn find_raw(
+  494|  1.15M|        &self,
+  495|  1.15M|        start: *const u8,
+  496|  1.15M|        end: *const u8,
+  497|  1.15M|    ) -> Option<*const u8> {
+  498|       |        // If we want to support vectors bigger than 256 bits, we probably
+  499|       |        // need to move up to using a u64 for the masks used below. Currently
+  500|       |        // they are 32 bits, which means we're SOL for vectors that need masks
+  501|       |        // bigger than 32 bits. Overall unclear until there's a use case.
+  502|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+  503|       |
+  504|  1.15M|        let topos = V::Mask::first_offset;
+  505|  1.15M|        let len = end.distance(start);
+  506|       |        debug_assert!(
+  507|      0|            len >= V::BYTES,
+  508|      0|            "haystack has length {}, but must be at least {}",
+  509|       |            len,
+  510|       |            V::BYTES
+  511|       |        );
+  512|       |
+  513|       |        // Search a possibly unaligned chunk at `start`. This covers any part
+  514|       |        // of the haystack prior to where aligned loads can start.
+  515|  1.15M|        if let Some(cur) = self.search_chunk(start, topos) {
+  516|  1.13M|            return Some(cur);
+  517|  20.0k|        }
+  518|  20.0k|        // Set `cur` to the first V-aligned pointer greater than `start`.
+  519|  20.0k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+  520|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+  521|  20.0k|        if len >= Self::LOOP_SIZE {
+  522|  18.7k|            while cur <= end.sub(Self::LOOP_SIZE) {
+  523|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  524|       |
+  525|  17.4k|                let a = V::load_aligned(cur);
+  526|  17.4k|                let b = V::load_aligned(cur.add(V::BYTES));
+  527|  17.4k|                let eqa1 = self.v1.cmpeq(a);
+  528|  17.4k|                let eqb1 = self.v1.cmpeq(b);
+  529|  17.4k|                let eqa2 = self.v2.cmpeq(a);
+  530|  17.4k|                let eqb2 = self.v2.cmpeq(b);
+  531|  17.4k|                let or1 = eqa1.or(eqb1);
+  532|  17.4k|                let or2 = eqa2.or(eqb2);
+  533|  17.4k|                let or3 = or1.or(or2);
+  534|  17.4k|                if or3.movemask_will_have_non_zero() {
+  535|  16.3k|                    let mask = eqa1.movemask().or(eqa2.movemask());
+  536|  16.3k|                    if mask.has_non_zero() {
+  537|  15.4k|                        return Some(cur.add(topos(mask)));
+  538|    965|                    }
+  539|    965|
+  540|    965|                    let mask = eqb1.movemask().or(eqb2.movemask());
+  541|      0|                    debug_assert!(mask.has_non_zero());
+  542|    965|                    return Some(cur.add(V::BYTES).add(topos(mask)));
+  543|  1.09k|                }
+  544|  1.09k|                cur = cur.add(Self::LOOP_SIZE);
+  545|       |            }
+  546|  2.38k|        }
+  547|       |        // Handle any leftovers after the aligned loop above. We use unaligned
+  548|       |        // loads here, but I believe we are guaranteed that they are aligned
+  549|       |        // since `cur` is aligned.
+  550|  3.82k|        while cur <= end.sub(V::BYTES) {
+  551|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
+  552|  1.73k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  553|  1.58k|                return Some(cur);
+  554|    149|            }
+  555|    149|            cur = cur.add(V::BYTES);
+  556|       |        }
+  557|       |        // Finally handle any remaining bytes less than the size of V. In this
+  558|       |        // case, our pointer may indeed be unaligned and the load may overlap
+  559|       |        // with the previous one. But that's okay since we know the previous
+  560|       |        // load didn't lead to a match (otherwise we wouldn't be here).
+  561|  2.09k|        if cur < end {
+  562|      0|            debug_assert!(end.distance(cur) < V::BYTES);
+  563|  2.06k|            cur = cur.sub(V::BYTES - end.distance(cur));
+  564|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  565|  2.06k|            return self.search_chunk(cur, topos);
+  566|     38|        }
+  567|     38|        None
+  568|  1.15M|    }
+_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newBb_:
+  710|  1.96k|    pub(crate) unsafe fn new(
+  711|  1.96k|        needle1: u8,
+  712|  1.96k|        needle2: u8,
+  713|  1.96k|        needle3: u8,
+  714|  1.96k|    ) -> Three<V> {
+  715|  1.96k|        Three {
+  716|  1.96k|            s1: needle1,
+  717|  1.96k|            s2: needle2,
+  718|  1.96k|            s3: needle3,
+  719|  1.96k|            v1: V::splat(needle1),
+  720|  1.96k|            v2: V::splat(needle2),
+  721|  1.96k|            v3: V::splat(needle3),
+  722|  1.96k|        }
+  723|  1.96k|    }
+_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle2Bb_:
+  733|    377|    pub(crate) fn needle2(&self) -> u8 {
+  734|    377|        self.s2
+  735|    377|    }
+_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE8find_rawBa_:
+  493|  55.6k|    pub(crate) unsafe fn find_raw(
+  494|  55.6k|        &self,
+  495|  55.6k|        start: *const u8,
+  496|  55.6k|        end: *const u8,
+  497|  55.6k|    ) -> Option<*const u8> {
+  498|       |        // If we want to support vectors bigger than 256 bits, we probably
+  499|       |        // need to move up to using a u64 for the masks used below. Currently
+  500|       |        // they are 32 bits, which means we're SOL for vectors that need masks
+  501|       |        // bigger than 32 bits. Overall unclear until there's a use case.
+  502|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+  503|       |
+  504|  55.6k|        let topos = V::Mask::first_offset;
+  505|  55.6k|        let len = end.distance(start);
+  506|       |        debug_assert!(
+  507|      0|            len >= V::BYTES,
+  508|      0|            "haystack has length {}, but must be at least {}",
+  509|       |            len,
+  510|       |            V::BYTES
+  511|       |        );
+  512|       |
+  513|       |        // Search a possibly unaligned chunk at `start`. This covers any part
+  514|       |        // of the haystack prior to where aligned loads can start.
+  515|  55.6k|        if let Some(cur) = self.search_chunk(start, topos) {
+  516|  53.3k|            return Some(cur);
+  517|  2.34k|        }
+  518|  2.34k|        // Set `cur` to the first V-aligned pointer greater than `start`.
+  519|  2.34k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+  520|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+  521|  2.34k|        if len >= Self::LOOP_SIZE {
+  522|      0|            while cur <= end.sub(Self::LOOP_SIZE) {
+  523|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  524|       |
+  525|      0|                let a = V::load_aligned(cur);
+  526|      0|                let b = V::load_aligned(cur.add(V::BYTES));
+  527|      0|                let eqa1 = self.v1.cmpeq(a);
+  528|      0|                let eqb1 = self.v1.cmpeq(b);
+  529|      0|                let eqa2 = self.v2.cmpeq(a);
+  530|      0|                let eqb2 = self.v2.cmpeq(b);
+  531|      0|                let or1 = eqa1.or(eqb1);
+  532|      0|                let or2 = eqa2.or(eqb2);
+  533|      0|                let or3 = or1.or(or2);
+  534|      0|                if or3.movemask_will_have_non_zero() {
+  535|      0|                    let mask = eqa1.movemask().or(eqa2.movemask());
+  536|      0|                    if mask.has_non_zero() {
+  537|      0|                        return Some(cur.add(topos(mask)));
+  538|      0|                    }
+  539|      0|
+  540|      0|                    let mask = eqb1.movemask().or(eqb2.movemask());
+  541|      0|                    debug_assert!(mask.has_non_zero());
+  542|      0|                    return Some(cur.add(V::BYTES).add(topos(mask)));
+  543|      0|                }
+  544|      0|                cur = cur.add(Self::LOOP_SIZE);
+  545|       |            }
+  546|  2.34k|        }
+  547|       |        // Handle any leftovers after the aligned loop above. We use unaligned
+  548|       |        // loads here, but I believe we are guaranteed that they are aligned
+  549|       |        // since `cur` is aligned.
+  550|  3.24k|        while cur <= end.sub(V::BYTES) {
+  551|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
+  552|  1.53k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  553|    634|                return Some(cur);
+  554|    899|            }
+  555|    899|            cur = cur.add(V::BYTES);
+  556|       |        }
+  557|       |        // Finally handle any remaining bytes less than the size of V. In this
+  558|       |        // case, our pointer may indeed be unaligned and the load may overlap
+  559|       |        // with the previous one. But that's okay since we know the previous
+  560|       |        // load didn't lead to a match (otherwise we wouldn't be here).
+  561|  1.71k|        if cur < end {
+  562|      0|            debug_assert!(end.distance(cur) < V::BYTES);
+  563|  1.56k|            cur = cur.sub(V::BYTES - end.distance(cur));
+  564|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  565|  1.56k|            return self.search_chunk(cur, topos);
+  566|    150|        }
+  567|    150|        None
+  568|  55.6k|    }
+_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newBb_:
+  710|  1.96k|    pub(crate) unsafe fn new(
+  711|  1.96k|        needle1: u8,
+  712|  1.96k|        needle2: u8,
+  713|  1.96k|        needle3: u8,
+  714|  1.96k|    ) -> Three<V> {
+  715|  1.96k|        Three {
+  716|  1.96k|            s1: needle1,
+  717|  1.96k|            s2: needle2,
+  718|  1.96k|            s3: needle3,
+  719|  1.96k|            v1: V::splat(needle1),
+  720|  1.96k|            v2: V::splat(needle2),
+  721|  1.96k|            v3: V::splat(needle3),
+  722|  1.96k|        }
+  723|  1.96k|    }
+_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newBa_:
+  450|  1.29M|    pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Two<V> {
+  451|  1.29M|        Two {
+  452|  1.29M|            s1: needle1,
+  453|  1.29M|            s2: needle2,
+  454|  1.29M|            v1: V::splat(needle1),
+  455|  1.29M|            v2: V::splat(needle2),
+  456|  1.29M|        }
+  457|  1.29M|    }
+_RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMNtNtNtB6_6x86_644avx26memchrNtB1a_3One8find_raw0EB8_:
+ 1148|  2.05k|pub(crate) unsafe fn fwd_byte_by_byte<F: Fn(u8) -> bool>(
+ 1149|  2.05k|    start: *const u8,
+ 1150|  2.05k|    end: *const u8,
+ 1151|  2.05k|    confirm: F,
+ 1152|  2.05k|) -> Option<*const u8> {
+ 1153|      0|    debug_assert!(start <= end);
+ 1154|  2.05k|    let mut ptr = start;
+ 1155|  5.61k|    while ptr < end {
+ 1156|  5.27k|        if confirm(*ptr) {
+ 1157|  1.71k|            return Some(ptr);
+ 1158|  3.56k|        }
+ 1159|  3.56k|        ptr = ptr.offset(1);
+ 1160|       |    }
+ 1161|    339|    None
+ 1162|  2.05k|}
+_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawB8_:
+  143|  27.2k|    pub(crate) unsafe fn find_raw(
+  144|  27.2k|        &self,
+  145|  27.2k|        start: *const u8,
+  146|  27.2k|        end: *const u8,
+  147|  27.2k|    ) -> Option<*const u8> {
+  148|       |        // If we want to support vectors bigger than 256 bits, we probably
+  149|       |        // need to move up to using a u64 for the masks used below. Currently
+  150|       |        // they are 32 bits, which means we're SOL for vectors that need masks
+  151|       |        // bigger than 32 bits. Overall unclear until there's a use case.
+  152|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+  153|       |
+  154|  27.2k|        let topos = V::Mask::first_offset;
+  155|  27.2k|        let len = end.distance(start);
+  156|       |        debug_assert!(
+  157|      0|            len >= V::BYTES,
+  158|      0|            "haystack has length {}, but must be at least {}",
+  159|       |            len,
+  160|       |            V::BYTES
+  161|       |        );
+  162|       |
+  163|       |        // Search a possibly unaligned chunk at `start`. This covers any part
+  164|       |        // of the haystack prior to where aligned loads can start.
+  165|  27.2k|        if let Some(cur) = self.search_chunk(start, topos) {
+  166|  25.9k|            return Some(cur);
+  167|  1.29k|        }
+  168|  1.29k|        // Set `cur` to the first V-aligned pointer greater than `start`.
+  169|  1.29k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+  170|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+  171|  1.29k|        if len >= Self::LOOP_SIZE {
+  172|  2.18k|            while cur <= end.sub(Self::LOOP_SIZE) {
+  173|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  174|       |
+  175|  1.93k|                let a = V::load_aligned(cur);
+  176|  1.93k|                let b = V::load_aligned(cur.add(1 * V::BYTES));
+  177|  1.93k|                let c = V::load_aligned(cur.add(2 * V::BYTES));
+  178|  1.93k|                let d = V::load_aligned(cur.add(3 * V::BYTES));
+  179|  1.93k|                let eqa = self.v1.cmpeq(a);
+  180|  1.93k|                let eqb = self.v1.cmpeq(b);
+  181|  1.93k|                let eqc = self.v1.cmpeq(c);
+  182|  1.93k|                let eqd = self.v1.cmpeq(d);
+  183|  1.93k|                let or1 = eqa.or(eqb);
+  184|  1.93k|                let or2 = eqc.or(eqd);
+  185|  1.93k|                let or3 = or1.or(or2);
+  186|  1.93k|                if or3.movemask_will_have_non_zero() {
+  187|    797|                    let mask = eqa.movemask();
+  188|    797|                    if mask.has_non_zero() {
+  189|    500|                        return Some(cur.add(topos(mask)));
+  190|    297|                    }
+  191|    297|
+  192|    297|                    let mask = eqb.movemask();
+  193|    297|                    if mask.has_non_zero() {
+  194|    163|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+  195|    134|                    }
+  196|    134|
+  197|    134|                    let mask = eqc.movemask();
+  198|    134|                    if mask.has_non_zero() {
+  199|     85|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+  200|     49|                    }
+  201|     49|
+  202|     49|                    let mask = eqd.movemask();
+  203|      0|                    debug_assert!(mask.has_non_zero());
+  204|     49|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+  205|  1.13k|                }
+  206|  1.13k|                cur = cur.add(Self::LOOP_SIZE);
+  207|       |            }
+  208|    242|        }
+  209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
+  210|       |        // loads here, but I believe we are guaranteed that they are aligned
+  211|       |        // since `cur` is aligned.
+  212|  1.07k|        while cur <= end.sub(V::BYTES) {
+  213|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
+  214|    695|            if let Some(cur) = self.search_chunk(cur, topos) {
+  215|    120|                return Some(cur);
+  216|    575|            }
+  217|    575|            cur = cur.add(V::BYTES);
+  218|       |        }
+  219|       |        // Finally handle any remaining bytes less than the size of V. In this
+  220|       |        // case, our pointer may indeed be unaligned and the load may overlap
+  221|       |        // with the previous one. But that's okay since we know the previous
+  222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
+  223|    375|        if cur < end {
+  224|      0|            debug_assert!(end.distance(cur) < V::BYTES);
+  225|    329|            cur = cur.sub(V::BYTES - end.distance(cur));
+  226|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  227|    329|            return self.search_chunk(cur, topos);
+  228|     46|        }
+  229|     46|        None
+  230|  27.2k|    }
+_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newBa_:
+  450|  1.29M|    pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Two<V> {
+  451|  1.29M|        Two {
+  452|  1.29M|            s1: needle1,
+  453|  1.29M|            s2: needle2,
+  454|  1.29M|            v1: V::splat(needle1),
+  455|  1.29M|            v2: V::splat(needle2),
+  456|  1.29M|        }
+  457|  1.29M|    }
+_RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMs2_NtNtNtB6_6x86_644avx26memchrNtB1d_3Two8find_raw0EB8_:
+ 1148|  74.9k|pub(crate) unsafe fn fwd_byte_by_byte<F: Fn(u8) -> bool>(
+ 1149|  74.9k|    start: *const u8,
+ 1150|  74.9k|    end: *const u8,
+ 1151|  74.9k|    confirm: F,
+ 1152|  74.9k|) -> Option<*const u8> {
+ 1153|      0|    debug_assert!(start <= end);
+ 1154|  74.9k|    let mut ptr = start;
+ 1155|   112k|    while ptr < end {
+ 1156|   108k|        if confirm(*ptr) {
+ 1157|  71.0k|            return Some(ptr);
+ 1158|  37.8k|        }
+ 1159|  37.8k|        ptr = ptr.offset(1);
+ 1160|       |    }
+ 1161|  3.89k|    None
+ 1162|  74.9k|}
 _RINvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
-  416|  27.7k|    unsafe fn search_chunk(
-  417|  27.7k|        &self,
-  418|  27.7k|        cur: *const u8,
-  419|  27.7k|        mask_to_offset: impl Fn(V::Mask) -> usize,
-  420|  27.7k|    ) -> Option<*const u8> {
-  421|  27.7k|        let chunk = V::load_unaligned(cur);
-  422|  27.7k|        let mask = self.v1.cmpeq(chunk).movemask();
-  423|  27.7k|        if mask.has_non_zero() {
-  424|  25.6k|            Some(cur.add(mask_to_offset(mask)))
+  416|  28.2k|    unsafe fn search_chunk(
+  417|  28.2k|        &self,
+  418|  28.2k|        cur: *const u8,
+  419|  28.2k|        mask_to_offset: impl Fn(V::Mask) -> usize,
+  420|  28.2k|    ) -> Option<*const u8> {
+  421|  28.2k|        let chunk = V::load_unaligned(cur);
+  422|  28.2k|        let mask = self.v1.cmpeq(chunk).movemask();
+  423|  28.2k|        if mask.has_non_zero() {
+  424|  26.1k|            Some(cur.add(mask_to_offset(mask)))
   425|       |        } else {
-  426|  2.14k|            None
+  426|  2.13k|            None
   427|       |        }
-  428|  27.7k|    }
+  428|  28.2k|    }
 _RINvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB6_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtBc_6vector16SensibleMoveMaskNtB29_8MoveMask12first_offsetEBc_:
   962|    252|    unsafe fn search_chunk(
   963|    252|        &self,
@@ -211,276 +673,44 @@ _RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMs6_Nt
  1160|       |    }
  1161|     23|    None
  1162|    377|}
-_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newB8_:
-  111|  30.1k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
-  112|  30.1k|        One { s1: needle, v1: V::splat(needle) }
-  113|  30.1k|    }
-_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle2Ba_:
-  467|  86.2k|    pub(crate) fn needle2(&self) -> u8 {
-  468|  86.2k|        self.s2
-  469|  86.2k|    }
-_RINvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB6_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE12search_chunkNvYNtNtBc_6vector16SensibleMoveMaskNtB29_8MoveMask12first_offsetEBc_:
-  962|  1.34k|    unsafe fn search_chunk(
-  963|  1.34k|        &self,
-  964|  1.34k|        cur: *const u8,
-  965|  1.34k|        mask_to_offset: impl Fn(V::Mask) -> usize,
-  966|  1.34k|    ) -> Option<*const u8> {
-  967|  1.34k|        let chunk = V::load_unaligned(cur);
-  968|  1.34k|        let eq1 = self.v1.cmpeq(chunk);
-  969|  1.34k|        let eq2 = self.v2.cmpeq(chunk);
-  970|  1.34k|        let eq3 = self.v3.cmpeq(chunk);
-  971|  1.34k|        let mask = eq1.or(eq2).or(eq3).movemask();
-  972|  1.34k|        if mask.has_non_zero() {
-  973|  1.08k|            let mask1 = eq1.movemask();
-  974|  1.08k|            let mask2 = eq2.movemask();
-  975|  1.08k|            let mask3 = eq3.movemask();
-  976|  1.08k|            Some(cur.add(mask_to_offset(mask1.or(mask2).or(mask3))))
-  977|       |        } else {
-  978|    259|            None
-  979|       |        }
-  980|  1.34k|    }
-_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle2Bb_:
-  733|    377|    pub(crate) fn needle2(&self) -> u8 {
-  734|    377|        self.s2
-  735|    377|    }
-_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE8find_rawBa_:
-  493|  53.4k|    pub(crate) unsafe fn find_raw(
-  494|  53.4k|        &self,
-  495|  53.4k|        start: *const u8,
-  496|  53.4k|        end: *const u8,
-  497|  53.4k|    ) -> Option<*const u8> {
-  498|       |        // If we want to support vectors bigger than 256 bits, we probably
-  499|       |        // need to move up to using a u64 for the masks used below. Currently
-  500|       |        // they are 32 bits, which means we're SOL for vectors that need masks
-  501|       |        // bigger than 32 bits. Overall unclear until there's a use case.
-  502|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
-  503|       |
-  504|  53.4k|        let topos = V::Mask::first_offset;
-  505|  53.4k|        let len = end.distance(start);
-  506|       |        debug_assert!(
-  507|      0|            len >= V::BYTES,
-  508|      0|            "haystack has length {}, but must be at least {}",
-  509|       |            len,
-  510|       |            V::BYTES
-  511|       |        );
-  512|       |
-  513|       |        // Search a possibly unaligned chunk at `start`. This covers any part
-  514|       |        // of the haystack prior to where aligned loads can start.
-  515|  53.4k|        if let Some(cur) = self.search_chunk(start, topos) {
-  516|  51.2k|            return Some(cur);
-  517|  2.21k|        }
-  518|  2.21k|        // Set `cur` to the first V-aligned pointer greater than `start`.
-  519|  2.21k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
-  520|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-  521|  2.21k|        if len >= Self::LOOP_SIZE {
-  522|      0|            while cur <= end.sub(Self::LOOP_SIZE) {
-  523|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
-  524|       |
-  525|      0|                let a = V::load_aligned(cur);
-  526|      0|                let b = V::load_aligned(cur.add(V::BYTES));
-  527|      0|                let eqa1 = self.v1.cmpeq(a);
-  528|      0|                let eqb1 = self.v1.cmpeq(b);
-  529|      0|                let eqa2 = self.v2.cmpeq(a);
-  530|      0|                let eqb2 = self.v2.cmpeq(b);
-  531|      0|                let or1 = eqa1.or(eqb1);
-  532|      0|                let or2 = eqa2.or(eqb2);
-  533|      0|                let or3 = or1.or(or2);
-  534|      0|                if or3.movemask_will_have_non_zero() {
-  535|      0|                    let mask = eqa1.movemask().or(eqa2.movemask());
-  536|      0|                    if mask.has_non_zero() {
-  537|      0|                        return Some(cur.add(topos(mask)));
-  538|      0|                    }
-  539|      0|
-  540|      0|                    let mask = eqb1.movemask().or(eqb2.movemask());
-  541|      0|                    debug_assert!(mask.has_non_zero());
-  542|      0|                    return Some(cur.add(V::BYTES).add(topos(mask)));
-  543|      0|                }
-  544|      0|                cur = cur.add(Self::LOOP_SIZE);
-  545|       |            }
-  546|  2.21k|        }
-  547|       |        // Handle any leftovers after the aligned loop above. We use unaligned
-  548|       |        // loads here, but I believe we are guaranteed that they are aligned
-  549|       |        // since `cur` is aligned.
-  550|  3.07k|        while cur <= end.sub(V::BYTES) {
-  551|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  552|  1.48k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  553|    631|                return Some(cur);
-  554|    858|            }
-  555|    858|            cur = cur.add(V::BYTES);
-  556|       |        }
-  557|       |        // Finally handle any remaining bytes less than the size of V. In this
-  558|       |        // case, our pointer may indeed be unaligned and the load may overlap
-  559|       |        // with the previous one. But that's okay since we know the previous
-  560|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  561|  1.58k|        if cur < end {
-  562|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  563|  1.43k|            cur = cur.sub(V::BYTES - end.distance(cur));
-  564|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  565|  1.43k|            return self.search_chunk(cur, topos);
-  566|    149|        }
-  567|    149|        None
-  568|  53.4k|    }
-_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newBb_:
-  710|  1.96k|    pub(crate) unsafe fn new(
-  711|  1.96k|        needle1: u8,
-  712|  1.96k|        needle2: u8,
-  713|  1.96k|        needle3: u8,
-  714|  1.96k|    ) -> Three<V> {
-  715|  1.96k|        Three {
-  716|  1.96k|            s1: needle1,
-  717|  1.96k|            s2: needle2,
-  718|  1.96k|            s3: needle3,
-  719|  1.96k|            v1: V::splat(needle1),
-  720|  1.96k|            v2: V::splat(needle2),
-  721|  1.96k|            v3: V::splat(needle3),
-  722|  1.96k|        }
-  723|  1.96k|    }
-_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE3newBa_:
-  450|  1.24M|    pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Two<V> {
-  451|  1.24M|        Two {
-  452|  1.24M|            s1: needle1,
-  453|  1.24M|            s2: needle2,
-  454|  1.24M|            v1: V::splat(needle1),
-  455|  1.24M|            v2: V::splat(needle2),
-  456|  1.24M|        }
-  457|  1.24M|    }
-_RINvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
-  416|  1.37k|    unsafe fn search_chunk(
-  417|  1.37k|        &self,
-  418|  1.37k|        cur: *const u8,
-  419|  1.37k|        mask_to_offset: impl Fn(V::Mask) -> usize,
-  420|  1.37k|    ) -> Option<*const u8> {
-  421|  1.37k|        let chunk = V::load_unaligned(cur);
-  422|  1.37k|        let mask = self.v1.cmpeq(chunk).movemask();
-  423|  1.37k|        if mask.has_non_zero() {
-  424|  1.18k|            Some(cur.add(mask_to_offset(mask)))
-  425|       |        } else {
-  426|    192|            None
-  427|       |        }
-  428|  1.37k|    }
-_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawBb_:
-  765|  1.31k|    pub(crate) unsafe fn find_raw(
-  766|  1.31k|        &self,
-  767|  1.31k|        start: *const u8,
-  768|  1.31k|        end: *const u8,
-  769|  1.31k|    ) -> Option<*const u8> {
-  770|       |        // If we want to support vectors bigger than 256 bits, we probably
-  771|       |        // need to move up to using a u64 for the masks used below. Currently
-  772|       |        // they are 32 bits, which means we're SOL for vectors that need masks
-  773|       |        // bigger than 32 bits. Overall unclear until there's a use case.
-  774|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
-  775|       |
-  776|  1.31k|        let topos = V::Mask::first_offset;
-  777|  1.31k|        let len = end.distance(start);
-  778|       |        debug_assert!(
-  779|      0|            len >= V::BYTES,
-  780|      0|            "haystack has length {}, but must be at least {}",
-  781|       |            len,
-  782|       |            V::BYTES
-  783|       |        );
-  784|       |
-  785|       |        // Search a possibly unaligned chunk at `start`. This covers any part
-  786|       |        // of the haystack prior to where aligned loads can start.
-  787|  1.31k|        if let Some(cur) = self.search_chunk(start, topos) {
-  788|  1.07k|            return Some(cur);
-  789|    243|        }
-  790|    243|        // Set `cur` to the first V-aligned pointer greater than `start`.
-  791|    243|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
-  792|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-  793|    243|        if len >= Self::LOOP_SIZE {
-  794|    327|            while cur <= end.sub(Self::LOOP_SIZE) {
-  795|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
-  796|       |
-  797|    310|                let a = V::load_aligned(cur);
-  798|    310|                let b = V::load_aligned(cur.add(V::BYTES));
-  799|    310|                let eqa1 = self.v1.cmpeq(a);
-  800|    310|                let eqb1 = self.v1.cmpeq(b);
-  801|    310|                let eqa2 = self.v2.cmpeq(a);
-  802|    310|                let eqb2 = self.v2.cmpeq(b);
-  803|    310|                let eqa3 = self.v3.cmpeq(a);
-  804|    310|                let eqb3 = self.v3.cmpeq(b);
-  805|    310|                let or1 = eqa1.or(eqb1);
-  806|    310|                let or2 = eqa2.or(eqb2);
-  807|    310|                let or3 = eqa3.or(eqb3);
-  808|    310|                let or4 = or1.or(or2);
-  809|    310|                let or5 = or3.or(or4);
-  810|    310|                if or5.movemask_will_have_non_zero() {
-  811|    220|                    let mask = eqa1
-  812|    220|                        .movemask()
-  813|    220|                        .or(eqa2.movemask())
-  814|    220|                        .or(eqa3.movemask());
-  815|    220|                    if mask.has_non_zero() {
-  816|    128|                        return Some(cur.add(topos(mask)));
-  817|     92|                    }
-  818|     92|
-  819|     92|                    let mask = eqb1
-  820|     92|                        .movemask()
-  821|     92|                        .or(eqb2.movemask())
-  822|     92|                        .or(eqb3.movemask());
-  823|      0|                    debug_assert!(mask.has_non_zero());
-  824|     92|                    return Some(cur.add(V::BYTES).add(topos(mask)));
-  825|     90|                }
-  826|     90|                cur = cur.add(Self::LOOP_SIZE);
-  827|       |            }
-  828|      6|        }
-  829|       |        // Handle any leftovers after the aligned loop above. We use unaligned
-  830|       |        // loads here, but I believe we are guaranteed that they are aligned
-  831|       |        // since `cur` is aligned.
-  832|     29|        while cur <= end.sub(V::BYTES) {
-  833|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  834|     11|            if let Some(cur) = self.search_chunk(cur, topos) {
-  835|      5|                return Some(cur);
-  836|      6|            }
-  837|      6|            cur = cur.add(V::BYTES);
-  838|       |        }
-  839|       |        // Finally handle any remaining bytes less than the size of V. In this
-  840|       |        // case, our pointer may indeed be unaligned and the load may overlap
-  841|       |        // with the previous one. But that's okay since we know the previous
-  842|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  843|     18|        if cur < end {
-  844|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  845|     13|            cur = cur.sub(V::BYTES - end.distance(cur));
-  846|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  847|     13|            return self.search_chunk(cur, topos);
-  848|      5|        }
-  849|      5|        None
-  850|  1.31k|    }
-_RINvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtBb_6vector16SensibleMoveMaskNtB26_8MoveMask12first_offsetEBb_:
-  670|  56.3k|    unsafe fn search_chunk(
-  671|  56.3k|        &self,
-  672|  56.3k|        cur: *const u8,
-  673|  56.3k|        mask_to_offset: impl Fn(V::Mask) -> usize,
-  674|  56.3k|    ) -> Option<*const u8> {
-  675|  56.3k|        let chunk = V::load_unaligned(cur);
-  676|  56.3k|        let eq1 = self.v1.cmpeq(chunk);
-  677|  56.3k|        let eq2 = self.v2.cmpeq(chunk);
-  678|  56.3k|        let mask = eq1.or(eq2).movemask();
-  679|  56.3k|        if mask.has_non_zero() {
-  680|  53.0k|            let mask1 = eq1.movemask();
-  681|  53.0k|            let mask2 = eq2.movemask();
-  682|  53.0k|            Some(cur.add(mask_to_offset(mask1.or(mask2))))
-  683|       |        } else {
-  684|  3.30k|            None
-  685|       |        }
-  686|  56.3k|    }
 _RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle3Bb_:
   739|    256|    pub(crate) fn needle3(&self) -> u8 {
   740|    256|        self.s3
   741|    256|    }
+_RINvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB6_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE12search_chunkNvYNtNtBc_6vector16SensibleMoveMaskNtB29_8MoveMask12first_offsetEBc_:
+  962|  1.33k|    unsafe fn search_chunk(
+  963|  1.33k|        &self,
+  964|  1.33k|        cur: *const u8,
+  965|  1.33k|        mask_to_offset: impl Fn(V::Mask) -> usize,
+  966|  1.33k|    ) -> Option<*const u8> {
+  967|  1.33k|        let chunk = V::load_unaligned(cur);
+  968|  1.33k|        let eq1 = self.v1.cmpeq(chunk);
+  969|  1.33k|        let eq2 = self.v2.cmpeq(chunk);
+  970|  1.33k|        let eq3 = self.v3.cmpeq(chunk);
+  971|  1.33k|        let mask = eq1.or(eq2).or(eq3).movemask();
+  972|  1.33k|        if mask.has_non_zero() {
+  973|  1.07k|            let mask1 = eq1.movemask();
+  974|  1.07k|            let mask2 = eq2.movemask();
+  975|  1.07k|            let mask3 = eq3.movemask();
+  976|  1.07k|            Some(cur.add(mask_to_offset(mask1.or(mask2).or(mask3))))
+  977|       |        } else {
+  978|    258|            None
+  979|       |        }
+  980|  1.33k|    }
 _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE8find_rawB8_:
-  143|  1.25k|    pub(crate) unsafe fn find_raw(
-  144|  1.25k|        &self,
-  145|  1.25k|        start: *const u8,
-  146|  1.25k|        end: *const u8,
-  147|  1.25k|    ) -> Option<*const u8> {
+  143|  1.26k|    pub(crate) unsafe fn find_raw(
+  144|  1.26k|        &self,
+  145|  1.26k|        start: *const u8,
+  146|  1.26k|        end: *const u8,
+  147|  1.26k|    ) -> Option<*const u8> {
   148|       |        // If we want to support vectors bigger than 256 bits, we probably
   149|       |        // need to move up to using a u64 for the masks used below. Currently
   150|       |        // they are 32 bits, which means we're SOL for vectors that need masks
   151|       |        // bigger than 32 bits. Overall unclear until there's a use case.
   152|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
   153|       |
-  154|  1.25k|        let topos = V::Mask::first_offset;
-  155|  1.25k|        let len = end.distance(start);
+  154|  1.26k|        let topos = V::Mask::first_offset;
+  155|  1.26k|        let len = end.distance(start);
   156|       |        debug_assert!(
   157|      0|            len >= V::BYTES,
   158|      0|            "haystack has length {}, but must be at least {}",
@@ -490,13 +720,13 @@ _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46
   162|       |
   163|       |        // Search a possibly unaligned chunk at `start`. This covers any part
   164|       |        // of the haystack prior to where aligned loads can start.
-  165|  1.25k|        if let Some(cur) = self.search_chunk(start, topos) {
-  166|  1.12k|            return Some(cur);
-  167|    125|        }
-  168|    125|        // Set `cur` to the first V-aligned pointer greater than `start`.
-  169|    125|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+  165|  1.26k|        if let Some(cur) = self.search_chunk(start, topos) {
+  166|  1.14k|            return Some(cur);
+  167|    126|        }
+  168|    126|        // Set `cur` to the first V-aligned pointer greater than `start`.
+  169|    126|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
   170|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-  171|    125|        if len >= Self::LOOP_SIZE {
+  171|    126|        if len >= Self::LOOP_SIZE {
   172|      0|            while cur <= end.sub(Self::LOOP_SIZE) {
   173|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
   174|       |
@@ -533,147 +763,33 @@ _RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46
   205|      0|                }
   206|      0|                cur = cur.add(Self::LOOP_SIZE);
   207|       |            }
-  208|    125|        }
+  208|    126|        }
   209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   210|       |        // loads here, but I believe we are guaranteed that they are aligned
   211|       |        // since `cur` is aligned.
-  212|    150|        while cur <= end.sub(V::BYTES) {
+  212|    152|        while cur <= end.sub(V::BYTES) {
   213|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  214|     34|            if let Some(cur) = self.search_chunk(cur, topos) {
+  214|     35|            if let Some(cur) = self.search_chunk(cur, topos) {
   215|      9|                return Some(cur);
-  216|     25|            }
-  217|     25|            cur = cur.add(V::BYTES);
+  216|     26|            }
+  217|     26|            cur = cur.add(V::BYTES);
   218|       |        }
   219|       |        // Finally handle any remaining bytes less than the size of V. In this
   220|       |        // case, our pointer may indeed be unaligned and the load may overlap
   221|       |        // with the previous one. But that's okay since we know the previous
   222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  223|    116|        if cur < end {
+  223|    117|        if cur < end {
   224|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  225|     88|            cur = cur.sub(V::BYTES - end.distance(cur));
+  225|     89|            cur = cur.sub(V::BYTES - end.distance(cur));
   226|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  227|     88|            return self.search_chunk(cur, topos);
+  227|     89|            return self.search_chunk(cur, topos);
   228|     28|        }
   229|     28|        None
-  230|  1.25k|    }
-_RINvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE12search_chunkNvYNtNtBb_6vector16SensibleMoveMaskNtB26_8MoveMask12first_offsetEBb_:
-  670|  1.11M|    unsafe fn search_chunk(
-  671|  1.11M|        &self,
-  672|  1.11M|        cur: *const u8,
-  673|  1.11M|        mask_to_offset: impl Fn(V::Mask) -> usize,
-  674|  1.11M|    ) -> Option<*const u8> {
-  675|  1.11M|        let chunk = V::load_unaligned(cur);
-  676|  1.11M|        let eq1 = self.v1.cmpeq(chunk);
-  677|  1.11M|        let eq2 = self.v2.cmpeq(chunk);
-  678|  1.11M|        let mask = eq1.or(eq2).movemask();
-  679|  1.11M|        if mask.has_non_zero() {
-  680|  1.09M|            let mask1 = eq1.movemask();
-  681|  1.09M|            let mask2 = eq2.movemask();
-  682|  1.09M|            Some(cur.add(mask_to_offset(mask1.or(mask2))))
-  683|       |        } else {
-  684|  21.3k|            None
-  685|       |        }
-  686|  1.11M|    }
-_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newB8_:
-  111|  30.1k|    pub(crate) unsafe fn new(needle: u8) -> One<V> {
-  112|  30.1k|        One { s1: needle, v1: V::splat(needle) }
-  113|  30.1k|    }
-_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawBa_:
-  493|  1.11M|    pub(crate) unsafe fn find_raw(
-  494|  1.11M|        &self,
-  495|  1.11M|        start: *const u8,
-  496|  1.11M|        end: *const u8,
-  497|  1.11M|    ) -> Option<*const u8> {
-  498|       |        // If we want to support vectors bigger than 256 bits, we probably
-  499|       |        // need to move up to using a u64 for the masks used below. Currently
-  500|       |        // they are 32 bits, which means we're SOL for vectors that need masks
-  501|       |        // bigger than 32 bits. Overall unclear until there's a use case.
-  502|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
-  503|       |
-  504|  1.11M|        let topos = V::Mask::first_offset;
-  505|  1.11M|        let len = end.distance(start);
-  506|       |        debug_assert!(
-  507|      0|            len >= V::BYTES,
-  508|      0|            "haystack has length {}, but must be at least {}",
-  509|       |            len,
-  510|       |            V::BYTES
-  511|       |        );
-  512|       |
-  513|       |        // Search a possibly unaligned chunk at `start`. This covers any part
-  514|       |        // of the haystack prior to where aligned loads can start.
-  515|  1.11M|        if let Some(cur) = self.search_chunk(start, topos) {
-  516|  1.09M|            return Some(cur);
-  517|  20.0k|        }
-  518|  20.0k|        // Set `cur` to the first V-aligned pointer greater than `start`.
-  519|  20.0k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
-  520|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-  521|  20.0k|        if len >= Self::LOOP_SIZE {
-  522|  18.4k|            while cur <= end.sub(Self::LOOP_SIZE) {
-  523|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
-  524|       |
-  525|  17.2k|                let a = V::load_aligned(cur);
-  526|  17.2k|                let b = V::load_aligned(cur.add(V::BYTES));
-  527|  17.2k|                let eqa1 = self.v1.cmpeq(a);
-  528|  17.2k|                let eqb1 = self.v1.cmpeq(b);
-  529|  17.2k|                let eqa2 = self.v2.cmpeq(a);
-  530|  17.2k|                let eqb2 = self.v2.cmpeq(b);
-  531|  17.2k|                let or1 = eqa1.or(eqb1);
-  532|  17.2k|                let or2 = eqa2.or(eqb2);
-  533|  17.2k|                let or3 = or1.or(or2);
-  534|  17.2k|                if or3.movemask_will_have_non_zero() {
-  535|  16.5k|                    let mask = eqa1.movemask().or(eqa2.movemask());
-  536|  16.5k|                    if mask.has_non_zero() {
-  537|  12.7k|                        return Some(cur.add(topos(mask)));
-  538|  3.76k|                    }
-  539|  3.76k|
-  540|  3.76k|                    let mask = eqb1.movemask().or(eqb2.movemask());
-  541|      0|                    debug_assert!(mask.has_non_zero());
-  542|  3.76k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
-  543|    748|                }
-  544|    748|                cur = cur.add(Self::LOOP_SIZE);
-  545|       |            }
-  546|  2.38k|        }
-  547|       |        // Handle any leftovers after the aligned loop above. We use unaligned
-  548|       |        // loads here, but I believe we are guaranteed that they are aligned
-  549|       |        // since `cur` is aligned.
-  550|  4.27k|        while cur <= end.sub(V::BYTES) {
-  551|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  552|  2.03k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  553|  1.29k|                return Some(cur);
-  554|    740|            }
-  555|    740|            cur = cur.add(V::BYTES);
-  556|       |        }
-  557|       |        // Finally handle any remaining bytes less than the size of V. In this
-  558|       |        // case, our pointer may indeed be unaligned and the load may overlap
-  559|       |        // with the previous one. But that's okay since we know the previous
-  560|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  561|  2.23k|        if cur < end {
-  562|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  563|  2.17k|            cur = cur.sub(V::BYTES - end.distance(cur));
-  564|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  565|  2.17k|            return self.search_chunk(cur, topos);
-  566|     61|        }
-  567|     61|        None
-  568|  1.11M|    }
-_RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newBb_:
-  710|  1.96k|    pub(crate) unsafe fn new(
-  711|  1.96k|        needle1: u8,
-  712|  1.96k|        needle2: u8,
-  713|  1.96k|        needle3: u8,
-  714|  1.96k|    ) -> Three<V> {
-  715|  1.96k|        Three {
-  716|  1.96k|            s1: needle1,
-  717|  1.96k|            s2: needle2,
-  718|  1.96k|            s3: needle3,
-  719|  1.96k|            v1: V::splat(needle1),
-  720|  1.96k|            v2: V::splat(needle2),
-  721|  1.96k|            v3: V::splat(needle3),
-  722|  1.96k|        }
-  723|  1.96k|    }
+  230|  1.26k|    }
 _RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle1Ba_:
-  461|   106k|    pub(crate) fn needle1(&self) -> u8 {
-  462|   106k|        self.s1
-  463|   106k|    }
+  461|   108k|    pub(crate) fn needle1(&self) -> u8 {
+  462|   108k|        self.s1
+  463|   108k|    }
 _RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE8find_rawBb_:
   765|    236|    pub(crate) unsafe fn find_raw(
   766|    236|        &self,
@@ -761,140 +877,24 @@ _RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3
   848|     11|        }
   849|     11|        None
   850|    236|    }
-_RNvMs_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE3newBa_:
-  450|  1.24M|    pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Two<V> {
-  451|  1.24M|        Two {
-  452|  1.24M|            s1: needle1,
-  453|  1.24M|            s2: needle2,
-  454|  1.24M|            v1: V::splat(needle1),
-  455|  1.24M|            v2: V::splat(needle2),
-  456|  1.24M|        }
-  457|  1.24M|    }
-_RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMNtNtNtB6_6x86_644avx26memchrNtB1a_3One8find_raw0EB8_:
- 1148|  2.04k|pub(crate) unsafe fn fwd_byte_by_byte<F: Fn(u8) -> bool>(
- 1149|  2.04k|    start: *const u8,
- 1150|  2.04k|    end: *const u8,
- 1151|  2.04k|    confirm: F,
- 1152|  2.04k|) -> Option<*const u8> {
- 1153|      0|    debug_assert!(start <= end);
- 1154|  2.04k|    let mut ptr = start;
- 1155|  5.58k|    while ptr < end {
- 1156|  5.24k|        if confirm(*ptr) {
- 1157|  1.70k|            return Some(ptr);
- 1158|  3.54k|        }
- 1159|  3.54k|        ptr = ptr.offset(1);
- 1160|       |    }
- 1161|    337|    None
- 1162|  2.04k|}
-_RNvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iE8find_rawB8_:
-  143|  26.7k|    pub(crate) unsafe fn find_raw(
-  144|  26.7k|        &self,
-  145|  26.7k|        start: *const u8,
-  146|  26.7k|        end: *const u8,
-  147|  26.7k|    ) -> Option<*const u8> {
-  148|       |        // If we want to support vectors bigger than 256 bits, we probably
-  149|       |        // need to move up to using a u64 for the masks used below. Currently
-  150|       |        // they are 32 bits, which means we're SOL for vectors that need masks
-  151|       |        // bigger than 32 bits. Overall unclear until there's a use case.
-  152|      0|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
-  153|       |
-  154|  26.7k|        let topos = V::Mask::first_offset;
-  155|  26.7k|        let len = end.distance(start);
-  156|       |        debug_assert!(
-  157|      0|            len >= V::BYTES,
-  158|      0|            "haystack has length {}, but must be at least {}",
-  159|       |            len,
-  160|       |            V::BYTES
-  161|       |        );
-  162|       |
-  163|       |        // Search a possibly unaligned chunk at `start`. This covers any part
-  164|       |        // of the haystack prior to where aligned loads can start.
-  165|  26.7k|        if let Some(cur) = self.search_chunk(start, topos) {
-  166|  25.4k|            return Some(cur);
-  167|  1.28k|        }
-  168|  1.28k|        // Set `cur` to the first V-aligned pointer greater than `start`.
-  169|  1.28k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
-  170|      0|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-  171|  1.28k|        if len >= Self::LOOP_SIZE {
-  172|  2.16k|            while cur <= end.sub(Self::LOOP_SIZE) {
-  173|      0|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
-  174|       |
-  175|  1.91k|                let a = V::load_aligned(cur);
-  176|  1.91k|                let b = V::load_aligned(cur.add(1 * V::BYTES));
-  177|  1.91k|                let c = V::load_aligned(cur.add(2 * V::BYTES));
-  178|  1.91k|                let d = V::load_aligned(cur.add(3 * V::BYTES));
-  179|  1.91k|                let eqa = self.v1.cmpeq(a);
-  180|  1.91k|                let eqb = self.v1.cmpeq(b);
-  181|  1.91k|                let eqc = self.v1.cmpeq(c);
-  182|  1.91k|                let eqd = self.v1.cmpeq(d);
-  183|  1.91k|                let or1 = eqa.or(eqb);
-  184|  1.91k|                let or2 = eqc.or(eqd);
-  185|  1.91k|                let or3 = or1.or(or2);
-  186|  1.91k|                if or3.movemask_will_have_non_zero() {
-  187|    785|                    let mask = eqa.movemask();
-  188|    785|                    if mask.has_non_zero() {
-  189|    479|                        return Some(cur.add(topos(mask)));
-  190|    306|                    }
-  191|    306|
-  192|    306|                    let mask = eqb.movemask();
-  193|    306|                    if mask.has_non_zero() {
-  194|    171|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
-  195|    135|                    }
-  196|    135|
-  197|    135|                    let mask = eqc.movemask();
-  198|    135|                    if mask.has_non_zero() {
-  199|     95|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
-  200|     40|                    }
-  201|     40|
-  202|     40|                    let mask = eqd.movemask();
-  203|      0|                    debug_assert!(mask.has_non_zero());
-  204|     40|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
-  205|  1.12k|                }
-  206|  1.12k|                cur = cur.add(Self::LOOP_SIZE);
-  207|       |            }
-  208|    242|        }
-  209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
-  210|       |        // loads here, but I believe we are guaranteed that they are aligned
-  211|       |        // since `cur` is aligned.
-  212|  1.08k|        while cur <= end.sub(V::BYTES) {
-  213|      0|            debug_assert!(end.distance(cur) >= V::BYTES);
-  214|    710|            if let Some(cur) = self.search_chunk(cur, topos) {
-  215|    125|                return Some(cur);
-  216|    585|            }
-  217|    585|            cur = cur.add(V::BYTES);
-  218|       |        }
-  219|       |        // Finally handle any remaining bytes less than the size of V. In this
-  220|       |        // case, our pointer may indeed be unaligned and the load may overlap
-  221|       |        // with the previous one. But that's okay since we know the previous
-  222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  223|    374|        if cur < end {
-  224|      0|            debug_assert!(end.distance(cur) < V::BYTES);
-  225|    333|            cur = cur.sub(V::BYTES - end.distance(cur));
-  226|      0|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  227|    333|            return self.search_chunk(cur, topos);
-  228|     41|        }
-  229|     41|        None
-  230|  26.7k|    }
 _RNvMs0_NtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE7needle1Bb_:
   727|    458|    pub(crate) fn needle1(&self) -> u8 {
   728|    458|        self.s1
   729|    458|    }
-_RINvNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMs2_NtNtNtB6_6x86_644avx26memchrNtB1d_3Two8find_raw0EB8_:
- 1148|  72.7k|pub(crate) unsafe fn fwd_byte_by_byte<F: Fn(u8) -> bool>(
- 1149|  72.7k|    start: *const u8,
- 1150|  72.7k|    end: *const u8,
- 1151|  72.7k|    confirm: F,
- 1152|  72.7k|) -> Option<*const u8> {
- 1153|      0|    debug_assert!(start <= end);
- 1154|  72.7k|    let mut ptr = start;
- 1155|   109k|    while ptr < end {
- 1156|   106k|        if confirm(*ptr) {
- 1157|  68.9k|            return Some(ptr);
- 1158|  37.0k|        }
- 1159|  37.0k|        ptr = ptr.offset(1);
- 1160|       |    }
- 1161|  3.74k|    None
- 1162|  72.7k|}
+_RINvMNtNtNtCsezyNti1ZN2c_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
+  416|  1.39k|    unsafe fn search_chunk(
+  417|  1.39k|        &self,
+  418|  1.39k|        cur: *const u8,
+  419|  1.39k|        mask_to_offset: impl Fn(V::Mask) -> usize,
+  420|  1.39k|    ) -> Option<*const u8> {
+  421|  1.39k|        let chunk = V::load_unaligned(cur);
+  422|  1.39k|        let mask = self.v1.cmpeq(chunk).movemask();
+  423|  1.39k|        if mask.has_non_zero() {
+  424|  1.19k|            Some(cur.add(mask_to_offset(mask)))
+  425|       |        } else {
+  426|    194|            None
+  427|       |        }
+  428|  1.39k|    }
 
 _RNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_5Three13new_uncheckedBd_:
   935|  1.96k|    pub unsafe fn new_unchecked(
@@ -951,6 +951,20 @@ _RNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_5Three8find_ra
  1077|  1.31k|        // architecture specific code.
  1078|  1.31k|        self.find_raw_avx2(start, end)
  1079|  1.96k|    }
+_RNCNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB7_5Three8find_raw0Bf_:
+ 1050|    458|                generic::fwd_byte_by_byte(start, end, |b| {
+ 1051|    458|                    b == self.sse2.needle1()
+ 1052|    377|                        || b == self.sse2.needle2()
+ 1053|    256|                        || b == self.sse2.needle3()
+ 1054|    458|                })
+_RNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_5Three13find_raw_avx2Bd_:
+ 1191|  1.31k|    unsafe fn find_raw_avx2(
+ 1192|  1.31k|        &self,
+ 1193|  1.31k|        start: *const u8,
+ 1194|  1.31k|        end: *const u8,
+ 1195|  1.31k|    ) -> Option<*const u8> {
+ 1196|  1.31k|        self.avx2.find_raw(start, end)
+ 1197|  1.31k|    }
 _RNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_3Two12is_availableBd_:
   573|      1|    pub fn is_available() -> bool {
   574|      1|        #[cfg(not(target_feature = "sse2"))]
@@ -976,79 +990,79 @@ _RNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_3Two12is_avail
   594|       |            }
   595|       |        }
   596|      1|    }
-_RNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_5Three13find_raw_avx2Bd_:
- 1191|  1.31k|    unsafe fn find_raw_avx2(
- 1192|  1.31k|        &self,
- 1193|  1.31k|        start: *const u8,
- 1194|  1.31k|        end: *const u8,
- 1195|  1.31k|    ) -> Option<*const u8> {
- 1196|  1.31k|        self.avx2.find_raw(start, end)
- 1197|  1.31k|    }
+_RNCNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB7_3Two8find_raw0Bf_:
+  667|   108k|                generic::fwd_byte_by_byte(start, end, |b| {
+  668|   108k|                    b == self.sse2.needle1() || b == self.sse2.needle2()
+  669|   108k|                })
 _RNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB2_3One13find_raw_avx2Ba_:
-  396|  26.7k|    unsafe fn find_raw_avx2(
-  397|  26.7k|        &self,
-  398|  26.7k|        start: *const u8,
-  399|  26.7k|        end: *const u8,
-  400|  26.7k|    ) -> Option<*const u8> {
-  401|  26.7k|        self.avx2.find_raw(start, end)
-  402|  26.7k|    }
+  396|  27.2k|    unsafe fn find_raw_avx2(
+  397|  27.2k|        &self,
+  398|  27.2k|        start: *const u8,
+  399|  27.2k|        end: *const u8,
+  400|  27.2k|    ) -> Option<*const u8> {
+  401|  27.2k|        self.avx2.find_raw(start, end)
+  402|  27.2k|    }
+_RNCNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB4_3One8find_raw0Bc_:
+  192|  5.27k|                generic::fwd_byte_by_byte(start, end, |b| {
+  193|  5.27k|                    b == self.sse2.needle1()
+  194|  5.27k|                })
 _RNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_3Two13new_uncheckedBd_:
-  556|  1.24M|    pub unsafe fn new_unchecked(needle1: u8, needle2: u8) -> Two {
-  557|  1.24M|        Two {
-  558|  1.24M|            sse2: generic::Two::new(needle1, needle2),
-  559|  1.24M|            avx2: generic::Two::new(needle1, needle2),
-  560|  1.24M|        }
-  561|  1.24M|    }
+  556|  1.29M|    pub unsafe fn new_unchecked(needle1: u8, needle2: u8) -> Two {
+  557|  1.29M|        Two {
+  558|  1.29M|            sse2: generic::Two::new(needle1, needle2),
+  559|  1.29M|            avx2: generic::Two::new(needle1, needle2),
+  560|  1.29M|        }
+  561|  1.29M|    }
 _RNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_3Two8find_rawBd_:
-  654|  1.24M|    pub unsafe fn find_raw(
-  655|  1.24M|        &self,
-  656|  1.24M|        start: *const u8,
-  657|  1.24M|        end: *const u8,
-  658|  1.24M|    ) -> Option<*const u8> {
-  659|  1.24M|        if start >= end {
-  660|  6.14k|            return None;
-  661|  1.24M|        }
-  662|  1.24M|        let len = end.distance(start);
-  663|  1.24M|        if len < __m256i::BYTES {
-  664|   126k|            return if len < __m128i::BYTES {
+  654|  1.29M|    pub unsafe fn find_raw(
+  655|  1.29M|        &self,
+  656|  1.29M|        start: *const u8,
+  657|  1.29M|        end: *const u8,
+  658|  1.29M|    ) -> Option<*const u8> {
+  659|  1.29M|        if start >= end {
+  660|  6.27k|            return None;
+  661|  1.28M|        }
+  662|  1.28M|        let len = end.distance(start);
+  663|  1.28M|        if len < __m256i::BYTES {
+  664|   130k|            return if len < __m128i::BYTES {
   665|       |                // SAFETY: We require the caller to pass valid start/end
   666|       |                // pointers.
-  667|  72.7k|                generic::fwd_byte_by_byte(start, end, |b| {
+  667|  74.9k|                generic::fwd_byte_by_byte(start, end, |b| {
   668|       |                    b == self.sse2.needle1() || b == self.sse2.needle2()
-  669|  72.7k|                })
+  669|  74.9k|                })
   670|       |            } else {
   671|       |                // SAFETY: We require the caller to pass valid start/end
   672|       |                // pointers.
-  673|  53.4k|                self.find_raw_sse2(start, end)
+  673|  55.6k|                self.find_raw_sse2(start, end)
   674|       |            };
-  675|  1.11M|        }
-  676|  1.11M|        // SAFETY: Building a `Two` means it's safe to call both 'sse2' and
-  677|  1.11M|        // 'avx2' routines. Also, we've checked that our haystack is big
-  678|  1.11M|        // enough to run on the vector routine. Pointer validity is caller's
-  679|  1.11M|        // responsibility.
-  680|  1.11M|        //
-  681|  1.11M|        // Note that we could call `self.avx2.find_raw` directly here. But that
-  682|  1.11M|        // means we'd have to annotate this routine with `target_feature`.
-  683|  1.11M|        // Which is fine, because this routine is `unsafe` anyway and the
-  684|  1.11M|        // `target_feature` obligation is met by virtue of building a `Two`.
-  685|  1.11M|        // The real problem is that a routine with a `target_feature`
-  686|  1.11M|        // annotation generally can't be inlined into caller code unless
-  687|  1.11M|        // the caller code has the same target feature annotations. Namely,
-  688|  1.11M|        // the common case (at time of writing) is for calling code to not
-  689|  1.11M|        // have the `avx2` target feature enabled *at compile time*. Without
-  690|  1.11M|        // `target_feature` on this routine, it can be inlined which will
-  691|  1.11M|        // handle some of the short-haystack cases above without touching the
-  692|  1.11M|        // architecture specific code.
-  693|  1.11M|        self.find_raw_avx2(start, end)
-  694|  1.24M|    }
+  675|  1.15M|        }
+  676|  1.15M|        // SAFETY: Building a `Two` means it's safe to call both 'sse2' and
+  677|  1.15M|        // 'avx2' routines. Also, we've checked that our haystack is big
+  678|  1.15M|        // enough to run on the vector routine. Pointer validity is caller's
+  679|  1.15M|        // responsibility.
+  680|  1.15M|        //
+  681|  1.15M|        // Note that we could call `self.avx2.find_raw` directly here. But that
+  682|  1.15M|        // means we'd have to annotate this routine with `target_feature`.
+  683|  1.15M|        // Which is fine, because this routine is `unsafe` anyway and the
+  684|  1.15M|        // `target_feature` obligation is met by virtue of building a `Two`.
+  685|  1.15M|        // The real problem is that a routine with a `target_feature`
+  686|  1.15M|        // annotation generally can't be inlined into caller code unless
+  687|  1.15M|        // the caller code has the same target feature annotations. Namely,
+  688|  1.15M|        // the common case (at time of writing) is for calling code to not
+  689|  1.15M|        // have the `avx2` target feature enabled *at compile time*. Without
+  690|  1.15M|        // `target_feature` on this routine, it can be inlined which will
+  691|  1.15M|        // handle some of the short-haystack cases above without touching the
+  692|  1.15M|        // architecture specific code.
+  693|  1.15M|        self.find_raw_avx2(start, end)
+  694|  1.29M|    }
 _RNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_3Two13find_raw_avx2Bd_:
-  804|  1.11M|    unsafe fn find_raw_avx2(
-  805|  1.11M|        &self,
-  806|  1.11M|        start: *const u8,
-  807|  1.11M|        end: *const u8,
-  808|  1.11M|    ) -> Option<*const u8> {
-  809|  1.11M|        self.avx2.find_raw(start, end)
-  810|  1.11M|    }
+  804|  1.15M|    unsafe fn find_raw_avx2(
+  805|  1.15M|        &self,
+  806|  1.15M|        start: *const u8,
+  807|  1.15M|        end: *const u8,
+  808|  1.15M|    ) -> Option<*const u8> {
+  809|  1.15M|        self.avx2.find_raw(start, end)
+  810|  1.15M|    }
 _RNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB2_3One12is_availableBa_:
    86|      1|    pub fn is_available() -> bool {
    87|      1|        #[cfg(not(target_feature = "sse2"))]
@@ -1075,61 +1089,55 @@ _RNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB2_3One12is_availabl
   108|       |        }
   109|      1|    }
 _RNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB2_3One8find_rawBa_:
-  179|  30.1k|    pub unsafe fn find_raw(
-  180|  30.1k|        &self,
-  181|  30.1k|        start: *const u8,
-  182|  30.1k|        end: *const u8,
-  183|  30.1k|    ) -> Option<*const u8> {
-  184|  30.1k|        if start >= end {
-  185|    101|            return None;
-  186|  30.0k|        }
-  187|  30.0k|        let len = end.distance(start);
-  188|  30.0k|        if len < __m256i::BYTES {
-  189|  3.29k|            return if len < __m128i::BYTES {
+  179|  30.6k|    pub unsafe fn find_raw(
+  180|  30.6k|        &self,
+  181|  30.6k|        start: *const u8,
+  182|  30.6k|        end: *const u8,
+  183|  30.6k|    ) -> Option<*const u8> {
+  184|  30.6k|        if start >= end {
+  185|    102|            return None;
+  186|  30.5k|        }
+  187|  30.5k|        let len = end.distance(start);
+  188|  30.5k|        if len < __m256i::BYTES {
+  189|  3.32k|            return if len < __m128i::BYTES {
   190|       |                // SAFETY: We require the caller to pass valid start/end
   191|       |                // pointers.
-  192|  2.04k|                generic::fwd_byte_by_byte(start, end, |b| {
+  192|  2.05k|                generic::fwd_byte_by_byte(start, end, |b| {
   193|       |                    b == self.sse2.needle1()
-  194|  2.04k|                })
+  194|  2.05k|                })
   195|       |            } else {
   196|       |                // SAFETY: We require the caller to pass valid start/end
   197|       |                // pointers.
-  198|  1.25k|                self.find_raw_sse2(start, end)
+  198|  1.26k|                self.find_raw_sse2(start, end)
   199|       |            };
-  200|  26.7k|        }
-  201|  26.7k|        // SAFETY: Building a `One` means it's safe to call both 'sse2' and
-  202|  26.7k|        // 'avx2' routines. Also, we've checked that our haystack is big
-  203|  26.7k|        // enough to run on the vector routine. Pointer validity is caller's
-  204|  26.7k|        // responsibility.
-  205|  26.7k|        //
-  206|  26.7k|        // Note that we could call `self.avx2.find_raw` directly here. But that
-  207|  26.7k|        // means we'd have to annotate this routine with `target_feature`.
-  208|  26.7k|        // Which is fine, because this routine is `unsafe` anyway and the
-  209|  26.7k|        // `target_feature` obligation is met by virtue of building a `One`.
-  210|  26.7k|        // The real problem is that a routine with a `target_feature`
-  211|  26.7k|        // annotation generally can't be inlined into caller code unless
-  212|  26.7k|        // the caller code has the same target feature annotations. Namely,
-  213|  26.7k|        // the common case (at time of writing) is for calling code to not
-  214|  26.7k|        // have the `avx2` target feature enabled *at compile time*. Without
-  215|  26.7k|        // `target_feature` on this routine, it can be inlined which will
-  216|  26.7k|        // handle some of the short-haystack cases above without touching the
-  217|  26.7k|        // architecture specific code.
-  218|  26.7k|        self.find_raw_avx2(start, end)
-  219|  30.1k|    }
+  200|  27.2k|        }
+  201|  27.2k|        // SAFETY: Building a `One` means it's safe to call both 'sse2' and
+  202|  27.2k|        // 'avx2' routines. Also, we've checked that our haystack is big
+  203|  27.2k|        // enough to run on the vector routine. Pointer validity is caller's
+  204|  27.2k|        // responsibility.
+  205|  27.2k|        //
+  206|  27.2k|        // Note that we could call `self.avx2.find_raw` directly here. But that
+  207|  27.2k|        // means we'd have to annotate this routine with `target_feature`.
+  208|  27.2k|        // Which is fine, because this routine is `unsafe` anyway and the
+  209|  27.2k|        // `target_feature` obligation is met by virtue of building a `One`.
+  210|  27.2k|        // The real problem is that a routine with a `target_feature`
+  211|  27.2k|        // annotation generally can't be inlined into caller code unless
+  212|  27.2k|        // the caller code has the same target feature annotations. Namely,
+  213|  27.2k|        // the common case (at time of writing) is for calling code to not
+  214|  27.2k|        // have the `avx2` target feature enabled *at compile time*. Without
+  215|  27.2k|        // `target_feature` on this routine, it can be inlined which will
+  216|  27.2k|        // handle some of the short-haystack cases above without touching the
+  217|  27.2k|        // architecture specific code.
+  218|  27.2k|        self.find_raw_avx2(start, end)
+  219|  30.6k|    }
 _RNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_3Two13find_raw_sse2Bd_:
-  764|  53.4k|    unsafe fn find_raw_sse2(
-  765|  53.4k|        &self,
-  766|  53.4k|        start: *const u8,
-  767|  53.4k|        end: *const u8,
-  768|  53.4k|    ) -> Option<*const u8> {
-  769|  53.4k|        self.sse2.find_raw(start, end)
-  770|  53.4k|    }
-_RNCNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB7_5Three8find_raw0Bf_:
- 1050|    458|                generic::fwd_byte_by_byte(start, end, |b| {
- 1051|    458|                    b == self.sse2.needle1()
- 1052|    377|                        || b == self.sse2.needle2()
- 1053|    256|                        || b == self.sse2.needle3()
- 1054|    458|                })
+  764|  55.6k|    unsafe fn find_raw_sse2(
+  765|  55.6k|        &self,
+  766|  55.6k|        start: *const u8,
+  767|  55.6k|        end: *const u8,
+  768|  55.6k|    ) -> Option<*const u8> {
+  769|  55.6k|        self.sse2.find_raw(start, end)
+  770|  55.6k|    }
 _RNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_5Three12is_availableBd_:
   956|      1|    pub fn is_available() -> bool {
   957|      1|        #[cfg(not(target_feature = "sse2"))]
@@ -1163,47 +1171,39 @@ _RNvMs6_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB5_5Three13find_r
  1155|    236|    ) -> Option<*const u8> {
  1156|    236|        self.sse2.find_raw(start, end)
  1157|    236|    }
-_RNCNvMs2_NtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB7_3Two8find_raw0Bf_:
-  667|   106k|                generic::fwd_byte_by_byte(start, end, |b| {
-  668|   106k|                    b == self.sse2.needle1() || b == self.sse2.needle2()
-  669|   106k|                })
 _RNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB2_3One13find_raw_sse2Ba_:
-  336|  1.25k|    unsafe fn find_raw_sse2(
-  337|  1.25k|        &self,
-  338|  1.25k|        start: *const u8,
-  339|  1.25k|        end: *const u8,
-  340|  1.25k|    ) -> Option<*const u8> {
-  341|  1.25k|        self.sse2.find_raw(start, end)
-  342|  1.25k|    }
+  336|  1.26k|    unsafe fn find_raw_sse2(
+  337|  1.26k|        &self,
+  338|  1.26k|        start: *const u8,
+  339|  1.26k|        end: *const u8,
+  340|  1.26k|    ) -> Option<*const u8> {
+  341|  1.26k|        self.sse2.find_raw(start, end)
+  342|  1.26k|    }
 _RNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB2_3One13new_uncheckedBa_:
-   69|  30.1k|    pub unsafe fn new_unchecked(needle: u8) -> One {
-   70|  30.1k|        One {
-   71|  30.1k|            sse2: generic::One::new(needle),
-   72|  30.1k|            avx2: generic::One::new(needle),
-   73|  30.1k|        }
-   74|  30.1k|    }
-_RNCNvMNtNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_644avx26memchrNtB4_3One8find_raw0Bc_:
-  192|  5.24k|                generic::fwd_byte_by_byte(start, end, |b| {
-  193|  5.24k|                    b == self.sse2.needle1()
-  194|  5.24k|                })
+   69|  30.6k|    pub unsafe fn new_unchecked(needle: u8) -> One {
+   70|  30.6k|        One {
+   71|  30.6k|            sse2: generic::One::new(needle),
+   72|  30.6k|            avx2: generic::One::new(needle),
+   73|  30.6k|        }
+   74|  30.6k|    }
 
 _RNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr10memchr_raw:
-  174|  30.1k|pub(crate) fn memchr_raw(
-  175|  30.1k|    n1: u8,
-  176|  30.1k|    start: *const u8,
-  177|  30.1k|    end: *const u8,
-  178|  30.1k|) -> Option<*const u8> {
-  179|  30.1k|    // SAFETY: We provide a valid function pointer type.
-  180|  30.1k|    unsafe_ifunc!(
-  181|  30.1k|        One,
-  182|  30.1k|        find_raw,
-  183|  30.1k|        unsafe fn(u8, *const u8, *const u8) -> Option<*const u8>,
-  184|  30.1k|        Option<*const u8>,
-  185|  30.1k|        start,
-  186|  30.1k|        end,
-  187|  30.1k|        n1
-  188|  30.1k|    )
-  189|  30.1k|}
+  174|  30.6k|pub(crate) fn memchr_raw(
+  175|  30.6k|    n1: u8,
+  176|  30.6k|    start: *const u8,
+  177|  30.6k|    end: *const u8,
+  178|  30.6k|) -> Option<*const u8> {
+  179|  30.6k|    // SAFETY: We provide a valid function pointer type.
+  180|  30.6k|    unsafe_ifunc!(
+  181|  30.6k|        One,
+  182|  30.6k|        find_raw,
+  183|  30.6k|        unsafe fn(u8, *const u8, *const u8) -> Option<*const u8>,
+  184|  30.6k|        Option<*const u8>,
+  185|  30.6k|        start,
+  186|  30.6k|        end,
+  187|  30.6k|        n1
+  188|  30.6k|    )
+  189|  30.6k|}
 _RNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr3_raw:
   270|  1.96k|pub(crate) fn memchr3_raw(
   271|  1.96k|    n1: u8,
@@ -1226,24 +1226,24 @@ _RNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr3_raw:
   288|  1.96k|    )
   289|  1.96k|}
 _RNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr2_raw:
-  220|  1.24M|pub(crate) fn memchr2_raw(
-  221|  1.24M|    n1: u8,
-  222|  1.24M|    n2: u8,
-  223|  1.24M|    start: *const u8,
-  224|  1.24M|    end: *const u8,
-  225|  1.24M|) -> Option<*const u8> {
-  226|  1.24M|    // SAFETY: We provide a valid function pointer type.
-  227|  1.24M|    unsafe_ifunc!(
-  228|  1.24M|        Two,
-  229|  1.24M|        find_raw,
-  230|  1.24M|        unsafe fn(u8, u8, *const u8, *const u8) -> Option<*const u8>,
-  231|  1.24M|        Option<*const u8>,
-  232|  1.24M|        start,
-  233|  1.24M|        end,
-  234|  1.24M|        n1,
-  235|  1.24M|        n2
-  236|  1.24M|    )
-  237|  1.24M|}
+  220|  1.29M|pub(crate) fn memchr2_raw(
+  221|  1.29M|    n1: u8,
+  222|  1.29M|    n2: u8,
+  223|  1.29M|    start: *const u8,
+  224|  1.29M|    end: *const u8,
+  225|  1.29M|) -> Option<*const u8> {
+  226|  1.29M|    // SAFETY: We provide a valid function pointer type.
+  227|  1.29M|    unsafe_ifunc!(
+  228|  1.29M|        Two,
+  229|  1.29M|        find_raw,
+  230|  1.29M|        unsafe fn(u8, u8, *const u8, *const u8) -> Option<*const u8>,
+  231|  1.29M|        Option<*const u8>,
+  232|  1.29M|        start,
+  233|  1.29M|        end,
+  234|  1.29M|        n1,
+  235|  1.29M|        n2
+  236|  1.29M|    )
+  237|  1.29M|}
 _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr10memchr_raw6detect:
   109|      1|        unsafe fn detect(
   110|      1|            $($needle: u8),+,
@@ -1283,15 +1283,15 @@ _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr10memchr_raw6detect:
   144|      1|            fun($($needle),+, $hay_start, $hay_end)
   145|      1|        }
 _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr2_raw9find_avx2:
-   78|  1.24M|        unsafe fn find_avx2(
-   79|  1.24M|            $($needle: u8),+,
-   80|  1.24M|            $hay_start: *const u8,
-   81|  1.24M|            $hay_end: *const u8,
-   82|  1.24M|        ) -> $retty {
-   83|  1.24M|            use crate::arch::x86_64::avx2::memchr::$memchrty;
-   84|  1.24M|            $memchrty::new_unchecked($($needle),+)
-   85|  1.24M|                .$memchrfind($hay_start, $hay_end)
-   86|  1.24M|        }
+   78|  1.29M|        unsafe fn find_avx2(
+   79|  1.29M|            $($needle: u8),+,
+   80|  1.29M|            $hay_start: *const u8,
+   81|  1.29M|            $hay_end: *const u8,
+   82|  1.29M|        ) -> $retty {
+   83|  1.29M|            use crate::arch::x86_64::avx2::memchr::$memchrty;
+   84|  1.29M|            $memchrty::new_unchecked($($needle),+)
+   85|  1.29M|                .$memchrfind($hay_start, $hay_end)
+   86|  1.29M|        }
 _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr2_raw6detect:
   109|      1|        unsafe fn detect(
   110|      1|            $($needle: u8),+,
@@ -1331,15 +1331,15 @@ _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr2_raw6detect:
   144|      1|            fun($($needle),+, $hay_start, $hay_end)
   145|      1|        }
 _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr10memchr_raw9find_avx2:
-   78|  30.1k|        unsafe fn find_avx2(
-   79|  30.1k|            $($needle: u8),+,
-   80|  30.1k|            $hay_start: *const u8,
-   81|  30.1k|            $hay_end: *const u8,
-   82|  30.1k|        ) -> $retty {
-   83|  30.1k|            use crate::arch::x86_64::avx2::memchr::$memchrty;
-   84|  30.1k|            $memchrty::new_unchecked($($needle),+)
-   85|  30.1k|                .$memchrfind($hay_start, $hay_end)
-   86|  30.1k|        }
+   78|  30.6k|        unsafe fn find_avx2(
+   79|  30.6k|            $($needle: u8),+,
+   80|  30.6k|            $hay_start: *const u8,
+   81|  30.6k|            $hay_end: *const u8,
+   82|  30.6k|        ) -> $retty {
+   83|  30.6k|            use crate::arch::x86_64::avx2::memchr::$memchrty;
+   84|  30.6k|            $memchrty::new_unchecked($($needle),+)
+   85|  30.6k|                .$memchrfind($hay_start, $hay_end)
+   86|  30.6k|        }
 _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr3_raw9find_avx2:
    78|  1.96k|        unsafe fn find_avx2(
    79|  1.96k|            $($needle: u8),+,
@@ -1390,19 +1390,19 @@ _RNvNvNtNtNtCsezyNti1ZN2c_6memchr4arch6x86_646memchr11memchr3_raw6detect:
   145|      1|        }
 
 _RNvXNtCsezyNti1ZN2c_6memchr3extPhNtB2_7Pointer8as_usizeB4_:
-   26|  23.9k|    fn as_usize(self) -> usize {
-   27|  23.9k|        self as usize
-   28|  23.9k|    }
+   26|  24.0k|    fn as_usize(self) -> usize {
+   27|  24.0k|        self as usize
+   28|  24.0k|    }
 _RNvXNtCsezyNti1ZN2c_6memchr3extPhNtB2_7Pointer8distanceB4_:
-   21|  3.74M|    unsafe fn distance(self, origin: *const T) -> usize {
-   22|  3.74M|        // TODO: Replace with `ptr::sub_ptr` once stabilized.
-   23|  3.74M|        usize::try_from(self.offset_from(origin)).unwrap_unchecked()
-   24|  3.74M|    }
+   21|  3.87M|    unsafe fn distance(self, origin: *const T) -> usize {
+   22|  3.87M|        // TODO: Replace with `ptr::sub_ptr` once stabilized.
+   23|  3.87M|        usize::try_from(self.offset_from(origin)).unwrap_unchecked()
+   24|  3.87M|    }
 
 _RNvNtCsezyNti1ZN2c_6memchr6memchr11memchr_iterCscEMhoEbPSQt_13oxigraph_fuzz:
-  216|  9.47k|pub fn memchr_iter<'h>(needle: u8, haystack: &'h [u8]) -> Memchr<'h> {
-  217|  9.47k|    Memchr::new(needle, haystack)
-  218|  9.47k|}
+  216|  9.60k|pub fn memchr_iter<'h>(needle: u8, haystack: &'h [u8]) -> Memchr<'h> {
+  217|  9.60k|    Memchr::new(needle, haystack)
+  218|  9.60k|}
 _RNvNtCsezyNti1ZN2c_6memchr6memchr12memchr3_iterCscEMhoEbPSQt_13oxigraph_fuzz:
   256|     95|pub fn memchr3_iter<'h>(
   257|     95|    needle1: u8,
@@ -1434,34 +1434,34 @@ _RNvXs7_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr3NtNtNtNtCs9nhK3FOW46N_4core4i
   473|  1.96k|        }
   474|  1.96k|    }
 _RNvXs_NtCsezyNti1ZN2c_6memchr6memchrNtB4_6MemchrNtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4nextCscEMhoEbPSQt_13oxigraph_fuzz:
-  312|  25.6k|    fn next(&mut self) -> Option<usize> {
-  313|  25.6k|        // SAFETY: All of our implementations of memchr ensure that any
-  314|  25.6k|        // pointers returns will fall within the start and end bounds, and this
-  315|  25.6k|        // upholds the safety contract of `self.it.next`.
-  316|  25.6k|        unsafe {
-  317|  25.6k|            // NOTE: I attempted to define an enum of previously created
-  318|  25.6k|            // searchers and then switch on those here instead of just
-  319|  25.6k|            // calling `memchr_raw` (or `One::new(..).find_raw(..)`). But
-  320|  25.6k|            // that turned out to have a fair bit of extra overhead when
-  321|  25.6k|            // searching very small haystacks.
-  322|  25.6k|            self.it.next(|s, e| memchr_raw(self.needle1, s, e))
-  323|  25.6k|        }
-  324|  25.6k|    }
+  312|  26.2k|    fn next(&mut self) -> Option<usize> {
+  313|  26.2k|        // SAFETY: All of our implementations of memchr ensure that any
+  314|  26.2k|        // pointers returns will fall within the start and end bounds, and this
+  315|  26.2k|        // upholds the safety contract of `self.it.next`.
+  316|  26.2k|        unsafe {
+  317|  26.2k|            // NOTE: I attempted to define an enum of previously created
+  318|  26.2k|            // searchers and then switch on those here instead of just
+  319|  26.2k|            // calling `memchr_raw` (or `One::new(..).find_raw(..)`). But
+  320|  26.2k|            // that turned out to have a fair bit of extra overhead when
+  321|  26.2k|            // searching very small haystacks.
+  322|  26.2k|            self.it.next(|s, e| memchr_raw(self.needle1, s, e))
+  323|  26.2k|        }
+  324|  26.2k|    }
 _RNvMNtCsezyNti1ZN2c_6memchr6memchrNtB2_6Memchr3newCscEMhoEbPSQt_13oxigraph_fuzz:
-  300|  9.47k|    pub fn new(needle1: u8, haystack: &'h [u8]) -> Memchr<'h> {
-  301|  9.47k|        Memchr {
-  302|  9.47k|            needle1,
-  303|  9.47k|            it: crate::arch::generic::memchr::Iter::new(haystack),
-  304|  9.47k|        }
-  305|  9.47k|    }
+  300|  9.60k|    pub fn new(needle1: u8, haystack: &'h [u8]) -> Memchr<'h> {
+  301|  9.60k|        Memchr {
+  302|  9.60k|            needle1,
+  303|  9.60k|            it: crate::arch::generic::memchr::Iter::new(haystack),
+  304|  9.60k|        }
+  305|  9.60k|    }
 _RNvMs2_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr23newCscEMhoEbPSQt_13oxigraph_fuzz:
-  377|  10.5k|    pub fn new(needle1: u8, needle2: u8, haystack: &'h [u8]) -> Memchr2<'h> {
-  378|  10.5k|        Memchr2 {
-  379|  10.5k|            needle1,
-  380|  10.5k|            needle2,
-  381|  10.5k|            it: crate::arch::generic::memchr::Iter::new(haystack),
-  382|  10.5k|        }
-  383|  10.5k|    }
+  377|  10.8k|    pub fn new(needle1: u8, needle2: u8, haystack: &'h [u8]) -> Memchr2<'h> {
+  378|  10.8k|        Memchr2 {
+  379|  10.8k|            needle1,
+  380|  10.8k|            needle2,
+  381|  10.8k|            it: crate::arch::generic::memchr::Iter::new(haystack),
+  382|  10.8k|        }
+  383|  10.8k|    }
 _RNvMs6_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr33newCscEMhoEbPSQt_13oxigraph_fuzz:
   446|     95|    pub fn new(
   447|     95|        needle1: u8,
@@ -1477,13 +1477,13 @@ _RNvMs6_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr33newCscEMhoEbPSQt_13oxigraph_
   457|     95|        }
   458|     95|    }
 _RNvNtCsezyNti1ZN2c_6memchr6memchr12memchr2_iterCscEMhoEbPSQt_13oxigraph_fuzz:
-  232|  10.5k|pub fn memchr2_iter<'h>(
-  233|  10.5k|    needle1: u8,
-  234|  10.5k|    needle2: u8,
-  235|  10.5k|    haystack: &'h [u8],
-  236|  10.5k|) -> Memchr2<'h> {
-  237|  10.5k|    Memchr2::new(needle1, needle2, haystack)
-  238|  10.5k|}
+  232|  10.8k|pub fn memchr2_iter<'h>(
+  233|  10.8k|    needle1: u8,
+  234|  10.8k|    needle2: u8,
+  235|  10.8k|    haystack: &'h [u8],
+  236|  10.8k|) -> Memchr2<'h> {
+  237|  10.8k|    Memchr2::new(needle1, needle2, haystack)
+  238|  10.8k|}
 _RNvNtCsezyNti1ZN2c_6memchr6memchr6memchrCsi7rvRgybzn0_10sparesults:
    27|     95|pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
    28|     95|    // SAFETY: memchr_raw, when a match is found, always returns a valid
@@ -1494,80 +1494,91 @@ _RNvNtCsezyNti1ZN2c_6memchr6memchr6memchrCsi7rvRgybzn0_10sparesults:
    33|     95|        })
    34|     95|    }
    35|     95|}
+_RNvMs2_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr23newCsdBczmAo6fNM_9quick_xml:
+  377|    441|    pub fn new(needle1: u8, needle2: u8, haystack: &'h [u8]) -> Memchr2<'h> {
+  378|    441|        Memchr2 {
+  379|    441|            needle1,
+  380|    441|            needle2,
+  381|    441|            it: crate::arch::generic::memchr::Iter::new(haystack),
+  382|    441|        }
+  383|    441|    }
 _RNvNtCsezyNti1ZN2c_6memchr6memchr11memchr2_rawCsdBczmAo6fNM_9quick_xml:
-  574|  1.24M|unsafe fn memchr2_raw(
-  575|  1.24M|    needle1: u8,
-  576|  1.24M|    needle2: u8,
-  577|  1.24M|    start: *const u8,
-  578|  1.24M|    end: *const u8,
-  579|  1.24M|) -> Option<*const u8> {
-  580|  1.24M|    #[cfg(target_arch = "x86_64")]
-  581|  1.24M|    {
-  582|  1.24M|        crate::arch::x86_64::memchr::memchr2_raw(needle1, needle2, start, end)
-  583|  1.24M|    }
-  584|  1.24M|    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
-  585|  1.24M|    {
-  586|  1.24M|        crate::arch::wasm32::memchr::memchr2_raw(needle1, needle2, start, end)
-  587|  1.24M|    }
-  588|  1.24M|    #[cfg(target_arch = "aarch64")]
-  589|  1.24M|    {
-  590|  1.24M|        crate::arch::aarch64::memchr::memchr2_raw(needle1, needle2, start, end)
-  591|  1.24M|    }
-  592|  1.24M|    #[cfg(not(any(
-  593|  1.24M|        target_arch = "x86_64",
-  594|  1.24M|        all(target_arch = "wasm32", target_feature = "simd128"),
-  595|  1.24M|        target_arch = "aarch64"
-  596|  1.24M|    )))]
-  597|  1.24M|    {
-  598|  1.24M|        crate::arch::all::memchr::Two::new(needle1, needle2)
-  599|  1.24M|            .find_raw(start, end)
-  600|  1.24M|    }
-  601|  1.24M|}
+  574|  1.29M|unsafe fn memchr2_raw(
+  575|  1.29M|    needle1: u8,
+  576|  1.29M|    needle2: u8,
+  577|  1.29M|    start: *const u8,
+  578|  1.29M|    end: *const u8,
+  579|  1.29M|) -> Option<*const u8> {
+  580|  1.29M|    #[cfg(target_arch = "x86_64")]
+  581|  1.29M|    {
+  582|  1.29M|        crate::arch::x86_64::memchr::memchr2_raw(needle1, needle2, start, end)
+  583|  1.29M|    }
+  584|  1.29M|    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+  585|  1.29M|    {
+  586|  1.29M|        crate::arch::wasm32::memchr::memchr2_raw(needle1, needle2, start, end)
+  587|  1.29M|    }
+  588|  1.29M|    #[cfg(target_arch = "aarch64")]
+  589|  1.29M|    {
+  590|  1.29M|        crate::arch::aarch64::memchr::memchr2_raw(needle1, needle2, start, end)
+  591|  1.29M|    }
+  592|  1.29M|    #[cfg(not(any(
+  593|  1.29M|        target_arch = "x86_64",
+  594|  1.29M|        all(target_arch = "wasm32", target_feature = "simd128"),
+  595|  1.29M|        target_arch = "aarch64"
+  596|  1.29M|    )))]
+  597|  1.29M|    {
+  598|  1.29M|        crate::arch::all::memchr::Two::new(needle1, needle2)
+  599|  1.29M|            .find_raw(start, end)
+  600|  1.29M|    }
+  601|  1.29M|}
+_RNCNvXs3_NtCsezyNti1ZN2c_6memchr6memchrNtB7_7Memchr2NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0CsdBczmAo6fNM_9quick_xml:
+  395|  1.29M|            self.it.next(|s, e| memchr2_raw(self.needle1, self.needle2, s, e))
 _RNvNtCsezyNti1ZN2c_6memchr6memchr10memchr_rawCsdBczmAo6fNM_9quick_xml:
-  504|  25.6k|unsafe fn memchr_raw(
-  505|  25.6k|    needle: u8,
-  506|  25.6k|    start: *const u8,
-  507|  25.6k|    end: *const u8,
-  508|  25.6k|) -> Option<*const u8> {
-  509|  25.6k|    #[cfg(target_arch = "x86_64")]
-  510|  25.6k|    {
-  511|  25.6k|        // x86_64 does CPU feature detection at runtime in order to use AVX2
-  512|  25.6k|        // instructions even when the `avx2` feature isn't enabled at compile
-  513|  25.6k|        // time. This function also handles using a fallback if neither AVX2
-  514|  25.6k|        // nor SSE2 (unusual) are available.
-  515|  25.6k|        crate::arch::x86_64::memchr::memchr_raw(needle, start, end)
-  516|  25.6k|    }
-  517|  25.6k|    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
-  518|  25.6k|    {
-  519|  25.6k|        crate::arch::wasm32::memchr::memchr_raw(needle, start, end)
-  520|  25.6k|    }
-  521|  25.6k|    #[cfg(target_arch = "aarch64")]
-  522|  25.6k|    {
-  523|  25.6k|        crate::arch::aarch64::memchr::memchr_raw(needle, start, end)
-  524|  25.6k|    }
-  525|  25.6k|    #[cfg(not(any(
-  526|  25.6k|        target_arch = "x86_64",
-  527|  25.6k|        all(target_arch = "wasm32", target_feature = "simd128"),
-  528|  25.6k|        target_arch = "aarch64"
-  529|  25.6k|    )))]
-  530|  25.6k|    {
-  531|  25.6k|        crate::arch::all::memchr::One::new(needle).find_raw(start, end)
-  532|  25.6k|    }
-  533|  25.6k|}
+  504|  26.2k|unsafe fn memchr_raw(
+  505|  26.2k|    needle: u8,
+  506|  26.2k|    start: *const u8,
+  507|  26.2k|    end: *const u8,
+  508|  26.2k|) -> Option<*const u8> {
+  509|  26.2k|    #[cfg(target_arch = "x86_64")]
+  510|  26.2k|    {
+  511|  26.2k|        // x86_64 does CPU feature detection at runtime in order to use AVX2
+  512|  26.2k|        // instructions even when the `avx2` feature isn't enabled at compile
+  513|  26.2k|        // time. This function also handles using a fallback if neither AVX2
+  514|  26.2k|        // nor SSE2 (unusual) are available.
+  515|  26.2k|        crate::arch::x86_64::memchr::memchr_raw(needle, start, end)
+  516|  26.2k|    }
+  517|  26.2k|    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+  518|  26.2k|    {
+  519|  26.2k|        crate::arch::wasm32::memchr::memchr_raw(needle, start, end)
+  520|  26.2k|    }
+  521|  26.2k|    #[cfg(target_arch = "aarch64")]
+  522|  26.2k|    {
+  523|  26.2k|        crate::arch::aarch64::memchr::memchr_raw(needle, start, end)
+  524|  26.2k|    }
+  525|  26.2k|    #[cfg(not(any(
+  526|  26.2k|        target_arch = "x86_64",
+  527|  26.2k|        all(target_arch = "wasm32", target_feature = "simd128"),
+  528|  26.2k|        target_arch = "aarch64"
+  529|  26.2k|    )))]
+  530|  26.2k|    {
+  531|  26.2k|        crate::arch::all::memchr::One::new(needle).find_raw(start, end)
+  532|  26.2k|    }
+  533|  26.2k|}
+_RNvXs3_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr2NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4nextCsdBczmAo6fNM_9quick_xml:
+  390|  1.29M|    fn next(&mut self) -> Option<usize> {
+  391|  1.29M|        // SAFETY: All of our implementations of memchr ensure that any
+  392|  1.29M|        // pointers returns will fall within the start and end bounds, and this
+  393|  1.29M|        // upholds the safety contract of `self.it.next`.
+  394|  1.29M|        unsafe {
+  395|  1.29M|            self.it.next(|s, e| memchr2_raw(self.needle1, self.needle2, s, e))
+  396|  1.29M|        }
+  397|  1.29M|    }
 _RNCNvXs7_NtCsezyNti1ZN2c_6memchr6memchrNtB7_7Memchr3NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0CsdBczmAo6fNM_9quick_xml:
   470|  1.96k|            self.it.next(|s, e| {
   471|  1.96k|                memchr3_raw(self.needle1, self.needle2, self.needle3, s, e)
   472|  1.96k|            })
 _RNCNvXs_NtCsezyNti1ZN2c_6memchr6memchrNtB6_6MemchrNtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0CsdBczmAo6fNM_9quick_xml:
-  322|  25.6k|            self.it.next(|s, e| memchr_raw(self.needle1, s, e))
-_RNvMs2_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr23newCsdBczmAo6fNM_9quick_xml:
-  377|    438|    pub fn new(needle1: u8, needle2: u8, haystack: &'h [u8]) -> Memchr2<'h> {
-  378|    438|        Memchr2 {
-  379|    438|            needle1,
-  380|    438|            needle2,
-  381|    438|            it: crate::arch::generic::memchr::Iter::new(haystack),
-  382|    438|        }
-  383|    438|    }
+  322|  26.2k|            self.it.next(|s, e| memchr_raw(self.needle1, s, e))
 _RNvNtCsezyNti1ZN2c_6memchr6memchr11memchr3_rawCsdBczmAo6fNM_9quick_xml:
   646|  1.96k|unsafe fn memchr3_raw(
   647|  1.96k|    needle1: u8,
@@ -1604,25 +1615,14 @@ _RNvNtCsezyNti1ZN2c_6memchr6memchr11memchr3_rawCsdBczmAo6fNM_9quick_xml:
   678|  1.96k|            .find_raw(start, end)
   679|  1.96k|    }
   680|  1.96k|}
-_RNCNvXs3_NtCsezyNti1ZN2c_6memchr6memchrNtB7_7Memchr2NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4next0CsdBczmAo6fNM_9quick_xml:
-  395|  1.24M|            self.it.next(|s, e| memchr2_raw(self.needle1, self.needle2, s, e))
-_RNvXs3_NtCsezyNti1ZN2c_6memchr6memchrNtB5_7Memchr2NtNtNtNtCs9nhK3FOW46N_4core4iter6traits8iterator8Iterator4nextCsdBczmAo6fNM_9quick_xml:
-  390|  1.24M|    fn next(&mut self) -> Option<usize> {
-  391|  1.24M|        // SAFETY: All of our implementations of memchr ensure that any
-  392|  1.24M|        // pointers returns will fall within the start and end bounds, and this
-  393|  1.24M|        // upholds the safety contract of `self.it.next`.
-  394|  1.24M|        unsafe {
-  395|  1.24M|            self.it.next(|s, e| memchr2_raw(self.needle1, self.needle2, s, e))
-  396|  1.24M|        }
-  397|  1.24M|    }
 _RNvNtCsezyNti1ZN2c_6memchr6memchr12memchr2_iterCsdBczmAo6fNM_9quick_xml:
-  232|    438|pub fn memchr2_iter<'h>(
-  233|    438|    needle1: u8,
-  234|    438|    needle2: u8,
-  235|    438|    haystack: &'h [u8],
-  236|    438|) -> Memchr2<'h> {
-  237|    438|    Memchr2::new(needle1, needle2, haystack)
-  238|    438|}
+  232|    441|pub fn memchr2_iter<'h>(
+  233|    441|    needle1: u8,
+  234|    441|    needle2: u8,
+  235|    441|    haystack: &'h [u8],
+  236|    441|) -> Memchr2<'h> {
+  237|    441|    Memchr2::new(needle1, needle2, haystack)
+  238|    441|}
 _RNCNvNtCsezyNti1ZN2c_6memchr6memchr6memchr0B5_:
    31|  4.46k|        generic::search_slice_with_raw(haystack, |start, end| {
    32|  4.46k|            memchr_raw(needle, start, end)
@@ -1660,173 +1660,173 @@ _RNvNtCsezyNti1ZN2c_6memchr6memchr10memchr_rawB3_:
   533|  4.46k|}
 
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector14load_unaligned:
-  220|  57.9k|        unsafe fn load_unaligned(data: *const u8) -> __m128i {
-  221|  57.9k|            _mm_loadu_si128(data as *const __m128i)
-  222|  57.9k|        }
-_RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask12first_offset:
-  173|  1.19M|    fn first_offset(self) -> usize {
-  174|  1.19M|        // We are dealing with little endian here (and if we aren't, we swap
-  175|  1.19M|        // the bytes so we are in practice), where the most significant byte
-  176|  1.19M|        // is at a higher address. That means the least significant bit that
-  177|  1.19M|        // is set corresponds to the position of our first matching byte.
-  178|  1.19M|        // That position corresponds to the number of zeros after the least
-  179|  1.19M|        // significant bit.
-  180|  1.19M|        self.get_for_offset().trailing_zeros() as usize
-  181|  1.19M|    }
-_RNvMNtCsezyNti1ZN2c_6memchr6vectorNtB2_16SensibleMoveMask14get_for_offset:
-  128|  1.19M|    fn get_for_offset(self) -> u32 {
-  129|  1.19M|        #[cfg(target_endian = "big")]
-  130|  1.19M|        {
-  131|  1.19M|            self.0.swap_bytes()
-  132|  1.19M|        }
-  133|  1.19M|        #[cfg(target_endian = "little")]
-  134|  1.19M|        {
-  135|  1.19M|            self.0
-  136|  1.19M|        }
-  137|  1.19M|    }
+  220|  60.4k|        unsafe fn load_unaligned(data: *const u8) -> __m128i {
+  221|  60.4k|            _mm_loadu_si128(data as *const __m128i)
+  222|  60.4k|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector8movemask:
-  225|   164k|        unsafe fn movemask(self) -> SensibleMoveMask {
-  226|   164k|            SensibleMoveMask(_mm_movemask_epi8(self) as u32)
-  227|   164k|        }
-_RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask12has_non_zero:
-  148|  1.24M|    fn has_non_zero(self) -> bool {
-  149|  1.24M|        self.0 != 0
-  150|  1.24M|    }
+  225|   171k|        unsafe fn movemask(self) -> SensibleMoveMask {
+  226|   171k|            SensibleMoveMask(_mm_movemask_epi8(self) as u32)
+  227|   171k|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector5cmpeq:
-  230|   114k|        unsafe fn cmpeq(self, vector2: Self) -> __m128i {
-  231|   114k|            _mm_cmpeq_epi8(self, vector2)
-  232|   114k|        }
+  230|   119k|        unsafe fn cmpeq(self, vector2: Self) -> __m128i {
+  231|   119k|            _mm_cmpeq_epi8(self, vector2)
+  232|   119k|        }
+_RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask12first_offset:
+  173|  1.24M|    fn first_offset(self) -> usize {
+  174|  1.24M|        // We are dealing with little endian here (and if we aren't, we swap
+  175|  1.24M|        // the bytes so we are in practice), where the most significant byte
+  176|  1.24M|        // is at a higher address. That means the least significant bit that
+  177|  1.24M|        // is set corresponds to the position of our first matching byte.
+  178|  1.24M|        // That position corresponds to the number of zeros after the least
+  179|  1.24M|        // significant bit.
+  180|  1.24M|        self.get_for_offset().trailing_zeros() as usize
+  181|  1.24M|    }
+_RNvMNtCsezyNti1ZN2c_6memchr6vectorNtB2_16SensibleMoveMask14get_for_offset:
+  128|  1.24M|    fn get_for_offset(self) -> u32 {
+  129|  1.24M|        #[cfg(target_endian = "big")]
+  130|  1.24M|        {
+  131|  1.24M|            self.0.swap_bytes()
+  132|  1.24M|        }
+  133|  1.24M|        #[cfg(target_endian = "little")]
+  134|  1.24M|        {
+  135|  1.24M|            self.0
+  136|  1.24M|        }
+  137|  1.24M|    }
+_RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask12has_non_zero:
+  148|  1.28M|    fn has_non_zero(self) -> bool {
+  149|  1.28M|        self.0 != 0
+  150|  1.28M|    }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector8movemask:
-  275|  3.40M|        unsafe fn movemask(self) -> SensibleMoveMask {
-  276|  3.40M|            SensibleMoveMask(_mm256_movemask_epi8(self) as u32)
-  277|  3.40M|        }
+  275|  3.52M|        unsafe fn movemask(self) -> SensibleMoveMask {
+  276|  3.52M|            SensibleMoveMask(_mm256_movemask_epi8(self) as u32)
+  277|  3.52M|        }
 _RNvYNtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtNtCsezyNti1ZN2c_6memchr6vector6Vector27movemask_will_have_non_zeroBS_:
-   65|  19.5k|    unsafe fn movemask_will_have_non_zero(self) -> bool {
-   66|  19.5k|        self.movemask().has_non_zero()
-   67|  19.5k|    }
+   65|  19.7k|    unsafe fn movemask_will_have_non_zero(self) -> bool {
+   66|  19.7k|        self.movemask().has_non_zero()
+   67|  19.7k|    }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector14load_unaligned:
-  270|  1.14M|        unsafe fn load_unaligned(data: *const u8) -> __m256i {
-  271|  1.14M|            _mm256_loadu_si256(data as *const __m256i)
-  272|  1.14M|        }
+  270|  1.18M|        unsafe fn load_unaligned(data: *const u8) -> __m256i {
+  271|  1.18M|            _mm256_loadu_si256(data as *const __m256i)
+  272|  1.18M|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector5cmpeq:
-  280|  2.34M|        unsafe fn cmpeq(self, vector2: Self) -> __m256i {
-  281|  2.34M|            _mm256_cmpeq_epi8(self, vector2)
-  282|  2.34M|        }
+  280|  2.43M|        unsafe fn cmpeq(self, vector2: Self) -> __m256i {
+  281|  2.43M|            _mm256_cmpeq_epi8(self, vector2)
+  282|  2.43M|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector5splat:
-  210|  2.53M|        unsafe fn splat(byte: u8) -> __m128i {
-  211|  2.53M|            _mm_set1_epi8(byte as i8)
-  212|  2.53M|        }
+  210|  2.62M|        unsafe fn splat(byte: u8) -> __m128i {
+  211|  2.62M|            _mm_set1_epi8(byte as i8)
+  212|  2.62M|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86sse2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m128iNtB4_6Vector2or:
-  240|  56.8k|        unsafe fn or(self, vector2: Self) -> __m128i {
-  241|  56.8k|            _mm_or_si128(self, vector2)
-  242|  56.8k|        }
-_RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask2or:
-  163|  1.17M|    fn or(self, other: SensibleMoveMask) -> SensibleMoveMask {
-  164|  1.17M|        SensibleMoveMask(self.0 | other.0)
-  165|  1.17M|    }
+  240|  59.2k|        unsafe fn or(self, vector2: Self) -> __m128i {
+  241|  59.2k|            _mm_or_si128(self, vector2)
+  242|  59.2k|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector12load_aligned:
-  265|  42.8k|        unsafe fn load_aligned(data: *const u8) -> __m256i {
-  266|  42.8k|            _mm256_load_si256(data as *const __m256i)
-  267|  42.8k|        }
+  265|  43.3k|        unsafe fn load_aligned(data: *const u8) -> __m256i {
+  266|  43.3k|            _mm256_load_si256(data as *const __m256i)
+  267|  43.3k|        }
+_RNvXs_NtCsezyNti1ZN2c_6memchr6vectorNtB4_16SensibleMoveMaskNtB4_8MoveMask2or:
+  163|  1.21M|    fn or(self, other: SensibleMoveMask) -> SensibleMoveMask {
+  164|  1.21M|        SensibleMoveMask(self.0 | other.0)
+  165|  1.21M|    }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector5splat:
-  260|  2.53M|        unsafe fn splat(byte: u8) -> __m256i {
-  261|  2.53M|            _mm256_set1_epi8(byte as i8)
-  262|  2.53M|        }
+  260|  2.62M|        unsafe fn splat(byte: u8) -> __m256i {
+  261|  2.62M|            _mm256_set1_epi8(byte as i8)
+  262|  2.62M|        }
 _RNvXNtNtCsezyNti1ZN2c_6memchr6vector7x86avx2NtNtNtCs9nhK3FOW46N_4core9core_arch3x867___m256iNtB4_6Vector2or:
-  290|  1.18M|        unsafe fn or(self, vector2: Self) -> __m256i {
-  291|  1.18M|            _mm256_or_si256(self, vector2)
-  292|  1.18M|        }
+  290|  1.22M|        unsafe fn or(self, vector2: Self) -> __m256i {
+  291|  1.22M|            _mm256_or_si256(self, vector2)
+  292|  1.22M|        }
 
 _RNvMs2_NtCs4LeKDsHh25A_9once_cell3impINtB5_8OnceCellNtNtCsjOdcKtOMjJI_5alloc6string6StringE14is_initializedCs4JyNK9ak0xV_13libfuzzer_sys:
-   49|  1.10k|    pub(crate) fn is_initialized(&self) -> bool {
-   50|  1.10k|        // An `Acquire` load is enough because that makes all the initialization
-   51|  1.10k|        // operations visible to us, and, this being a fast path, weaker
-   52|  1.10k|        // ordering helps with performance. This `Acquire` synchronizes with
-   53|  1.10k|        // `SeqCst` operations on the slow path.
-   54|  1.10k|        self.queue.load(Ordering::Acquire) == COMPLETE_PTR
-   55|  1.10k|    }
+   49|  1.11k|    pub(crate) fn is_initialized(&self) -> bool {
+   50|  1.11k|        // An `Acquire` load is enough because that makes all the initialization
+   51|  1.11k|        // operations visible to us, and, this being a fast path, weaker
+   52|  1.11k|        // ordering helps with performance. This `Acquire` synchronizes with
+   53|  1.11k|        // `SeqCst` operations on the slow path.
+   54|  1.11k|        self.queue.load(Ordering::Acquire) == COMPLETE_PTR
+   55|  1.11k|    }
 
 _RNvMs4_NtCs4LeKDsHh25A_9once_cell4syncINtB5_8OnceCellNtNtCsjOdcKtOMjJI_5alloc6string6StringE3getCs4JyNK9ak0xV_13libfuzzer_sys:
-  963|  1.10k|        pub fn get(&self) -> Option<&T> {
-  964|  1.10k|            if self.0.is_initialized() {
+  963|  1.11k|        pub fn get(&self) -> Option<&T> {
+  964|  1.11k|            if self.0.is_initialized() {
   965|       |                // Safe b/c value is initialized.
   966|      0|                Some(unsafe { self.get_unchecked() })
   967|       |            } else {
-  968|  1.10k|                None
+  968|  1.11k|                None
   969|       |            }
-  970|  1.10k|        }
+  970|  1.11k|        }
 
 _RNvMs_NtCsdBczmAo6fNM_9quick_xml8encodingNtB4_7Decoder6decode:
-   82|    593|    pub fn decode<'b>(&self, bytes: &'b [u8]) -> Result<Cow<'b, str>> {
+   82|    596|    pub fn decode<'b>(&self, bytes: &'b [u8]) -> Result<Cow<'b, str>> {
    83|       |        #[cfg(not(feature = "encoding"))]
-   84|    593|        let decoded = Ok(Cow::Borrowed(std::str::from_utf8(bytes)?));
+   84|    596|        let decoded = Ok(Cow::Borrowed(std::str::from_utf8(bytes)?));
    85|       |
    86|       |        #[cfg(feature = "encoding")]
    87|       |        let decoded = decode(bytes, self.encoding);
    88|       |
-   89|    529|        decoded
-   90|    593|    }
+   89|    532|        decoded
+   90|    596|    }
 
 _RNvXs1_NtCsdBczmAo6fNM_9quick_xml6errorsNtB5_5ErrorINtNtCs9nhK3FOW46N_4core7convert4FromNtNtB7_7escapei11EscapeErrorE4fromB7_:
-   97|    102|    fn from(error: EscapeError) -> Error {
-   98|    102|        Error::EscapeError(error)
-   99|    102|    }
+   97|    103|    fn from(error: EscapeError) -> Error {
+   98|    103|        Error::EscapeError(error)
+   99|    103|    }
 _RNvXs_NtCsdBczmAo6fNM_9quick_xml6errorsNtB4_5ErrorINtNtCs9nhK3FOW46N_4core7convert4FromNtNtNtBR_3str5error9Utf8ErrorE4fromB6_:
    81|     64|    fn from(error: Utf8Error) -> Error {
    82|     64|        Error::NonDecodable(Some(error))
    83|     64|    }
 
 _RNvNtCsdBczmAo6fNM_9quick_xml7escapei12parse_number:
- 1694|  16.3k|fn parse_number(bytes: &str, range: Range<usize>) -> Result<char, EscapeError> {
- 1695|  16.3k|    let code = if let Some(hex_digits) = bytes.strip_prefix('x') {
- 1696|  6.72k|        parse_hexadecimal(hex_digits)
+ 1694|  16.5k|fn parse_number(bytes: &str, range: Range<usize>) -> Result<char, EscapeError> {
+ 1695|  16.5k|    let code = if let Some(hex_digits) = bytes.strip_prefix('x') {
+ 1696|  6.79k|        parse_hexadecimal(hex_digits)
  1697|       |    } else {
- 1698|  9.58k|        parse_decimal(bytes)
+ 1698|  9.71k|        parse_decimal(bytes)
  1699|     18|    }?;
- 1700|  16.2k|    if code == 0 {
- 1701|      7|        return Err(EscapeError::EntityWithNull(range));
- 1702|  16.2k|    }
- 1703|  16.2k|    match std::char::from_u32(code) {
- 1704|  16.2k|        Some(c) => Ok(c),
+ 1700|  16.4k|    if code == 0 {
+ 1701|      8|        return Err(EscapeError::EntityWithNull(range));
+ 1702|  16.4k|    }
+ 1703|  16.4k|    match std::char::from_u32(code) {
+ 1704|  16.4k|        Some(c) => Ok(c),
  1705|     14|        None => Err(EscapeError::InvalidCodepoint(code)),
  1706|       |    }
- 1707|  16.3k|}
+ 1707|  16.5k|}
 _RNvNtCsdBczmAo6fNM_9quick_xml7escapei13parse_decimal:
- 1727|  9.58k|fn parse_decimal(bytes: &str) -> Result<u32, EscapeError> {
- 1728|  9.58k|    // maximum code is 0x10FFFF = 1114111 => 7 characters
- 1729|  9.58k|    if bytes.len() > 7 {
+ 1727|  9.71k|fn parse_decimal(bytes: &str) -> Result<u32, EscapeError> {
+ 1728|  9.71k|    // maximum code is 0x10FFFF = 1114111 => 7 characters
+ 1729|  9.71k|    if bytes.len() > 7 {
  1730|      1|        return Err(EscapeError::TooLongDecimal);
- 1731|  9.58k|    }
- 1732|  9.58k|    let mut code = 0;
- 1733|  41.5k|    for b in bytes.bytes() {
- 1734|  41.5k|        code *= 10;
- 1735|  41.5k|        code += match b {
- 1736|  41.5k|            b'0'..=b'9' => b - b'0',
+ 1731|  9.71k|    }
+ 1732|  9.71k|    let mut code = 0;
+ 1733|  41.8k|    for b in bytes.bytes() {
+ 1734|  41.8k|        code *= 10;
+ 1735|  41.8k|        code += match b {
+ 1736|  41.8k|            b'0'..=b'9' => b - b'0',
  1737|      9|            b => return Err(EscapeError::InvalidDecimal(b as char)),
  1738|       |        } as u32;
  1739|       |    }
- 1740|  9.57k|    Ok(code)
- 1741|  9.58k|}
+ 1740|  9.70k|    Ok(code)
+ 1741|  9.71k|}
 _RNvNtCsdBczmAo6fNM_9quick_xml7escapei17parse_hexadecimal:
- 1709|  6.72k|fn parse_hexadecimal(bytes: &str) -> Result<u32, EscapeError> {
- 1710|  6.72k|    // maximum code is 0x10FFFF => 6 characters
- 1711|  6.72k|    if bytes.len() > 6 {
+ 1709|  6.79k|fn parse_hexadecimal(bytes: &str) -> Result<u32, EscapeError> {
+ 1710|  6.79k|    // maximum code is 0x10FFFF => 6 characters
+ 1711|  6.79k|    if bytes.len() > 6 {
  1712|      1|        return Err(EscapeError::TooLongHexadecimal);
- 1713|  6.72k|    }
- 1714|  6.72k|    let mut code = 0;
- 1715|  15.9k|    for b in bytes.bytes() {
- 1716|  15.9k|        code <<= 4;
- 1717|  15.9k|        code += match b {
- 1718|  15.9k|            b'0'..=b'9' => b - b'0',
+ 1713|  6.78k|    }
+ 1714|  6.78k|    let mut code = 0;
+ 1715|  16.0k|    for b in bytes.bytes() {
+ 1716|  16.0k|        code <<= 4;
+ 1717|  16.0k|        code += match b {
+ 1718|  16.0k|            b'0'..=b'9' => b - b'0',
  1719|  1.07k|            b'a'..=b'f' => b - b'a' + 10,
  1720|     71|            b'A'..=b'F' => b - b'A' + 10,
  1721|      7|            b => return Err(EscapeError::InvalidHexadecimal(b as char)),
  1722|       |        } as u32;
  1723|       |    }
- 1724|  6.71k|    Ok(code)
- 1725|  6.72k|}
+ 1724|  6.78k|    Ok(code)
+ 1725|  6.79k|}
 _RNCINvNtCsdBczmAo6fNM_9quick_xml7escapei13unescape_withNCNvMs7_NtB6_6eventsNtBZ_9BytesText8unescape0E0B6_:
-  174|  24.2k|    while let Some(start) = iter.by_ref().find(|p| bytes[*p] == b'&') {
+  174|  24.4k|    while let Some(start) = iter.by_ref().find(|p| bytes[*p] == b'&') {
 _RNvNtCsdBczmAo6fNM_9quick_xml7escapei12named_entity:
   217|  4.29k|fn named_entity(name: &str) -> Option<&str> {
   218|       |    // match over strings are not allowed in const functions
@@ -1841,33 +1841,33 @@ _RNvNtCsdBczmAo6fNM_9quick_xml7escapei12named_entity:
   227|  4.25k|    Some(s)
   228|  4.29k|}
 _RINvNtCsdBczmAo6fNM_9quick_xml7escapei13unescape_withNCNvMs7_NtB4_6eventsNtBX_9BytesText8unescape0EB4_:
-  162|    438|pub fn unescape_with<'input, 'entity, F>(
-  163|    438|    raw: &'input str,
-  164|    438|    mut resolve_entity: F,
-  165|    438|) -> Result<Cow<'input, str>, EscapeError>
-  166|    438|where
-  167|    438|    // the lifetime of the output comes from a capture or is `'static`
-  168|    438|    F: FnMut(&str) -> Option<&'entity str>,
-  169|    438|{
-  170|    438|    let bytes = raw.as_bytes();
-  171|    438|    let mut unescaped = None;
-  172|    438|    let mut last_end = 0;
-  173|    438|    let mut iter = memchr2_iter(b'&', b';', bytes);
-  174|  20.9k|    while let Some(start) = iter.by_ref().find(|p| bytes[*p] == b'&') {
-  175|  20.6k|        match iter.next() {
-  176|  20.6k|            Some(end) if bytes[end] == b';' => {
-  177|  20.6k|                // append valid data
-  178|  20.6k|                if unescaped.is_none() {
-  179|    360|                    unescaped = Some(String::with_capacity(raw.len()));
-  180|  20.2k|                }
-  181|  20.6k|                let unescaped = unescaped.as_mut().expect("initialized");
-  182|  20.6k|                unescaped.push_str(&raw[last_end..start]);
-  183|  20.6k|
-  184|  20.6k|                // search for character correctness
-  185|  20.6k|                let pat = &raw[start + 1..end];
-  186|  20.6k|                if let Some(entity) = pat.strip_prefix('#') {
-  187|  16.3k|                    let codepoint = parse_number(entity, start..end)?;
-  188|  16.2k|                    unescaped.push_str(codepoint.encode_utf8(&mut [0u8; 4]));
+  162|    441|pub fn unescape_with<'input, 'entity, F>(
+  163|    441|    raw: &'input str,
+  164|    441|    mut resolve_entity: F,
+  165|    441|) -> Result<Cow<'input, str>, EscapeError>
+  166|    441|where
+  167|    441|    // the lifetime of the output comes from a capture or is `'static`
+  168|    441|    F: FnMut(&str) -> Option<&'entity str>,
+  169|    441|{
+  170|    441|    let bytes = raw.as_bytes();
+  171|    441|    let mut unescaped = None;
+  172|    441|    let mut last_end = 0;
+  173|    441|    let mut iter = memchr2_iter(b'&', b';', bytes);
+  174|  21.1k|    while let Some(start) = iter.by_ref().find(|p| bytes[*p] == b'&') {
+  175|  20.8k|        match iter.next() {
+  176|  20.8k|            Some(end) if bytes[end] == b';' => {
+  177|  20.8k|                // append valid data
+  178|  20.8k|                if unescaped.is_none() {
+  179|    363|                    unescaped = Some(String::with_capacity(raw.len()));
+  180|  20.4k|                }
+  181|  20.8k|                let unescaped = unescaped.as_mut().expect("initialized");
+  182|  20.8k|                unescaped.push_str(&raw[last_end..start]);
+  183|  20.8k|
+  184|  20.8k|                // search for character correctness
+  185|  20.8k|                let pat = &raw[start + 1..end];
+  186|  20.8k|                if let Some(entity) = pat.strip_prefix('#') {
+  187|  16.5k|                    let codepoint = parse_number(entity, start..end)?;
+  188|  16.4k|                    unescaped.push_str(codepoint.encode_utf8(&mut [0u8; 4]));
   189|  4.29k|                } else if let Some(value) = named_entity(pat) {
   190|  4.25k|                    unescaped.push_str(value);
   191|  4.25k|                } else if let Some(value) = resolve_entity(pat) {
@@ -1879,21 +1879,21 @@ _RINvNtCsdBczmAo6fNM_9quick_xml7escapei13unescape_withNCNvMs7_NtB4_6eventsNtBX_9
   197|     47|                    ));
   198|       |                }
   199|       |
-  200|  20.5k|                last_end = end + 1;
+  200|  20.7k|                last_end = end + 1;
   201|       |            }
   202|     16|            _ => return Err(EscapeError::UnterminatedEntity(start..raw.len())),
   203|       |        }
   204|       |    }
   205|       |
-  206|    336|    if let Some(mut unescaped) = unescaped {
-  207|    264|        if let Some(raw) = raw.get(last_end..) {
-  208|    264|            unescaped.push_str(raw);
-  209|    264|        }
-  210|    264|        Ok(Cow::Owned(unescaped))
+  206|    338|    if let Some(mut unescaped) = unescaped {
+  207|    266|        if let Some(raw) = raw.get(last_end..) {
+  208|    266|            unescaped.push_str(raw);
+  209|    266|        }
+  210|    266|        Ok(Cow::Owned(unescaped))
   211|       |    } else {
   212|     72|        Ok(Cow::Borrowed(raw))
   213|       |    }
-  214|    438|}
+  214|    441|}
 
 _RNvMNtCsdBczmAo6fNM_9quick_xml6eventsNtB2_10BytesStart10local_nameCsi7rvRgybzn0_10sparesults:
   179|     95|    pub fn local_name(&self) -> LocalName {
@@ -1905,34 +1905,10 @@ _RNvMNtCsdBczmAo6fNM_9quick_xml6eventsNtB2_10BytesStart4nameCsi7rvRgybzn0_10spar
   172|    190|    }
 _RNCNvMs7_NtCsdBczmAo6fNM_9quick_xml6eventsNtB7_9BytesText8unescape0B9_:
   734|     47|        self.unescape_with(|_| None)
-_RINvMs7_NtCsdBczmAo6fNM_9quick_xml6eventsNtB6_9BytesText13unescape_withNCNvB2_8unescape0EB8_:
-  741|    459|    pub fn unescape_with<'entity>(
-  742|    459|        &self,
-  743|    459|        resolve_entity: impl FnMut(&str) -> Option<&'entity str>,
-  744|    459|    ) -> Result<Cow<'a, str>> {
-  745|    459|        let decoded = match &self.content {
-  746|    459|            Cow::Borrowed(bytes) => self.decoder.decode(bytes)?,
-  747|       |            // Convert to owned, because otherwise Cow will be bound with wrong lifetime
-  748|      0|            Cow::Owned(bytes) => self.decoder.decode(bytes)?.into_owned().into(),
-  749|       |        };
-  750|       |
-  751|    438|        match unescape_with(&decoded, resolve_entity)? {
-  752|       |            // Because result is borrowed, no replacements was done and we can use original string
-  753|     72|            Cow::Borrowed(_) => Ok(decoded),
-  754|    264|            Cow::Owned(s) => Ok(s.into()),
-  755|       |        }
-  756|    459|    }
-_RINvMsa_NtCsdBczmAo6fNM_9quick_xml6eventsNtB6_10BytesCData4wrapRShEB8_:
-  823|      1|    pub(crate) fn wrap<C: Into<Cow<'a, [u8]>>>(content: C, decoder: Decoder) -> Self {
-  824|      1|        Self {
-  825|      1|            content: content.into(),
-  826|      1|            decoder,
-  827|      1|        }
-  828|      1|    }
 _RNvMs7_NtCsdBczmAo6fNM_9quick_xml6eventsNtB5_9BytesText8unescape:
-  733|    459|    pub fn unescape(&self) -> Result<Cow<'a, str>> {
-  734|    459|        self.unescape_with(|_| None)
-  735|    459|    }
+  733|    462|    pub fn unescape(&self) -> Result<Cow<'a, str>> {
+  734|    462|        self.unescape_with(|_| None)
+  735|    462|    }
 _RNvMNtCsdBczmAo6fNM_9quick_xml6eventsNtB2_10BytesStart4wrapB4_:
    79|     95|    pub(crate) fn wrap(content: &'a [u8], name_len: usize) -> Self {
    80|     95|        BytesStart {
@@ -1940,13 +1916,37 @@ _RNvMNtCsdBczmAo6fNM_9quick_xml6eventsNtB2_10BytesStart4wrapB4_:
    82|     95|            name_len,
    83|     95|        }
    84|     95|    }
+_RINvMs7_NtCsdBczmAo6fNM_9quick_xml6eventsNtB6_9BytesText13unescape_withNCNvB2_8unescape0EB8_:
+  741|    462|    pub fn unescape_with<'entity>(
+  742|    462|        &self,
+  743|    462|        resolve_entity: impl FnMut(&str) -> Option<&'entity str>,
+  744|    462|    ) -> Result<Cow<'a, str>> {
+  745|    462|        let decoded = match &self.content {
+  746|    462|            Cow::Borrowed(bytes) => self.decoder.decode(bytes)?,
+  747|       |            // Convert to owned, because otherwise Cow will be bound with wrong lifetime
+  748|      0|            Cow::Owned(bytes) => self.decoder.decode(bytes)?.into_owned().into(),
+  749|       |        };
+  750|       |
+  751|    441|        match unescape_with(&decoded, resolve_entity)? {
+  752|       |            // Because result is borrowed, no replacements was done and we can use original string
+  753|     72|            Cow::Borrowed(_) => Ok(decoded),
+  754|    266|            Cow::Owned(s) => Ok(s.into()),
+  755|       |        }
+  756|    462|    }
+_RINvMsa_NtCsdBczmAo6fNM_9quick_xml6eventsNtB6_10BytesCData4wrapRShEB8_:
+  823|      1|    pub(crate) fn wrap<C: Into<Cow<'a, [u8]>>>(content: C, decoder: Decoder) -> Self {
+  824|      1|        Self {
+  825|      1|            content: content.into(),
+  826|      1|            decoder,
+  827|      1|        }
+  828|      1|    }
 _RINvMs7_NtCsdBczmAo6fNM_9quick_xml6eventsNtB6_9BytesText4wrapRShEB8_:
-  684|  13.3k|    pub(crate) fn wrap<C: Into<Cow<'a, [u8]>>>(content: C, decoder: Decoder) -> Self {
-  685|  13.3k|        Self {
-  686|  13.3k|            content: content.into(),
-  687|  13.3k|            decoder,
-  688|  13.3k|        }
-  689|  13.3k|    }
+  684|  13.5k|    pub(crate) fn wrap<C: Into<Cow<'a, [u8]>>>(content: C, decoder: Decoder) -> Self {
+  685|  13.5k|        Self {
+  686|  13.5k|            content: content.into(),
+  687|  13.5k|            decoder,
+  688|  13.5k|        }
+  689|  13.5k|    }
 
 _RNCNvXs4_NtCsdBczmAo6fNM_9quick_xml4nameNtB7_9LocalNameINtNtCs9nhK3FOW46N_4core7convert4FromNtB7_5QNameE4from0Csi7rvRgybzn0_10sparesults:
   174|      3|        Self(name.index().map_or(name.0, |i| &name.0[i + 1..]))
@@ -1968,54 +1968,54 @@ _RNvXs0_NtCsdBczmAo6fNM_9quick_xml4nameNtB5_5QNameINtNtCs9nhK3FOW46N_4core7conve
   126|     95|    }
 
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE8peek_oneCscEMhoEbPSQt_13oxigraph_fuzz:
-  233|  36.9k|        $($async)? fn peek_one(&mut self) -> Result<Option<u8>> {
-  234|  36.9k|            loop {
-  235|  36.9k|                break match self $(.$reader)? .fill_buf() $(.$await)? {
-  236|  36.9k|                    Ok(n) if n.is_empty() => Ok(None),
-  237|  36.9k|                    Ok(n) => Ok(Some(n[0])),
+  233|  37.3k|        $($async)? fn peek_one(&mut self) -> Result<Option<u8>> {
+  234|  37.3k|            loop {
+  235|  37.3k|                break match self $(.$reader)? .fill_buf() $(.$await)? {
+  236|  37.3k|                    Ok(n) if n.is_empty() => Ok(None),
+  237|  37.2k|                    Ok(n) => Ok(Some(n[0])),
   238|      0|                    Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
   239|      0|                    Err(e) => Err(Error::Io(e.into())),
   240|       |                };
   241|       |            }
-  242|  36.9k|        }
+  242|  37.3k|        }
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE17read_bang_elementCscEMhoEbPSQt_13oxigraph_fuzz:
-  100|  9.47k|        $($async)? fn read_bang_element $(<$lf>)? (
-  101|  9.47k|            &mut self,
-  102|  9.47k|            buf: &'b mut Vec<u8>,
-  103|  9.47k|            position: &mut usize,
-  104|  9.47k|        ) -> Result<Option<(BangType, &'b [u8])>> {
-  105|  9.47k|            // Peeked one bang ('!') before being called, so it's guaranteed to
-  106|  9.47k|            // start with it.
-  107|  9.47k|            let start = buf.len();
-  108|  9.47k|            let mut read = 1;
-  109|  9.47k|            buf.push(b'!');
-  110|  9.47k|            self $(.$reader)? .consume(1);
+  100|  9.60k|        $($async)? fn read_bang_element $(<$lf>)? (
+  101|  9.60k|            &mut self,
+  102|  9.60k|            buf: &'b mut Vec<u8>,
+  103|  9.60k|            position: &mut usize,
+  104|  9.60k|        ) -> Result<Option<(BangType, &'b [u8])>> {
+  105|  9.60k|            // Peeked one bang ('!') before being called, so it's guaranteed to
+  106|  9.60k|            // start with it.
+  107|  9.60k|            let start = buf.len();
+  108|  9.60k|            let mut read = 1;
+  109|  9.60k|            buf.push(b'!');
+  110|  9.60k|            self $(.$reader)? .consume(1);
   111|       |
-  112|  9.47k|            let bang_type = BangType::new(self.peek_one() $(.$await)? ?)?;
+  112|  9.60k|            let bang_type = BangType::new(self.peek_one() $(.$await)? ?)?;
   113|       |
-  114|  9.67k|            loop {
-  115|  9.67k|                match self $(.$reader)? .fill_buf() $(.$await)? {
+  114|  9.80k|            loop {
+  115|  9.80k|                match self $(.$reader)? .fill_buf() $(.$await)? {
   116|       |                    // Note: Do not update position, so the error points to
   117|       |                    // somewhere sane rather than at the EOF
-  118|  9.67k|                    Ok(n) if n.is_empty() => return Err(bang_type.to_err()),
-  119|  9.47k|                    Ok(available) => {
+  118|  9.80k|                    Ok(n) if n.is_empty() => return Err(bang_type.to_err()),
+  119|  9.60k|                    Ok(available) => {
   120|       |                        // We only parse from start because we don't want to consider
   121|       |                        // whatever is in the buffer before the bang element
-  122|  9.47k|                        if let Some((consumed, used)) = bang_type.parse(&buf[start..], available) {
-  123|  9.27k|                            buf.extend_from_slice(consumed);
-  124|  9.27k|
-  125|  9.27k|                            self $(.$reader)? .consume(used);
-  126|  9.27k|                            read += used;
-  127|  9.27k|
-  128|  9.27k|                            *position += read;
-  129|  9.27k|                            break;
-  130|    200|                        } else {
-  131|    200|                            buf.extend_from_slice(available);
-  132|    200|
-  133|    200|                            let used = available.len();
-  134|    200|                            self $(.$reader)? .consume(used);
-  135|    200|                            read += used;
-  136|    200|                        }
+  122|  9.60k|                        if let Some((consumed, used)) = bang_type.parse(&buf[start..], available) {
+  123|  9.39k|                            buf.extend_from_slice(consumed);
+  124|  9.39k|
+  125|  9.39k|                            self $(.$reader)? .consume(used);
+  126|  9.39k|                            read += used;
+  127|  9.39k|
+  128|  9.39k|                            *position += read;
+  129|  9.39k|                            break;
+  130|    203|                        } else {
+  131|    203|                            buf.extend_from_slice(available);
+  132|    203|
+  133|    203|                            let used = available.len();
+  134|    203|                            self $(.$reader)? .consume(used);
+  135|    203|                            read += used;
+  136|    203|                        }
   137|       |                    }
   138|      0|                    Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
   139|      0|                    Err(e) => {
@@ -2025,12 +2025,12 @@ _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_
   143|       |                }
   144|       |            }
   145|       |
-  146|  9.27k|            if read == 0 {
+  146|  9.39k|            if read == 0 {
   147|      0|                Ok(None)
   148|       |            } else {
-  149|  9.27k|                Ok(Some((bang_type, &buf[start..])))
+  149|  9.39k|                Ok(Some((bang_type, &buf[start..])))
   150|       |            }
-  151|  9.47k|        }
+  151|  9.60k|        }
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE12read_elementCscEMhoEbPSQt_13oxigraph_fuzz:
   154|     95|        $($async)? fn read_element $(<$lf>)? (
   155|     95|            &mut self,
@@ -2078,72 +2078,72 @@ _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_
   197|       |            }
   198|     95|        }
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE15remove_utf8_bomCscEMhoEbPSQt_13oxigraph_fuzz:
-   18|  1.10k|        $($async)? fn remove_utf8_bom(&mut self) -> Result<()> {
+   18|  1.11k|        $($async)? fn remove_utf8_bom(&mut self) -> Result<()> {
    19|       |            use crate::encoding::UTF8_BOM;
    20|       |
-   21|  1.10k|            loop {
-   22|  1.10k|                break match self $(.$reader)? .fill_buf() $(.$await)? {
-   23|  1.10k|                    Ok(n) => {
-   24|  1.10k|                        if n.starts_with(UTF8_BOM) {
-   25|      3|                            self $(.$reader)? .consume(UTF8_BOM.len());
+   21|  1.11k|            loop {
+   22|  1.11k|                break match self $(.$reader)? .fill_buf() $(.$await)? {
+   23|  1.11k|                    Ok(n) => {
+   24|  1.11k|                        if n.starts_with(UTF8_BOM) {
+   25|      4|                            self $(.$reader)? .consume(UTF8_BOM.len());
    26|  1.10k|                        }
-   27|  1.10k|                        Ok(())
+   27|  1.11k|                        Ok(())
    28|       |                    },
    29|      0|                    Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
    30|      0|                    Err(e) => Err(Error::Io(e.into())),
    31|       |                };
    32|       |            }
-   33|  1.10k|        }
+   33|  1.11k|        }
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE15skip_whitespaceCscEMhoEbPSQt_13oxigraph_fuzz:
-  200|  14.0k|        $($async)? fn skip_whitespace(&mut self, position: &mut usize) -> Result<()> {
-  201|  15.2k|            loop {
-  202|  15.2k|                break match self $(.$reader)? .fill_buf() $(.$await)? {
-  203|  15.2k|                    Ok(n) => {
-  204|  15.2k|                        let count = n.iter().position(|b| !is_whitespace(*b)).unwrap_or(n.len());
-  205|  15.2k|                        if count > 0 {
+  200|  14.1k|        $($async)? fn skip_whitespace(&mut self, position: &mut usize) -> Result<()> {
+  201|  15.3k|            loop {
+  202|  15.3k|                break match self $(.$reader)? .fill_buf() $(.$await)? {
+  203|  15.3k|                    Ok(n) => {
+  204|  15.3k|                        let count = n.iter().position(|b| !is_whitespace(*b)).unwrap_or(n.len());
+  205|  15.3k|                        if count > 0 {
   206|  1.23k|                            self $(.$reader)? .consume(count);
   207|  1.23k|                            *position += count;
   208|  1.23k|                            continue;
   209|       |                        } else {
-  210|  14.0k|                            Ok(())
+  210|  14.1k|                            Ok(())
   211|       |                        }
   212|       |                    }
   213|      0|                    Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
   214|      0|                    Err(e) => Err(Error::Io(e.into())),
   215|       |                };
   216|       |            }
-  217|  14.0k|        }
+  217|  14.1k|        }
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE8skip_oneCscEMhoEbPSQt_13oxigraph_fuzz:
-  219|  14.0k|        $($async)? fn skip_one(&mut self, byte: u8, position: &mut usize) -> Result<bool> {
+  219|  14.1k|        $($async)? fn skip_one(&mut self, byte: u8, position: &mut usize) -> Result<bool> {
   220|       |            // search byte must be within the ascii range
   221|      0|            debug_assert!(byte.is_ascii());
   222|       |
-  223|  14.0k|            match self.peek_one() $(.$await)? ? {
-  224|  13.9k|                Some(b) if b == byte => {
-  225|  13.4k|                    *position += 1;
-  226|  13.4k|                    self $(.$reader)? .consume(1);
-  227|  13.4k|                    Ok(true)
+  223|  14.1k|            match self.peek_one() $(.$await)? ? {
+  224|  14.0k|                Some(b) if b == byte => {
+  225|  13.6k|                    *position += 1;
+  226|  13.6k|                    self $(.$reader)? .consume(1);
+  227|  13.6k|                    Ok(true)
   228|       |                }
-  229|    541|                _ => Ok(false),
+  229|    544|                _ => Ok(false),
   230|       |            }
-  231|  14.0k|        }
+  231|  14.1k|        }
 _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB4_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE16read_bytes_untilCscEMhoEbPSQt_13oxigraph_fuzz:
-   52|  4.44k|        $($async)? fn read_bytes_until $(<$lf>)? (
-   53|  4.44k|            &mut self,
-   54|  4.44k|            byte: u8,
-   55|  4.44k|            buf: &'b mut Vec<u8>,
-   56|  4.44k|            position: &mut usize,
-   57|  4.44k|        ) -> Result<Option<&'b [u8]>> {
+   52|  4.45k|        $($async)? fn read_bytes_until $(<$lf>)? (
+   53|  4.45k|            &mut self,
+   54|  4.45k|            byte: u8,
+   55|  4.45k|            buf: &'b mut Vec<u8>,
+   56|  4.45k|            position: &mut usize,
+   57|  4.45k|        ) -> Result<Option<&'b [u8]>> {
    58|       |            // search byte must be within the ascii range
    59|      0|            debug_assert!(byte.is_ascii());
    60|       |
-   61|  4.44k|            let mut read = 0;
-   62|  4.44k|            let mut done = false;
-   63|  4.44k|            let start = buf.len();
-   64|  8.81k|            while !done {
+   61|  4.45k|            let mut read = 0;
+   62|  4.45k|            let mut done = false;
+   63|  4.45k|            let start = buf.len();
+   64|  8.82k|            while !done {
    65|  4.36k|                let used = {
-   66|  4.97k|                    let available = match self $(.$reader)? .fill_buf() $(.$await)? {
-   67|  4.97k|                        Ok(n) if n.is_empty() => break,
+   66|  4.98k|                    let available = match self $(.$reader)? .fill_buf() $(.$await)? {
+   67|  4.98k|                        Ok(n) if n.is_empty() => break,
    68|  4.36k|                        Ok(n) => n,
    69|      0|                        Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
    70|      0|                        Err(e) => {
@@ -2159,39 +2159,39 @@ _RNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_
    80|  3.83k|                            i + 1
    81|       |                        }
    82|       |                        None => {
-   83|    529|                            buf.extend_from_slice(available);
-   84|    529|                            available.len()
+   83|    532|                            buf.extend_from_slice(available);
+   84|    532|                            available.len()
    85|       |                        }
    86|       |                    }
    87|       |                };
    88|  4.36k|                self $(.$reader)? .consume(used);
    89|  4.36k|                read += used;
    90|       |            }
-   91|  4.44k|            *position += read;
-   92|  4.44k|
-   93|  4.44k|            if read == 0 {
+   91|  4.45k|            *position += read;
+   92|  4.45k|
+   93|  4.45k|            if read == 0 {
    94|     82|                Ok(None)
    95|       |            } else {
    96|  4.36k|                Ok(Some(&buf[start..]))
    97|       |            }
-   98|  4.44k|        }
+   98|  4.45k|        }
 _RNCNvXNtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEINtB6_9XmlSourceQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEE15skip_whitespace0CscEMhoEbPSQt_13oxigraph_fuzz:
-  252|  17.1k|    impl_buffered_source!();
+  252|  17.3k|    impl_buffered_source!();
 _RNvMs_NtNtCsdBczmAo6fNM_9quick_xml6reader15buffered_readerINtB6_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE15read_event_intoCscEMhoEbPSQt_13oxigraph_fuzz:
-  304|  14.0k|    pub fn read_event_into<'b>(&mut self, buf: &'b mut Vec<u8>) -> Result<Event<'b>> {
-  305|  14.0k|        self.read_event_impl(buf)
-  306|  14.0k|    }
+  304|  14.1k|    pub fn read_event_into<'b>(&mut self, buf: &'b mut Vec<u8>) -> Result<Event<'b>> {
+  305|  14.1k|        self.read_event_impl(buf)
+  306|  14.1k|    }
 
 _RNvMs1_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_8BangType3new:
-  807|  9.47k|    fn new(byte: Option<u8>) -> Result<Self> {
-  808|  9.47k|        Ok(match byte {
+  807|  9.60k|    fn new(byte: Option<u8>) -> Result<Self> {
+  808|  9.60k|        Ok(match byte {
   809|     52|            Some(b'[') => Self::CData,
-  810|  8.16k|            Some(b'-') => Self::Comment,
+  810|  8.29k|            Some(b'-') => Self::Comment,
   811|  1.25k|            Some(b'D') | Some(b'd') => Self::DocType,
   812|      1|            Some(b) => return Err(Error::UnexpectedBang(b)),
   813|      5|            None => return Err(Error::UnexpectedEof("Bang".to_string())),
   814|       |        })
-  815|  9.47k|    }
+  815|  9.60k|    }
 _RNvMs2_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_16ReadElementState6change:
   904|     95|    fn change<'b>(&mut self, chunk: &'b [u8]) -> Option<(&'b [u8], usize)> {
   905|  1.87k|        for i in memchr::memchr3_iter(b'>', b'\'', b'"', chunk) {
@@ -2211,32 +2211,32 @@ _RNvMs2_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_16ReadElementState6change:
   919|     85|        None
   920|     95|    }
 _RNvMs1_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_8BangType5parse:
-  824|  9.47k|    fn parse<'b>(&self, buf: &[u8], chunk: &'b [u8]) -> Option<(&'b [u8], usize)> {
-  825|  25.4k|        for i in memchr::memchr_iter(b'>', chunk) {
-  826|  14.2k|            match self {
-  827|  14.2k|                // Need to read at least 6 symbols (`!---->`) for properly finished comment
-  828|  14.2k|                // <!----> - XML comment
-  829|  14.2k|                //  012345 - i
-  830|  14.2k|                Self::Comment if buf.len() + i > 4 => {
-  831|  8.47k|                    if chunk[..i].ends_with(b"--") {
+  824|  9.60k|    fn parse<'b>(&self, buf: &[u8], chunk: &'b [u8]) -> Option<(&'b [u8], usize)> {
+  825|  26.0k|        for i in memchr::memchr_iter(b'>', chunk) {
+  826|  14.5k|            match self {
+  827|  14.5k|                // Need to read at least 6 symbols (`!---->`) for properly finished comment
+  828|  14.5k|                // <!----> - XML comment
+  829|  14.5k|                //  012345 - i
+  830|  14.5k|                Self::Comment if buf.len() + i > 4 => {
+  831|  8.60k|                    if chunk[..i].ends_with(b"--") {
   832|       |                        // We cannot strip last `--` from the buffer because we need it in case of
   833|       |                        // check_comments enabled option. XML standard requires that comment
   834|       |                        // will not end with `--->` sequence because this is a special case of
   835|       |                        // `--` in the comment (https://www.w3.org/TR/xml11/#sec-comments)
-  836|  8.10k|                        return Some((&chunk[..i], i + 1)); // +1 for `>`
-  837|    368|                    }
-  838|    368|                    // End sequence `-|->` was splitted at |
-  839|    368|                    //        buf --/   \-- chunk
-  840|    368|                    if i == 1 && buf.ends_with(b"-") && chunk[0] == b'-' {
+  836|  8.23k|                        return Some((&chunk[..i], i + 1)); // +1 for `>`
+  837|    373|                    }
+  838|    373|                    // End sequence `-|->` was splitted at |
+  839|    373|                    //        buf --/   \-- chunk
+  840|    373|                    if i == 1 && buf.ends_with(b"-") && chunk[0] == b'-' {
   841|      0|                        return Some((&chunk[..i], i + 1)); // +1 for `>`
-  842|    368|                    }
-  843|    368|                    // End sequence `--|>` was splitted at |
-  844|    368|                    //         buf --/   \-- chunk
-  845|    368|                    if i == 0 && buf.ends_with(b"--") {
+  842|    373|                    }
+  843|    373|                    // End sequence `--|>` was splitted at |
+  844|    373|                    //         buf --/   \-- chunk
+  845|    373|                    if i == 0 && buf.ends_with(b"--") {
   846|      0|                        return Some((&[], i + 1)); // +1 for `>`
-  847|    368|                    }
+  847|    373|                    }
   848|       |                }
-  849|  5.76k|                Self::Comment => {}
+  849|  5.89k|                Self::Comment => {}
   850|       |                Self::CData => {
   851|    722|                    if chunk[..i].ends_with(b"]]") {
   852|      8|                        return Some((&chunk[..i], i + 1)); // +1 for `>`
@@ -2253,80 +2253,80 @@ _RNvMs1_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_8BangType5parse:
   863|    714|                    }
   864|       |                }
   865|       |                Self::DocType => {
-  866|  10.5k|                    let content = &chunk[..i];
-  867|  10.5k|                    let balance = memchr::memchr2_iter(b'<', b'>', content)
-  868|  10.5k|                        .map(|p| if content[p] == b'<' { 1i32 } else { -1 })
-  869|  10.5k|                        .sum::<i32>();
-  870|  10.5k|                    if balance == 0 {
+  866|  10.8k|                    let content = &chunk[..i];
+  867|  10.8k|                    let balance = memchr::memchr2_iter(b'<', b'>', content)
+  868|  10.8k|                        .map(|p| if content[p] == b'<' { 1i32 } else { -1 })
+  869|  10.8k|                        .sum::<i32>();
+  870|  10.8k|                    if balance == 0 {
   871|  1.16k|                        return Some((content, i + 1)); // +1 for `>`
-  872|  9.36k|                    }
+  872|  9.64k|                    }
   873|       |                }
   874|       |            }
   875|       |        }
-  876|    200|        None
-  877|  9.47k|    }
+  876|    203|        None
+  877|  9.60k|    }
 _RNvMs1_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_8BangType6to_errCscEMhoEbPSQt_13oxigraph_fuzz:
-  879|    200|    fn to_err(&self) -> Error {
-  880|    200|        let bang_str = match self {
+  879|    203|    fn to_err(&self) -> Error {
+  880|    203|        let bang_str = match self {
   881|     44|            Self::CData => "CData",
-  882|     61|            Self::Comment => "Comment",
-  883|     95|            Self::DocType => "DOCTYPE",
+  882|     62|            Self::Comment => "Comment",
+  883|     97|            Self::DocType => "DOCTYPE",
   884|       |        };
-  885|    200|        Error::UnexpectedEof(bang_str.to_string())
-  886|    200|    }
+  885|    203|        Error::UnexpectedEof(bang_str.to_string())
+  886|    203|    }
 _RNvNtCsdBczmAo6fNM_9quick_xml6reader13is_whitespaceCscEMhoEbPSQt_13oxigraph_fuzz:
-  925|  17.1k|pub(crate) const fn is_whitespace(b: u8) -> bool {
-  926|  17.1k|    matches!(b, b' ' | b'\r' | b'\n' | b'\t')
-  927|  17.1k|}
+  925|  17.3k|pub(crate) const fn is_whitespace(b: u8) -> bool {
+  926|  17.3k|    matches!(b, b' ' | b'\r' | b'\n' | b'\t')
+  927|  17.3k|}
 _RNvMNtCsdBczmAo6fNM_9quick_xml6readerINtB2_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE21expand_empty_elementsCscEMhoEbPSQt_13oxigraph_fuzz:
-   33|  1.10k|        pub fn expand_empty_elements(&mut self, val: bool) -> &mut Self {
-   34|  1.10k|            self $(.$holder)? .state.expand_empty_elements = val;
-   35|  1.10k|            self
-   36|  1.10k|        }
+   33|  1.11k|        pub fn expand_empty_elements(&mut self, val: bool) -> &mut Self {
+   34|  1.11k|            self $(.$holder)? .state.expand_empty_elements = val;
+   35|  1.11k|            self
+   36|  1.11k|        }
 _RNvMNtCsdBczmAo6fNM_9quick_xml6readerINtB2_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE9trim_textCscEMhoEbPSQt_13oxigraph_fuzz:
-   60|  1.10k|        pub fn trim_text(&mut self, val: bool) -> &mut Self {
-   61|  1.10k|            self $(.$holder)? .state.trim_text_start = val;
-   62|  1.10k|            self $(.$holder)? .state.trim_text_end = val;
-   63|  1.10k|            self
-   64|  1.10k|        }
+   60|  1.11k|        pub fn trim_text(&mut self, val: bool) -> &mut Self {
+   61|  1.11k|            self $(.$holder)? .state.trim_text_start = val;
+   62|  1.11k|            self $(.$holder)? .state.trim_text_end = val;
+   63|  1.11k|            self
+   64|  1.11k|        }
 _RINvMs0_NtCsdBczmAo6fNM_9quick_xml6readerINtB6_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE15read_event_implQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEECscEMhoEbPSQt_13oxigraph_fuzz:
-  645|  14.0k|    fn read_event_impl<'i, B>(&mut self, mut buf: B) -> Result<Event<'i>>
-  646|  14.0k|    where
-  647|  14.0k|        R: XmlSource<'i, B>,
-  648|  14.0k|    {
-  649|  27.5k|        read_event_impl!(self, buf, self.reader, read_until_open, read_until_close)
-  650|  14.0k|    }
+  645|  14.1k|    fn read_event_impl<'i, B>(&mut self, mut buf: B) -> Result<Event<'i>>
+  646|  14.1k|    where
+  647|  14.1k|        R: XmlSource<'i, B>,
+  648|  14.1k|    {
+  649|  27.7k|        read_event_impl!(self, buf, self.reader, read_until_open, read_until_close)
+  650|  14.1k|    }
 _RINvMs0_NtCsdBczmAo6fNM_9quick_xml6readerINtB6_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE16read_until_closeQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEECscEMhoEbPSQt_13oxigraph_fuzz:
-  665|  13.4k|    fn read_until_close<'i, B>(&mut self, buf: B) -> Result<Event<'i>>
-  666|  13.4k|    where
-  667|  13.4k|        R: XmlSource<'i, B>,
-  668|  13.4k|    {
-  669|  13.4k|        read_until_close!(self, buf, self.reader)
-  670|  13.4k|    }
+  665|  13.6k|    fn read_until_close<'i, B>(&mut self, buf: B) -> Result<Event<'i>>
+  666|  13.6k|    where
+  667|  13.6k|        R: XmlSource<'i, B>,
+  668|  13.6k|    {
+  669|  13.6k|        read_until_close!(self, buf, self.reader)
+  670|  13.6k|    }
 _RNvMNtCsdBczmAo6fNM_9quick_xml6readerINtB2_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE11from_readerCscEMhoEbPSQt_13oxigraph_fuzz:
-  533|  1.10k|    pub fn from_reader(reader: R) -> Self {
-  534|  1.10k|        Self {
-  535|  1.10k|            reader,
-  536|  1.10k|            state: ReaderState::default(),
-  537|  1.10k|        }
-  538|  1.10k|    }
+  533|  1.11k|    pub fn from_reader(reader: R) -> Self {
+  534|  1.11k|        Self {
+  535|  1.11k|            reader,
+  536|  1.11k|            state: ReaderState::default(),
+  537|  1.11k|        }
+  538|  1.11k|    }
 _RNvMs_NtCsdBczmAo6fNM_9quick_xml6readerINtB4_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE7decoderCscEMhoEbPSQt_13oxigraph_fuzz:
-  635|  1.10k|    pub fn decoder(&self) -> Decoder {
-  636|  1.10k|        self.state.decoder()
-  637|  1.10k|    }
+  635|  1.11k|    pub fn decoder(&self) -> Decoder {
+  636|  1.11k|        self.state.decoder()
+  637|  1.11k|    }
 _RINvMs0_NtCsdBczmAo6fNM_9quick_xml6readerINtB6_6ReaderINtNtNtNtCsc4CYCHgsNRQ_3std2io8buffered9bufreader9BufReaderRShEE15read_until_openQINtNtCsjOdcKtOMjJI_5alloc3vec3VechEECscEMhoEbPSQt_13oxigraph_fuzz:
-  656|  14.0k|    fn read_until_open<'i, B>(&mut self, buf: B) -> Result<std::result::Result<Event<'i>, B>>
-  657|  14.0k|    where
-  658|  14.0k|        R: XmlSource<'i, B>,
-  659|  14.0k|    {
-  660|  14.0k|        read_until_open!(self, buf, self.reader, read_event_impl)
-  661|  14.0k|    }
+  656|  14.1k|    fn read_until_open<'i, B>(&mut self, buf: B) -> Result<std::result::Result<Event<'i>, B>>
+  657|  14.1k|    where
+  658|  14.1k|        R: XmlSource<'i, B>,
+  659|  14.1k|    {
+  660|  14.1k|        read_until_open!(self, buf, self.reader, read_event_impl)
+  661|  14.1k|    }
 _RNvNtCsdBczmAo6fNM_9quick_xml6reader13is_whitespaceB3_:
   925|  9.30k|pub(crate) const fn is_whitespace(b: u8) -> bool {
   926|  9.30k|    matches!(b, b' ' | b'\r' | b'\n' | b'\t')
   927|  9.30k|}
 _RNCNvMs1_NtCsdBczmAo6fNM_9quick_xml6readerNtB7_8BangType5parse0B9_:
-  868|  1.19M|                        .map(|p| if content[p] == b'<' { 1i32 } else { -1 })
+  868|  1.23M|                        .map(|p| if content[p] == b'<' { 1i32 } else { -1 })
 _RNvMs1_NtCsdBczmAo6fNM_9quick_xml6readerNtB5_8BangType6to_errB7_:
   879|    140|    fn to_err(&self) -> Error {
   880|    140|        let bang_str = match self {
@@ -2364,52 +2364,42 @@ _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState18emit_question_
   207|       |        }
   208|  3.86k|    }
 _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState7decoder:
-  261|  14.5k|    pub fn decoder(&self) -> Decoder {
-  262|  14.5k|        Decoder {
-  263|  14.5k|            #[cfg(feature = "encoding")]
-  264|  14.5k|            encoding: self.encoding.encoding(),
-  265|  14.5k|        }
-  266|  14.5k|    }
+  261|  14.6k|    pub fn decoder(&self) -> Decoder {
+  262|  14.6k|        Decoder {
+  263|  14.6k|            #[cfg(feature = "encoding")]
+  264|  14.6k|            encoding: self.encoding.encoding(),
+  265|  14.6k|        }
+  266|  14.6k|    }
 _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState9emit_text:
-   68|    459|    pub fn emit_text<'b>(&mut self, bytes: &'b [u8]) -> Result<Event<'b>> {
-   69|    459|        let mut content = bytes;
-   70|    459|
-   71|    459|        if self.trim_text_end {
-   72|    459|            // Skip the ending '<'
-   73|    459|            let len = bytes
-   74|    459|                .iter()
-   75|    459|                .rposition(|&b| !is_whitespace(b))
-   76|    459|                .map_or_else(|| bytes.len(), |p| p + 1);
-   77|    459|            content = &bytes[..len];
-   78|    459|        }
+   68|    462|    pub fn emit_text<'b>(&mut self, bytes: &'b [u8]) -> Result<Event<'b>> {
+   69|    462|        let mut content = bytes;
+   70|    462|
+   71|    462|        if self.trim_text_end {
+   72|    462|            // Skip the ending '<'
+   73|    462|            let len = bytes
+   74|    462|                .iter()
+   75|    462|                .rposition(|&b| !is_whitespace(b))
+   76|    462|                .map_or_else(|| bytes.len(), |p| p + 1);
+   77|    462|            content = &bytes[..len];
+   78|    462|        }
    79|       |
-   80|    459|        Ok(Event::Text(BytesText::wrap(content, self.decoder())))
-   81|    459|    }
-_RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState9emit_bang0B8_:
-   86|  1.16k|        let uncased_starts_with = |string: &[u8], prefix: &[u8]| {
-   87|  1.16k|            string.len() >= prefix.len() && string[..prefix.len()].eq_ignore_ascii_case(prefix)
-   88|  1.16k|        };
-_RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState8emit_ends_0B8_:
-  150|     39|        let mismatch_err = |expected: String, found: &[u8], offset: &mut usize| {
-  151|     39|            *offset -= buf.len();
-  152|     39|            Err(Error::EndEventMismatch {
-  153|     39|                expected,
-  154|     39|                found: decoder.decode(found).unwrap_or_default().into_owned(),
-  155|     39|            })
-  156|     39|        };
+   80|    462|        Ok(Event::Text(BytesText::wrap(content, self.decoder())))
+   81|    462|    }
 _RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState8emit_end0B8_:
   140|    851|            if let Some(pos_end_name) = content.iter().rposition(|&b| !is_whitespace(b)) {
+_RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState10emit_start0B8_:
+  218|  4.31k|            .position(|&b| is_whitespace(b))
 _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState9emit_bang:
-   85|  9.27k|    pub fn emit_bang<'b>(&mut self, bang_type: BangType, buf: &'b [u8]) -> Result<Event<'b>> {
-   86|  9.27k|        let uncased_starts_with = |string: &[u8], prefix: &[u8]| {
+   85|  9.39k|    pub fn emit_bang<'b>(&mut self, bang_type: BangType, buf: &'b [u8]) -> Result<Event<'b>> {
+   86|  9.39k|        let uncased_starts_with = |string: &[u8], prefix: &[u8]| {
    87|       |            string.len() >= prefix.len() && string[..prefix.len()].eq_ignore_ascii_case(prefix)
    88|       |        };
    89|       |
-   90|  9.27k|        let len = buf.len();
+   90|  9.39k|        let len = buf.len();
    91|  1.16k|        match bang_type {
-   92|  8.10k|            BangType::Comment if buf.starts_with(b"!--") => {
+   92|  8.23k|            BangType::Comment if buf.starts_with(b"!--") => {
    93|      0|                debug_assert!(buf.ends_with(b"--"));
-   94|  8.10k|                if self.check_comments {
+   94|  8.22k|                if self.check_comments {
    95|       |                    // search if '--' not in comments
    96|      0|                    if let Some(p) = memchr::memchr_iter(b'-', &buf[3..len - 2])
    97|      0|                        .position(|p| buf[3 + p + 1] == b'-')
@@ -2417,11 +2407,11 @@ _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState9emit_bang:
    99|      0|                        self.offset += len - p;
   100|      0|                        return Err(Error::UnexpectedToken("--".to_string()));
   101|      0|                    }
-  102|  8.10k|                }
-  103|  8.10k|                Ok(Event::Comment(BytesText::wrap(
-  104|  8.10k|                    &buf[3..len - 2],
-  105|  8.10k|                    self.decoder(),
-  106|  8.10k|                )))
+  102|  8.22k|                }
+  103|  8.22k|                Ok(Event::Comment(BytesText::wrap(
+  104|  8.22k|                    &buf[3..len - 2],
+  105|  8.22k|                    self.decoder(),
+  106|  8.22k|                )))
   107|       |            }
   108|      8|            BangType::CData if uncased_starts_with(buf, b"![CDATA[") => {
   109|      0|                debug_assert!(buf.ends_with(b"]]"));
@@ -2445,11 +2435,9 @@ _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState9emit_bang:
   127|       |            }
   128|    140|            _ => Err(bang_type.to_err()),
   129|       |        }
-  130|  9.27k|    }
-_RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState10emit_start0B8_:
-  218|  4.31k|            .position(|&b| is_whitespace(b))
+  130|  9.39k|    }
 _RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState9emit_texts0_0B8_:
-   76|    459|                .map_or_else(|| bytes.len(), |p| p + 1);
+   76|    462|                .map_or_else(|| bytes.len(), |p| p + 1);
 _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState8emit_end:
   134|     39|    pub fn emit_end<'b>(&mut self, buf: &'b [u8]) -> Result<Event<'b>> {
   135|     39|        // Strip the `/` character. `content` contains data between `</` and `>`
@@ -2530,33 +2518,45 @@ _RNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB2_11ReaderState10emit_start:
   240|       |        }
   241|     95|    }
 _RNvXs_NtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderStateNtNtCs9nhK3FOW46N_4core7default7Default7default:
-  270|  1.10k|    fn default() -> Self {
-  271|  1.10k|        Self {
-  272|  1.10k|            offset: 0,
-  273|  1.10k|            state: ParseState::Init,
-  274|  1.10k|            expand_empty_elements: false,
-  275|  1.10k|            trim_text_start: false,
-  276|  1.10k|            trim_text_end: false,
-  277|  1.10k|            trim_markup_names_in_closing_tags: true,
-  278|  1.10k|            check_end_names: true,
-  279|  1.10k|            check_comments: false,
-  280|  1.10k|            opened_buffer: Vec::new(),
-  281|  1.10k|            opened_starts: Vec::new(),
-  282|  1.10k|
-  283|  1.10k|            #[cfg(feature = "encoding")]
-  284|  1.10k|            encoding: EncodingRef::Implicit(UTF_8),
-  285|  1.10k|        }
-  286|  1.10k|    }
+  270|  1.11k|    fn default() -> Self {
+  271|  1.11k|        Self {
+  272|  1.11k|            offset: 0,
+  273|  1.11k|            state: ParseState::Init,
+  274|  1.11k|            expand_empty_elements: false,
+  275|  1.11k|            trim_text_start: false,
+  276|  1.11k|            trim_text_end: false,
+  277|  1.11k|            trim_markup_names_in_closing_tags: true,
+  278|  1.11k|            check_end_names: true,
+  279|  1.11k|            check_comments: false,
+  280|  1.11k|            opened_buffer: Vec::new(),
+  281|  1.11k|            opened_starts: Vec::new(),
+  282|  1.11k|
+  283|  1.11k|            #[cfg(feature = "encoding")]
+  284|  1.11k|            encoding: EncodingRef::Implicit(UTF_8),
+  285|  1.11k|        }
+  286|  1.11k|    }
 _RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState9emit_text0B8_:
-   75|  1.25k|                .rposition(|&b| !is_whitespace(b))
+   75|  1.26k|                .rposition(|&b| !is_whitespace(b))
+_RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState8emit_ends_0B8_:
+  150|     39|        let mismatch_err = |expected: String, found: &[u8], offset: &mut usize| {
+  151|     39|            *offset -= buf.len();
+  152|     39|            Err(Error::EndEventMismatch {
+  153|     39|                expected,
+  154|     39|                found: decoder.decode(found).unwrap_or_default().into_owned(),
+  155|     39|            })
+  156|     39|        };
+_RNCNvMNtNtCsdBczmAo6fNM_9quick_xml6reader5stateNtB4_11ReaderState9emit_bang0B8_:
+   86|  1.16k|        let uncased_starts_with = |string: &[u8], prefix: &[u8]| {
+   87|  1.16k|            string.len() >= prefix.len() && string[..prefix.len()].eq_ignore_ascii_case(prefix)
+   88|  1.16k|        };
 
 _RNvNtCscEMhoEbPSQt_13oxigraph_fuzz13result_format18fuzz_result_format:
-    6|  1.10k|pub fn fuzz_result_format(format: QueryResultsFormat, data: &[u8]) {
-    7|  1.10k|    let parser = QueryResultsParser::from_format(format);
-    8|  1.10k|    let serializer = QueryResultsSerializer::from_format(format);
+    6|  1.11k|pub fn fuzz_result_format(format: QueryResultsFormat, data: &[u8]) {
+    7|  1.11k|    let parser = QueryResultsParser::from_format(format);
+    8|  1.11k|    let serializer = QueryResultsSerializer::from_format(format);
     9|       |
-   10|  1.10k|    let Ok(reader) = parser.parse_read(data) else {
-   11|  1.10k|        return;
+   10|  1.11k|    let Ok(reader) = parser.parse_read(data) else {
+   11|  1.11k|        return;
    12|       |    };
    13|      0|    match reader {
    14|      0|        FromReadQueryResultsReader::Solutions(solutions) => {
@@ -2608,35 +2608,35 @@ _RNvNtCscEMhoEbPSQt_13oxigraph_fuzz13result_format18fuzz_result_format:
    60|      0|            }
    61|       |        }
    62|       |    }
-   63|  1.10k|}
+   63|  1.11k|}
 
 _RNvXs0_NtCsi7rvRgybzn0_10sparesults5errorNtB5_22QueryResultsParseErrorINtNtCs9nhK3FOW46N_4core7convert4FromNtNtCsdBczmAo6fNM_9quick_xml6errors5ErrorE4fromCscEMhoEbPSQt_13oxigraph_fuzz:
-   42|    460|    fn from(error: quick_xml::Error) -> Self {
-   43|    460|        match error {
+   42|    463|    fn from(error: quick_xml::Error) -> Self {
+   43|    463|        match error {
    44|      0|            quick_xml::Error::Io(error) => {
    45|      0|                Self::Io(Arc::try_unwrap(error).unwrap_or_else(|e| io::Error::new(e.kind(), e)))
    46|       |            }
-   47|    460|            _ => Self::Syntax(QueryResultsSyntaxError(SyntaxErrorKind::Xml(error))),
+   47|    463|            _ => Self::Syntax(QueryResultsSyntaxError(SyntaxErrorKind::Xml(error))),
    48|       |        }
-   49|    460|    }
+   49|    463|    }
 _RNvXs0_NtCsi7rvRgybzn0_10sparesults5errorNtB5_22QueryResultsParseErrorINtNtCs9nhK3FOW46N_4core7convert4FromNtNtCsdBczmAo6fNM_9quick_xml6errors5ErrorE4fromB7_:
-   42|    162|    fn from(error: quick_xml::Error) -> Self {
-   43|    162|        match error {
+   42|    163|    fn from(error: quick_xml::Error) -> Self {
+   43|    163|        match error {
    44|      0|            quick_xml::Error::Io(error) => {
    45|      0|                Self::Io(Arc::try_unwrap(error).unwrap_or_else(|e| io::Error::new(e.kind(), e)))
    46|       |            }
-   47|    162|            _ => Self::Syntax(QueryResultsSyntaxError(SyntaxErrorKind::Xml(error))),
+   47|    163|            _ => Self::Syntax(QueryResultsSyntaxError(SyntaxErrorKind::Xml(error))),
    48|       |        }
-   49|    162|    }
+   49|    163|    }
 _RNvXs9_NtCsi7rvRgybzn0_10sparesults5errorNtB5_22QueryResultsParseErrorINtNtCs9nhK3FOW46N_4core7convert4FromNtB5_23QueryResultsSyntaxErrorE4from:
-    7|    483|#[derive(Debug, thiserror::Error)]
+    7|    485|#[derive(Debug, thiserror::Error)]
 _RINvMs2_NtCsi7rvRgybzn0_10sparesults5errorNtB6_23QueryResultsSyntaxError3msgNtNtCsjOdcKtOMjJI_5alloc6string6StringEB8_:
-   87|    392|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
-   88|    392|        Self(SyntaxErrorKind::Msg {
-   89|    392|            msg: msg.into(),
-   90|    392|            location: None,
-   91|    392|        })
-   92|    392|    }
+   87|    394|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
+   88|    394|        Self(SyntaxErrorKind::Msg {
+   89|    394|            msg: msg.into(),
+   90|    394|            location: None,
+   91|    394|        })
+   92|    394|    }
 _RINvMs2_NtCsi7rvRgybzn0_10sparesults5errorNtB6_23QueryResultsSyntaxError3msgReEB8_:
    87|     91|    pub(crate) fn msg(msg: impl Into<String>) -> Self {
    88|     91|        Self(SyntaxErrorKind::Msg {
@@ -2646,12 +2646,12 @@ _RINvMs2_NtCsi7rvRgybzn0_10sparesults5errorNtB6_23QueryResultsSyntaxError3msgReE
    92|     91|    }
 
 _RINvMNtCsi7rvRgybzn0_10sparesults6parserNtB3_18QueryResultsParser10parse_readRShECscEMhoEbPSQt_13oxigraph_fuzz:
-   83|  1.10k|    pub fn parse_read<R: Read>(
-   84|  1.10k|        &self,
-   85|  1.10k|        reader: R,
-   86|  1.10k|    ) -> Result<FromReadQueryResultsReader<R>, QueryResultsParseError> {
-   87|  1.10k|        Ok(match self.format {
-   88|  1.10k|            QueryResultsFormat::Xml => match FromReadXmlQueryResultsReader::read(reader)? {
+   83|  1.11k|    pub fn parse_read<R: Read>(
+   84|  1.11k|        &self,
+   85|  1.11k|        reader: R,
+   86|  1.11k|    ) -> Result<FromReadQueryResultsReader<R>, QueryResultsParseError> {
+   87|  1.11k|        Ok(match self.format {
+   88|  1.11k|            QueryResultsFormat::Xml => match FromReadXmlQueryResultsReader::read(reader)? {
    89|      0|                FromReadXmlQueryResultsReader::Boolean(r) => FromReadQueryResultsReader::Boolean(r),
    90|       |                FromReadXmlQueryResultsReader::Solutions {
    91|      0|                    solutions,
@@ -2683,32 +2683,32 @@ _RINvMNtCsi7rvRgybzn0_10sparesults6parserNtB3_18QueryResultsParser10parse_readRS
   117|      0|                }),
   118|       |            },
   119|       |        })
-  120|  1.10k|    }
+  120|  1.11k|    }
 _RNvMNtCsi7rvRgybzn0_10sparesults6parserNtB2_18QueryResultsParser11from_formatCscEMhoEbPSQt_13oxigraph_fuzz:
-   54|  1.10k|    pub fn from_format(format: QueryResultsFormat) -> Self {
-   55|  1.10k|        Self { format }
-   56|  1.10k|    }
+   54|  1.11k|    pub fn from_format(format: QueryResultsFormat) -> Self {
+   55|  1.11k|        Self { format }
+   56|  1.11k|    }
 
 _RNvMNtCsi7rvRgybzn0_10sparesults10serializerNtB2_22QueryResultsSerializer11from_formatCscEMhoEbPSQt_13oxigraph_fuzz:
-   55|  1.10k|    pub fn from_format(format: QueryResultsFormat) -> Self {
-   56|  1.10k|        Self { format }
-   57|  1.10k|    }
+   55|  1.11k|    pub fn from_format(format: QueryResultsFormat) -> Self {
+   56|  1.11k|        Self { format }
+   57|  1.11k|    }
 
 _RNvMs0_NtCsi7rvRgybzn0_10sparesults3xmlINtB5_29FromReadXmlQueryResultsReaderRShE4readCscEMhoEbPSQt_13oxigraph_fuzz:
-  229|  1.10k|    pub fn read(read: R) -> Result<Self, QueryResultsParseError> {
-  230|  1.10k|        let mut reader = Reader::from_reader(BufReader::new(read));
-  231|  1.10k|        reader.trim_text(true);
-  232|  1.10k|        reader.expand_empty_elements(true);
-  233|  1.10k|        let mut reader_buffer = Vec::new();
-  234|  1.10k|        let mut inner = XmlInnerQueryResultsReader {
-  235|  1.10k|            state: ResultsState::Start,
-  236|  1.10k|            variables: Vec::new(),
-  237|  1.10k|            decoder: reader.decoder(),
-  238|  1.10k|        };
-  239|  14.0k|        loop {
-  240|  14.0k|            reader_buffer.clear();
-  241|  14.0k|            let event = reader.read_event_into(&mut reader_buffer)?;
-  242|  13.5k|            if let Some(result) = inner.read_event(event)? {
+  229|  1.11k|    pub fn read(read: R) -> Result<Self, QueryResultsParseError> {
+  230|  1.11k|        let mut reader = Reader::from_reader(BufReader::new(read));
+  231|  1.11k|        reader.trim_text(true);
+  232|  1.11k|        reader.expand_empty_elements(true);
+  233|  1.11k|        let mut reader_buffer = Vec::new();
+  234|  1.11k|        let mut inner = XmlInnerQueryResultsReader {
+  235|  1.11k|            state: ResultsState::Start,
+  236|  1.11k|            variables: Vec::new(),
+  237|  1.11k|            decoder: reader.decoder(),
+  238|  1.11k|        };
+  239|  14.1k|        loop {
+  240|  14.1k|            reader_buffer.clear();
+  241|  14.1k|            let event = reader.read_event_into(&mut reader_buffer)?;
+  242|  13.6k|            if let Some(result) = inner.read_event(event)? {
   243|      0|                return Ok(match result {
   244|       |                    XmlInnerQueryResults::Solutions {
   245|      0|                        variables,
@@ -2723,15 +2723,15 @@ _RNvMs0_NtCsi7rvRgybzn0_10sparesults3xmlINtB5_29FromReadXmlQueryResultsReaderRSh
   254|      0|                    },
   255|      0|                    XmlInnerQueryResults::Boolean(value) => Self::Boolean(value),
   256|       |                });
-  257|  12.9k|            }
+  257|  13.0k|            }
   258|       |        }
-  259|  1.10k|    }
+  259|  1.11k|    }
 _RNvMs2_NtCsi7rvRgybzn0_10sparesults3xmlNtB5_26XmlInnerQueryResultsReader10read_event:
-  377|  13.5k|    pub fn read_event(
-  378|  13.5k|        &mut self,
-  379|  13.5k|        event: Event<'_>,
-  380|  13.5k|    ) -> Result<Option<XmlInnerQueryResults>, QueryResultsParseError> {
-  381|  13.5k|        match event {
+  377|  13.6k|    pub fn read_event(
+  378|  13.6k|        &mut self,
+  379|  13.6k|        event: Event<'_>,
+  380|  13.6k|    ) -> Result<Option<XmlInnerQueryResults>, QueryResultsParseError> {
+  381|  13.6k|        match event {
   382|     95|            Event::Start(event) => match self.state {
   383|       |                ResultsState::Start => {
   384|     95|                    if event.local_name().as_ref() == b"sparql" {
@@ -2805,9 +2805,9 @@ _RNvMs2_NtCsi7rvRgybzn0_10sparesults3xmlNtB5_26XmlInnerQueryResultsReader10read_
   452|       |                }
   453|      0|                ResultsState::Boolean => Err(QueryResultsSyntaxError::msg(format!("Unexpected tag inside of <boolean> tag: <{}>", self.decoder.decode(event.name().as_ref())?)).into())
   454|       |            },
-  455|    459|            Event::Text(event) => {
-  456|    459|                let value = event.unescape()?;
-  457|    336|                match self.state {
+  455|    462|            Event::Text(event) => {
+  456|    462|                let value = event.unescape()?;
+  457|    338|                match self.state {
   458|       |                    ResultsState::Boolean => {
   459|      0|                        if value == "true" {
   460|      0|                            Ok(Some(XmlInnerQueryResults::Boolean(true)))
@@ -2817,7 +2817,7 @@ _RNvMs2_NtCsi7rvRgybzn0_10sparesults3xmlNtB5_26XmlInnerQueryResultsReader10read_
   464|      0|                            Err(QueryResultsSyntaxError::msg(format!("Unexpected boolean value. Found '{value}'")).into())
   465|       |                        }
   466|       |                    }
-  467|    336|                    _ => Err(QueryResultsSyntaxError::msg(format!("Unexpected textual value found: '{value}'")).into())
+  467|    338|                    _ => Err(QueryResultsSyntaxError::msg(format!("Unexpected textual value found: '{value}'")).into())
   468|       |                }
   469|       |            }
   470|      0|            Event::End(event) => {
@@ -2832,7 +2832,7 @@ _RNvMs2_NtCsi7rvRgybzn0_10sparesults3xmlNtB5_26XmlInnerQueryResultsReader10read_
   479|       |            }
   480|     90|            Event::Eof => Err(QueryResultsSyntaxError::msg("Unexpected early file end. All results file should have a <head> and a <result> or <boolean> tag").into()),
   481|       |            Event::Comment(_) | Event::Decl(_) | Event::PI(_) | Event::DocType(_) => {
-  482|  12.9k|                Ok(None)
+  482|  13.0k|                Ok(None)
   483|       |            }
   484|      0|            Event::Empty(_) => unreachable!("Empty events are expended"),
   485|       |            Event::CData(_) => {
@@ -2842,5 +2842,5 @@ _RNvMs2_NtCsi7rvRgybzn0_10sparesults3xmlNtB5_26XmlInnerQueryResultsReader10read_
   489|      1|                    .into())
   490|       |            }
   491|       |        }
-  492|  13.5k|    }
+  492|  13.6k|    }
 
