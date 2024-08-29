@@ -433,46 +433,46 @@ _RNvMNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCscdEvteftVc
   187|   111k|                    let mask = eqa.movemask();
   188|   111k|                    if mask.has_non_zero() {
   189|  69.6k|                        return Some(cur.add(topos(mask)));
-  190|  41.5k|                    }
-  191|  41.5k|
-  192|  41.5k|                    let mask = eqb.movemask();
-  193|  41.5k|                    if mask.has_non_zero() {
-  194|  31.8k|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
-  195|  9.75k|                    }
-  196|  9.75k|
-  197|  9.75k|                    let mask = eqc.movemask();
-  198|  9.75k|                    if mask.has_non_zero() {
-  199|  7.45k|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
-  200|  2.30k|                    }
-  201|  2.30k|
-  202|  2.30k|                    let mask = eqd.movemask();
-  203|  2.30k|                    debug_assert!(mask.has_non_zero());
-  204|  2.30k|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
-  205|  8.59k|                }
-  206|  8.59k|                cur = cur.add(Self::LOOP_SIZE);
+  190|  41.4k|                    }
+  191|  41.4k|
+  192|  41.4k|                    let mask = eqb.movemask();
+  193|  41.4k|                    if mask.has_non_zero() {
+  194|  31.7k|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+  195|  9.72k|                    }
+  196|  9.72k|
+  197|  9.72k|                    let mask = eqc.movemask();
+  198|  9.72k|                    if mask.has_non_zero() {
+  199|  7.46k|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+  200|  2.25k|                    }
+  201|  2.25k|
+  202|  2.25k|                    let mask = eqd.movemask();
+  203|  2.25k|                    debug_assert!(mask.has_non_zero());
+  204|  2.25k|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+  205|  8.60k|                }
+  206|  8.60k|                cur = cur.add(Self::LOOP_SIZE);
   207|       |            }
   208|   107k|        }
   209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   210|       |        // loads here, but I believe we are guaranteed that they are aligned
   211|       |        // since `cur` is aligned.
-  212|   157k|        while cur <= end.sub(V::BYTES) {
-  213|  66.4k|            debug_assert!(end.distance(cur) >= V::BYTES);
-  214|  66.4k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  215|  27.9k|                return Some(cur);
-  216|  38.5k|            }
-  217|  38.5k|            cur = cur.add(V::BYTES);
+  212|   158k|        while cur <= end.sub(V::BYTES) {
+  213|  66.9k|            debug_assert!(end.distance(cur) >= V::BYTES);
+  214|  66.9k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  215|  27.8k|                return Some(cur);
+  216|  39.0k|            }
+  217|  39.0k|            cur = cur.add(V::BYTES);
   218|       |        }
   219|       |        // Finally handle any remaining bytes less than the size of V. In this
   220|       |        // case, our pointer may indeed be unaligned and the load may overlap
   221|       |        // with the previous one. But that's okay since we know the previous
   222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
   223|  91.4k|        if cur < end {
-  224|  76.4k|            debug_assert!(end.distance(cur) < V::BYTES);
-  225|  76.4k|            cur = cur.sub(V::BYTES - end.distance(cur));
-  226|  76.4k|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  227|  76.4k|            return self.search_chunk(cur, topos);
-  228|  15.0k|        }
-  229|  15.0k|        None
+  224|  75.8k|            debug_assert!(end.distance(cur) < V::BYTES);
+  225|  75.8k|            cur = cur.sub(V::BYTES - end.distance(cur));
+  226|  75.8k|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  227|  75.8k|            return self.search_chunk(cur, topos);
+  228|  15.6k|        }
+  229|  15.6k|        None
   230|  2.45M|    }
 _RINvMNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
   416|   148k|    unsafe fn search_chunk(
@@ -529,20 +529,20 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   468|  6.57M|        self.s2
   469|  6.57M|    }
 _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE8find_rawBa_:
-  493|   789k|    pub(crate) unsafe fn find_raw(
-  494|   789k|        &self,
-  495|   789k|        start: *const u8,
-  496|   789k|        end: *const u8,
-  497|   789k|    ) -> Option<*const u8> {
-  498|   789k|        // If we want to support vectors bigger than 256 bits, we probably
-  499|   789k|        // need to move up to using a u64 for the masks used below. Currently
-  500|   789k|        // they are 32 bits, which means we're SOL for vectors that need masks
-  501|   789k|        // bigger than 32 bits. Overall unclear until there's a use case.
-  502|   789k|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+  493|   788k|    pub(crate) unsafe fn find_raw(
+  494|   788k|        &self,
+  495|   788k|        start: *const u8,
+  496|   788k|        end: *const u8,
+  497|   788k|    ) -> Option<*const u8> {
+  498|   788k|        // If we want to support vectors bigger than 256 bits, we probably
+  499|   788k|        // need to move up to using a u64 for the masks used below. Currently
+  500|   788k|        // they are 32 bits, which means we're SOL for vectors that need masks
+  501|   788k|        // bigger than 32 bits. Overall unclear until there's a use case.
+  502|   788k|        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
   503|       |
-  504|   789k|        let topos = V::Mask::first_offset;
-  505|   789k|        let len = end.distance(start);
-  506|   789k|        debug_assert!(
+  504|   788k|        let topos = V::Mask::first_offset;
+  505|   788k|        let len = end.distance(start);
+  506|   788k|        debug_assert!(
   507|      0|            len >= V::BYTES,
   508|      0|            "haystack has length {}, but must be at least {}",
   509|       |            len,
@@ -551,7 +551,7 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   512|       |
   513|       |        // Search a possibly unaligned chunk at `start`. This covers any part
   514|       |        // of the haystack prior to where aligned loads can start.
-  515|   789k|        if let Some(cur) = self.search_chunk(start, topos) {
+  515|   788k|        if let Some(cur) = self.search_chunk(start, topos) {
   516|   432k|            return Some(cur);
   517|   356k|        }
   518|   356k|        // Set `cur` to the first V-aligned pointer greater than `start`.
@@ -587,11 +587,11 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   548|       |        // loads here, but I believe we are guaranteed that they are aligned
   549|       |        // since `cur` is aligned.
   550|   382k|        while cur <= end.sub(V::BYTES) {
-  551|  27.3k|            debug_assert!(end.distance(cur) >= V::BYTES);
-  552|  27.3k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  551|  27.2k|            debug_assert!(end.distance(cur) >= V::BYTES);
+  552|  27.2k|            if let Some(cur) = self.search_chunk(cur, topos) {
   553|  1.40k|                return Some(cur);
-  554|  25.9k|            }
-  555|  25.9k|            cur = cur.add(V::BYTES);
+  554|  25.8k|            }
+  555|  25.8k|            cur = cur.add(V::BYTES);
   556|       |        }
   557|       |        // Finally handle any remaining bytes less than the size of V. In this
   558|       |        // case, our pointer may indeed be unaligned and the load may overlap
@@ -602,9 +602,9 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   563|   346k|            cur = cur.sub(V::BYTES - end.distance(cur));
   564|   346k|            debug_assert_eq!(end.distance(cur), V::BYTES);
   565|   346k|            return self.search_chunk(cur, topos);
-  566|  9.05k|        }
-  567|  9.05k|        None
-  568|   789k|    }
+  566|  9.10k|        }
+  567|  9.10k|        None
+  568|   788k|    }
 _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteftVc2_4core9core_arch3x867___m256iE8find_rawBa_:
   493|  34.1M|    pub(crate) unsafe fn find_raw(
   494|  34.1M|        &self,
@@ -650,12 +650,12 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   534|  2.21M|                if or3.movemask_will_have_non_zero() {
   535|   249k|                    let mask = eqa1.movemask().or(eqa2.movemask());
   536|   249k|                    if mask.has_non_zero() {
-  537|   167k|                        return Some(cur.add(topos(mask)));
-  538|  82.1k|                    }
-  539|  82.1k|
-  540|  82.1k|                    let mask = eqb1.movemask().or(eqb2.movemask());
-  541|  82.1k|                    debug_assert!(mask.has_non_zero());
-  542|  82.1k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
+  537|   168k|                        return Some(cur.add(topos(mask)));
+  538|  81.6k|                    }
+  539|  81.6k|
+  540|  81.6k|                    let mask = eqb1.movemask().or(eqb2.movemask());
+  541|  81.6k|                    debug_assert!(mask.has_non_zero());
+  542|  81.6k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
   543|  1.96M|                }
   544|  1.96M|                cur = cur.add(Self::LOOP_SIZE);
   545|       |            }
@@ -663,12 +663,12 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   547|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   548|       |        // loads here, but I believe we are guaranteed that they are aligned
   549|       |        // since `cur` is aligned.
-  550|  1.91M|        while cur <= end.sub(V::BYTES) {
-  551|   436k|            debug_assert!(end.distance(cur) >= V::BYTES);
-  552|   436k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  553|  19.3k|                return Some(cur);
-  554|   416k|            }
-  555|   416k|            cur = cur.add(V::BYTES);
+  550|  1.92M|        while cur <= end.sub(V::BYTES) {
+  551|   450k|            debug_assert!(end.distance(cur) >= V::BYTES);
+  552|   450k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  553|  19.1k|                return Some(cur);
+  554|   431k|            }
+  555|   431k|            cur = cur.add(V::BYTES);
   556|       |        }
   557|       |        // Finally handle any remaining bytes less than the size of V. In this
   558|       |        // case, our pointer may indeed be unaligned and the load may overlap
@@ -679,8 +679,8 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   563|  1.44M|            cur = cur.sub(V::BYTES - end.distance(cur));
   564|  1.44M|            debug_assert_eq!(end.distance(cur), V::BYTES);
   565|  1.44M|            return self.search_chunk(cur, topos);
-  566|  25.4k|        }
-  567|  25.4k|        None
+  566|  30.2k|        }
+  567|  30.2k|        None
   568|  34.1M|    }
 _RINvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE12search_chunkNvYNtNtBb_6vector16SensibleMoveMaskNtB26_8MoveMask12first_offsetEBb_:
   670|  1.16M|    unsafe fn search_chunk(
@@ -715,7 +715,7 @@ _RINvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCscdEvtef
   681|  32.6M|            let mask2 = eq2.movemask();
   682|  32.6M|            Some(cur.add(mask_to_offset(mask1.or(mask2))))
   683|       |        } else {
-  684|  3.45M|            None
+  684|  3.46M|            None
   685|       |        }
   686|  36.0M|    }
 _RNvMs0_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE3newBb_:
@@ -828,12 +828,12 @@ _RNvMs0_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCscdEvt
   829|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   830|       |        // loads here, but I believe we are guaranteed that they are aligned
   831|       |        // since `cur` is aligned.
-  832|  6.53k|        while cur <= end.sub(V::BYTES) {
+  832|  6.52k|        while cur <= end.sub(V::BYTES) {
   833|  3.26k|            debug_assert!(end.distance(cur) >= V::BYTES);
   834|  3.26k|            if let Some(cur) = self.search_chunk(cur, topos) {
   835|  2.34k|                return Some(cur);
-  836|    924|            }
-  837|    924|            cur = cur.add(V::BYTES);
+  836|    922|            }
+  837|    922|            cur = cur.add(V::BYTES);
   838|       |        }
   839|       |        // Finally handle any remaining bytes less than the size of V. In this
   840|       |        // case, our pointer may indeed be unaligned and the load may overlap
@@ -899,15 +899,15 @@ _RNvMs0_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCscdEvt
   813|   685k|                        .or(eqa2.movemask())
   814|   685k|                        .or(eqa3.movemask());
   815|   685k|                    if mask.has_non_zero() {
-  816|   525k|                        return Some(cur.add(topos(mask)));
-  817|   159k|                    }
-  818|   159k|
-  819|   159k|                    let mask = eqb1
-  820|   159k|                        .movemask()
-  821|   159k|                        .or(eqb2.movemask())
-  822|   159k|                        .or(eqb3.movemask());
-  823|   159k|                    debug_assert!(mask.has_non_zero());
-  824|   159k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
+  816|   524k|                        return Some(cur.add(topos(mask)));
+  817|   161k|                    }
+  818|   161k|
+  819|   161k|                    let mask = eqb1
+  820|   161k|                        .movemask()
+  821|   161k|                        .or(eqb2.movemask())
+  822|   161k|                        .or(eqb3.movemask());
+  823|   161k|                    debug_assert!(mask.has_non_zero());
+  824|   161k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
   825|  2.04M|                }
   826|  2.04M|                cur = cur.add(Self::LOOP_SIZE);
   827|       |            }
@@ -915,24 +915,24 @@ _RNvMs0_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_5ThreeNtNtNtCscdEvt
   829|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   830|       |        // loads here, but I believe we are guaranteed that they are aligned
   831|       |        // since `cur` is aligned.
-  832|  51.0k|        while cur <= end.sub(V::BYTES) {
+  832|  48.7k|        while cur <= end.sub(V::BYTES) {
   833|  34.1k|            debug_assert!(end.distance(cur) >= V::BYTES);
   834|  34.1k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  835|  21.5k|                return Some(cur);
-  836|  12.5k|            }
-  837|  12.5k|            cur = cur.add(V::BYTES);
+  835|  23.9k|                return Some(cur);
+  836|  10.1k|            }
+  837|  10.1k|            cur = cur.add(V::BYTES);
   838|       |        }
   839|       |        // Finally handle any remaining bytes less than the size of V. In this
   840|       |        // case, our pointer may indeed be unaligned and the load may overlap
   841|       |        // with the previous one. But that's okay since we know the previous
   842|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  843|  16.9k|        if cur < end {
-  844|  16.9k|            debug_assert!(end.distance(cur) < V::BYTES);
-  845|  16.9k|            cur = cur.sub(V::BYTES - end.distance(cur));
-  846|  16.9k|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  847|  16.9k|            return self.search_chunk(cur, topos);
-  848|     16|        }
-  849|     16|        None
+  843|  14.6k|        if cur < end {
+  844|  14.6k|            debug_assert!(end.distance(cur) < V::BYTES);
+  845|  14.6k|            cur = cur.sub(V::BYTES - end.distance(cur));
+  846|  14.6k|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  847|  14.6k|            return self.search_chunk(cur, topos);
+  848|     20|        }
+  849|     20|        None
   850|  4.27M|    }
 _RINvMs0_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB6_5ThreeNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE12search_chunkNvYNtNtBc_6vector16SensibleMoveMaskNtB29_8MoveMask12first_offsetEBc_:
   962|   101k|    unsafe fn search_chunk(
@@ -971,7 +971,7 @@ _RINvMs0_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB6_5ThreeNtNtNtCscdEv
   975|  3.58M|            let mask3 = eq3.movemask();
   976|  3.58M|            Some(cur.add(mask_to_offset(mask1.or(mask2).or(mask3))))
   977|       |        } else {
-  978|   737k|            None
+  978|   735k|            None
   979|       |        }
   980|  4.32M|    }
 _RINvNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchr16fwd_byte_by_byteNCNvMNtNtNtB6_6x86_644avx26memchrNtB1a_3One8find_raw0EB8_:
@@ -1169,7 +1169,7 @@ _RNvMs2_NtNtNtNtCseJq1f3D7C0A_6memchr4arch6x86_644avx26memchrNtB5_3Two8find_rawB
   670|       |            } else {
   671|       |                // SAFETY: We require the caller to pass valid start/end
   672|       |                // pointers.
-  673|   789k|                self.find_raw_sse2(start, end)
+  673|   788k|                self.find_raw_sse2(start, end)
   674|       |            };
   675|  34.1M|        }
   676|  34.1M|        // SAFETY: Building a `Two` means it's safe to call both 'sse2' and
@@ -1196,13 +1196,13 @@ _RNCNvMs2_NtNtNtNtCseJq1f3D7C0A_6memchr4arch6x86_644avx26memchrNtB7_3Two8find_ra
   668|  6.78M|                    b == self.sse2.needle1() || b == self.sse2.needle2()
   669|  6.78M|                })
 _RNvMs2_NtNtNtNtCseJq1f3D7C0A_6memchr4arch6x86_644avx26memchrNtB5_3Two13find_raw_sse2Bd_:
-  764|   789k|    unsafe fn find_raw_sse2(
-  765|   789k|        &self,
-  766|   789k|        start: *const u8,
-  767|   789k|        end: *const u8,
-  768|   789k|    ) -> Option<*const u8> {
-  769|   789k|        self.sse2.find_raw(start, end)
-  770|   789k|    }
+  764|   788k|    unsafe fn find_raw_sse2(
+  765|   788k|        &self,
+  766|   788k|        start: *const u8,
+  767|   788k|        end: *const u8,
+  768|   788k|    ) -> Option<*const u8> {
+  769|   788k|        self.sse2.find_raw(start, end)
+  770|   788k|    }
 _RNvMs2_NtNtNtNtCseJq1f3D7C0A_6memchr4arch6x86_644avx26memchrNtB5_3Two13find_raw_avx2Bd_:
   804|  34.1M|    unsafe fn find_raw_avx2(
   805|  34.1M|        &self,
@@ -2500,51 +2500,51 @@ _RNvMNtCscXEpi1jYvvk_10ppv_lite864softINtB2_2x2INtNtNtNtB4_6x86_644sse24avx212u3
    16|  6.19M|        x2(xs, PhantomData)
    17|  6.19M|    }
 _RNvXsJ_NtCscXEpi1jYvvk_10ppv_lite864softINtB5_2x2INtNtNtNtB7_6x86_644sse24avx212u32x4x2_avx2NtBS_4NoNIENtBQ_2G0ENtNtNtCscdEvteftVc2_4core3ops3bit6BitXor6bitxorCs9UY6Ucr4wbE_11rand_chacha:
-   24|  2.17M|            fn $fn(self, rhs: Self) -> Self::Output {
-   25|  2.17M|                x2::new([self.0[0].$fn(rhs.0[0]), self.0[1].$fn(rhs.0[1])])
-   26|  2.17M|            }
+   24|  2.16M|            fn $fn(self, rhs: Self) -> Self::Output {
+   25|  2.16M|                x2::new([self.0[0].$fn(rhs.0[0]), self.0[1].$fn(rhs.0[1])])
+   26|  2.16M|            }
 _RNvXsP_NtCscXEpi1jYvvk_10ppv_lite864softINtB5_2x2INtNtNtNtB7_6x86_644sse24avx212u32x4x2_avx2NtBS_4NoNIENtBQ_2G0ENtNtNtCscdEvteftVc2_4core3ops5arith9AddAssign10add_assignCs9UY6Ucr4wbE_11rand_chacha:
-   34|  2.17M|            fn $fn_assign(&mut self, rhs: Self) {
-   35|  2.17M|                (self.0[0]).$fn_assign(rhs.0[0]);
-   36|  2.17M|                (self.0[1]).$fn_assign(rhs.0[1]);
-   37|  2.17M|            }
+   34|  2.16M|            fn $fn_assign(&mut self, rhs: Self) {
+   35|  2.16M|                (self.0[0]).$fn_assign(rhs.0[0]);
+   36|  2.16M|                (self.0[1]).$fn_assign(rhs.0[1]);
+   37|  2.16M|            }
 _RNvXs_NtCscXEpi1jYvvk_10ppv_lite864softINtB4_2x2INtNtNtNtB6_6x86_644sse24avx212u32x4x2_avx2NtBR_4NoNIENtBP_2G0ENtNtB6_5types16RotateEachWord3224rotate_each_word_right16Cs9UY6Ucr4wbE_11rand_chacha:
-   44|   543k|        fn $fn(self) -> Self {
-   45|   543k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
-   46|   543k|        }
+   44|   542k|        fn $fn(self) -> Self {
+   45|   542k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
+   46|   542k|        }
 _RNvXs_NtCscXEpi1jYvvk_10ppv_lite864softINtB4_2x2INtNtNtNtB6_6x86_644sse24avx212u32x4x2_avx2NtBR_4NoNIENtBP_2G0ENtNtB6_5types16RotateEachWord3224rotate_each_word_right20Cs9UY6Ucr4wbE_11rand_chacha:
-   44|   543k|        fn $fn(self) -> Self {
-   45|   543k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
-   46|   543k|        }
+   44|   542k|        fn $fn(self) -> Self {
+   45|   542k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
+   46|   542k|        }
 _RNvXs_NtCscXEpi1jYvvk_10ppv_lite864softINtB4_2x2INtNtNtNtB6_6x86_644sse24avx212u32x4x2_avx2NtBR_4NoNIENtBP_2G0ENtNtB6_5types16RotateEachWord3224rotate_each_word_right24Cs9UY6Ucr4wbE_11rand_chacha:
-   44|   543k|        fn $fn(self) -> Self {
-   45|   543k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
-   46|   543k|        }
+   44|   542k|        fn $fn(self) -> Self {
+   45|   542k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
+   46|   542k|        }
 _RNvXs_NtCscXEpi1jYvvk_10ppv_lite864softINtB4_2x2INtNtNtNtB6_6x86_644sse24avx212u32x4x2_avx2NtBR_4NoNIENtBP_2G0ENtNtB6_5types16RotateEachWord3224rotate_each_word_right25Cs9UY6Ucr4wbE_11rand_chacha:
-   44|   543k|        fn $fn(self) -> Self {
-   45|   543k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
-   46|   543k|        }
+   44|   542k|        fn $fn(self) -> Self {
+   45|   542k|            x2::new([self.0[0].$fn(), self.0[1].$fn()])
+   46|   542k|        }
 _RNvXsg_NtCscXEpi1jYvvk_10ppv_lite864softINtB5_2x2INtNtNtNtB7_6x86_644sse24avx212u32x4x2_avx2NtBS_4NoNIENtBQ_2G0ENtNtB7_5types10LaneWords422shuffle_lane_words1230Cs9UY6Ucr4wbE_11rand_chacha:
-  210|   543k|    fn shuffle_lane_words1230(self) -> Self {
-  211|   543k|        Self::new([
-  212|   543k|            self.0[0].shuffle_lane_words1230(),
-  213|   543k|            self.0[1].shuffle_lane_words1230(),
-  214|   543k|        ])
-  215|   543k|    }
+  210|   542k|    fn shuffle_lane_words1230(self) -> Self {
+  211|   542k|        Self::new([
+  212|   542k|            self.0[0].shuffle_lane_words1230(),
+  213|   542k|            self.0[1].shuffle_lane_words1230(),
+  214|   542k|        ])
+  215|   542k|    }
 _RNvXsg_NtCscXEpi1jYvvk_10ppv_lite864softINtB5_2x2INtNtNtNtB7_6x86_644sse24avx212u32x4x2_avx2NtBS_4NoNIENtBQ_2G0ENtNtB7_5types10LaneWords422shuffle_lane_words2301Cs9UY6Ucr4wbE_11rand_chacha:
-  203|   543k|    fn shuffle_lane_words2301(self) -> Self {
-  204|   543k|        Self::new([
-  205|   543k|            self.0[0].shuffle_lane_words2301(),
-  206|   543k|            self.0[1].shuffle_lane_words2301(),
-  207|   543k|        ])
-  208|   543k|    }
+  203|   542k|    fn shuffle_lane_words2301(self) -> Self {
+  204|   542k|        Self::new([
+  205|   542k|            self.0[0].shuffle_lane_words2301(),
+  206|   542k|            self.0[1].shuffle_lane_words2301(),
+  207|   542k|        ])
+  208|   542k|    }
 _RNvXsg_NtCscXEpi1jYvvk_10ppv_lite864softINtB5_2x2INtNtNtNtB7_6x86_644sse24avx212u32x4x2_avx2NtBS_4NoNIENtBQ_2G0ENtNtB7_5types10LaneWords422shuffle_lane_words3012Cs9UY6Ucr4wbE_11rand_chacha:
-  217|   543k|    fn shuffle_lane_words3012(self) -> Self {
-  218|   543k|        Self::new([
-  219|   543k|            self.0[0].shuffle_lane_words3012(),
-  220|   543k|            self.0[1].shuffle_lane_words3012(),
-  221|   543k|        ])
-  222|   543k|    }
+  217|   542k|    fn shuffle_lane_words3012(self) -> Self {
+  218|   542k|        Self::new([
+  219|   542k|            self.0[0].shuffle_lane_words3012(),
+  220|   542k|            self.0[1].shuffle_lane_words3012(),
+  221|   542k|        ])
+  222|   542k|    }
 
 _RINvYINtNtCscXEpi1jYvvk_10ppv_lite866x86_6410SseMachineNtB6_5YesS3NtB6_5YesS4NtB6_4NoNIENtNtB8_5types7Machine7read_leINtNtB6_4sse210u32x4_sse2BR_B12_B1d_EECs9UY6Ucr4wbE_11rand_chacha:
   259|    354|    fn read_le<V>(self, input: &[u8]) -> V
@@ -2561,9 +2561,9 @@ _RINvYINtNtCscXEpi1jYvvk_10ppv_lite866x86_6411Avx2MachineNtB6_4NoNIENtNtB8_5type
   255|  45.2k|        V::from_lanes(a)
   256|  45.2k|    }
 _RINvYINtNtCscXEpi1jYvvk_10ppv_lite866x86_6411Avx2MachineNtB6_4NoNIENtNtB8_5types7Machine6unpackNtB6_14vec128_storageINtNtB6_4sse210u32x4_sse2NtB6_5YesS3NtB6_5YesS4BS_EECs9UY6Ucr4wbE_11rand_chacha:
-  246|   407k|    fn unpack<S, V: Store<S>>(self, s: S) -> V {
-  247|   407k|        unsafe { V::unpack(s) }
-  248|   407k|    }
+  246|   406k|    fn unpack<S, V: Store<S>>(self, s: S) -> V {
+  247|   406k|        unsafe { V::unpack(s) }
+  248|   406k|    }
 _RINvYINtNtCscXEpi1jYvvk_10ppv_lite866x86_6411Avx2MachineNtB6_4NoNIENtNtB8_5types7Machine6unpackNtB6_14vec512_storageINtNtB8_4soft2x2INtNtNtB6_4sse24avx212u32x4x2_avx2BS_ENtB2b_2G0EECs9UY6Ucr4wbE_11rand_chacha:
   246|  45.2k|    fn unpack<S, V: Store<S>>(self, s: S) -> V {
   247|  45.2k|        unsafe { V::unpack(s) }
@@ -2677,36 +2677,36 @@ _RNvMsZ_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3N
    72|  2.53M|                }
    73|  2.53M|            }
 _RNvXs0_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIEINtNtBb_5types5StoreNtB9_14vec256_storageE6unpackCs9UY6Ucr4wbE_11rand_chacha:
- 1406|  90.5k|        unsafe fn unpack(p: vec256_storage) -> Self {
- 1407|  90.5k|            Self::new(p.avx)
- 1408|  90.5k|        }
+ 1406|  90.4k|        unsafe fn unpack(p: vec256_storage) -> Self {
+ 1407|  90.4k|            Self::new(p.avx)
+ 1408|  90.4k|        }
 _RNvXs10_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB6_10u32x4_sse2NtB8_5YesS3NtB8_5YesS4NtB8_4NoNIENtNtBa_5types10StoreBytes14unsafe_read_leCs9UY6Ucr4wbE_11rand_chacha:
    81|    354|            unsafe fn unsafe_read_le(input: &[u8]) -> Self {
    82|    354|                assert_eq!(input.len(), 16);
    83|    354|                Self::new(_mm_loadu_si128(input.as_ptr() as *const _))
    84|    354|            }
 _RNvXs10_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB6_10u32x4_sse2NtB8_5YesS3NtB8_5YesS4NtB8_4NoNIENtNtBa_5types10StoreBytes8write_leCs9UY6Ucr4wbE_11rand_chacha:
-   91|   724k|            fn write_le(self, out: &mut [u8]) {
-   92|   724k|                assert_eq!(out.len(), 16);
-   93|   724k|                unsafe { _mm_storeu_si128(out.as_mut_ptr() as *mut _, self.x) }
-   94|   724k|            }
+   91|   723k|            fn write_le(self, out: &mut [u8]) {
+   92|   723k|                assert_eq!(out.len(), 16);
+   93|   723k|                unsafe { _mm_storeu_si128(out.as_mut_ptr() as *mut _, self.x) }
+   94|   723k|            }
 _RNvXs20_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB6_10u32x4_sse2NtB8_5YesS3NtB8_5YesS4NtB8_4NoNIENtNtNtCscdEvteftVc2_4core3ops5arith3Add3addCs9UY6Ucr4wbE_11rand_chacha:
-   19|   724k|            fn $fn(self, rhs: Self) -> Self::Output {
-   20|   724k|                Self::new(unsafe { $impl_fn(self.x, rhs.x) })
-   21|   724k|            }
+   19|   723k|            fn $fn(self, rhs: Self) -> Self::Output {
+   20|   723k|                Self::new(unsafe { $impl_fn(self.x, rhs.x) })
+   21|   723k|            }
 _RNvXs2_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIEINtNtBb_5types9MultiLaneAINtB7_10u32x4_sse2NtB9_5YesS3NtB9_5YesS4B1c_Ej2_E10from_lanesCs9UY6Ucr4wbE_11rand_chacha:
- 1443|   362k|        fn from_lanes(x: [u32x4_sse2<YesS3, YesS4, NI>; 2]) -> Self {
- 1444|   362k|            Self::new(unsafe { _mm256_setr_m128i(x[0].x, x[1].x) })
- 1445|   362k|        }
+ 1443|   361k|        fn from_lanes(x: [u32x4_sse2<YesS3, YesS4, NI>; 2]) -> Self {
+ 1444|   361k|            Self::new(unsafe { _mm256_setr_m128i(x[0].x, x[1].x) })
+ 1445|   361k|        }
 _RNvXs2_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIEINtNtBb_5types9MultiLaneAINtB7_10u32x4_sse2NtB9_5YesS3NtB9_5YesS4B1c_Ej2_E8to_lanesCs9UY6Ucr4wbE_11rand_chacha:
- 1434|   362k|        fn to_lanes(self) -> [u32x4_sse2<YesS3, YesS4, NI>; 2] {
- 1435|   362k|            unsafe {
- 1436|   362k|                [
- 1437|   362k|                    u32x4_sse2::new(_mm256_extracti128_si256(self.x, 0)),
- 1438|   362k|                    u32x4_sse2::new(_mm256_extracti128_si256(self.x, 1)),
- 1439|   362k|                ]
- 1440|   362k|            }
- 1441|   362k|        }
+ 1434|   361k|        fn to_lanes(self) -> [u32x4_sse2<YesS3, YesS4, NI>; 2] {
+ 1435|   361k|            unsafe {
+ 1436|   361k|                [
+ 1437|   361k|                    u32x4_sse2::new(_mm256_extracti128_si256(self.x, 0)),
+ 1438|   361k|                    u32x4_sse2::new(_mm256_extracti128_si256(self.x, 1)),
+ 1439|   361k|                ]
+ 1440|   361k|            }
+ 1441|   361k|        }
 _RNvXs6_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIEINtNtB9_5types9MultiLaneAmj4_E10from_lanesCs9UY6Ucr4wbE_11rand_chacha:
   333|  45.2k|    fn from_lanes(xs: [u32; 4]) -> Self {
   334|  45.2k|        unsafe {
@@ -2716,13 +2716,13 @@ _RNvXs6_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3N
   338|  45.2k|        }
   339|  45.2k|    }
 _RNvXs6_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIEINtNtB9_5types9MultiLaneAmj4_E8to_lanesCs9UY6Ucr4wbE_11rand_chacha:
-  325|   181k|    fn to_lanes(self) -> [u32; 4] {
-  326|   181k|        unsafe {
-  327|   181k|            let x = _mm_cvtsi128_si64(self.x) as u64;
-  328|   181k|            let y = _mm_extract_epi64(self.x, 1) as u64;
-  329|   181k|            [x as u32, (x >> 32) as u32, y as u32, (y >> 32) as u32]
-  330|   181k|        }
-  331|   181k|    }
+  325|   180k|    fn to_lanes(self) -> [u32; 4] {
+  326|   180k|        unsafe {
+  327|   180k|            let x = _mm_cvtsi128_si64(self.x) as u64;
+  328|   180k|            let y = _mm_extract_epi64(self.x, 1) as u64;
+  329|   180k|            [x as u32, (x >> 32) as u32, y as u32, (y >> 32) as u32]
+  330|   180k|        }
+  331|   180k|    }
 _RNvXs6_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIENtNtBb_5types16RotateEachWord3224rotate_each_word_right16Cs9UY6Ucr4wbE_11rand_chacha:
  1474|  1.08M|            fn $name(self) -> Self {
  1475|  1.08M|                Self::new(unsafe {
@@ -2754,9 +2754,9 @@ _RNvXs6_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB
  1490|  1.08M|                })
  1491|  1.08M|            }
 _RNvXsX_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIEINtNtB9_5types5StoreNtB7_14vec128_storageE6unpackCs9UY6Ucr4wbE_11rand_chacha:
-   54|   407k|            unsafe fn unpack(x: vec128_storage) -> Self {
-   55|   407k|                Self::new(x.sse2)
-   56|   407k|            }
+   54|   406k|            unsafe fn unpack(x: vec128_storage) -> Self {
+   55|   406k|                Self::new(x.sse2)
+   56|   406k|            }
 _RNvXsc_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIENtNtBb_5types10LaneWords422shuffle_lane_words1230Cs9UY6Ucr4wbE_11rand_chacha:
  1586|  1.08M|        fn shuffle_lane_words1230(self) -> Self {
  1587|  1.08M|            Self::new(unsafe { _mm256_shuffle_epi32(self.x, 0b1001_0011) })
@@ -2777,21 +2777,21 @@ _RNvXse_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtNtBb_4soft2x2INtB5_1
  1610|  45.2k|            ])
  1611|  45.2k|        }
 _RNvXsf_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtNtBb_4soft2x2INtB5_12u32x4x2_avx2NtB9_4NoNIENtB7_2G0EINtNtBb_5types9MultiLaneAINtB7_10u32x4_sse2NtB9_5YesS3NtB9_5YesS4B1s_Ej4_E10from_lanesCs9UY6Ucr4wbE_11rand_chacha:
- 1621|   181k|        fn from_lanes(x: [u32x4_sse2<YesS3, YesS4, NI>; 4]) -> Self {
- 1622|   181k|            let ab = u32x4x2_avx2::from_lanes([x[0], x[1]]);
- 1623|   181k|            let cd = u32x4x2_avx2::from_lanes([x[2], x[3]]);
- 1624|   181k|            Self::new([ab, cd])
- 1625|   181k|        }
+ 1621|   180k|        fn from_lanes(x: [u32x4_sse2<YesS3, YesS4, NI>; 4]) -> Self {
+ 1622|   180k|            let ab = u32x4x2_avx2::from_lanes([x[0], x[1]]);
+ 1623|   180k|            let cd = u32x4x2_avx2::from_lanes([x[2], x[3]]);
+ 1624|   180k|            Self::new([ab, cd])
+ 1625|   180k|        }
 _RNvXsf_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtNtBb_4soft2x2INtB5_12u32x4x2_avx2NtB9_4NoNIENtB7_2G0EINtNtBb_5types9MultiLaneAINtB7_10u32x4_sse2NtB9_5YesS3NtB9_5YesS4B1s_Ej4_E8to_lanesCs9UY6Ucr4wbE_11rand_chacha:
- 1615|   181k|        fn to_lanes(self) -> [u32x4_sse2<YesS3, YesS4, NI>; 4] {
- 1616|   181k|            let [a, b] = self.0[0].to_lanes();
- 1617|   181k|            let [c, d] = self.0[1].to_lanes();
- 1618|   181k|            [a, b, c, d]
- 1619|   181k|        }
+ 1615|   180k|        fn to_lanes(self) -> [u32x4_sse2<YesS3, YesS4, NI>; 4] {
+ 1616|   180k|            let [a, b] = self.0[0].to_lanes();
+ 1617|   180k|            let [c, d] = self.0[1].to_lanes();
+ 1618|   180k|            [a, b, c, d]
+ 1619|   180k|        }
 _RNvXsl_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIEINtNtB9_5types4Vec4mE6insertCs9UY6Ucr4wbE_11rand_chacha:
-  525|   633k|    fn insert(self, v: u32, i: u32) -> Self {
-  526|   633k|        Self::new(unsafe {
-  527|   633k|            match i {
+  525|   632k|    fn insert(self, v: u32, i: u32) -> Self {
+  526|   632k|        Self::new(unsafe {
+  527|   632k|            match i {
   528|   316k|                0 => _mm_insert_epi32(self.x, v as i32, 0),
   529|   316k|                1 => _mm_insert_epi32(self.x, v as i32, 1),
   530|      0|                2 => _mm_insert_epi32(self.x, v as i32, 2),
@@ -2799,27 +2799,27 @@ _RNvXsl_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3N
   532|      0|                _ => unreachable!(),
   533|       |            }
   534|       |        })
-  535|   633k|    }
+  535|   632k|    }
 _RNvXsl_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIEINtNtB9_5types4Vec4mE7extractCs9UY6Ucr4wbE_11rand_chacha:
-  521|   181k|    fn extract(self, i: u32) -> u32 {
-  522|   181k|        self.to_lanes()[i as usize]
-  523|   181k|    }
+  521|   180k|    fn extract(self, i: u32) -> u32 {
+  522|   180k|        self.to_lanes()[i as usize]
+  523|   180k|    }
 _RNvXst_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIENtNtNtCscdEvteftVc2_4core3ops5arith9AddAssign10add_assignCs9UY6Ucr4wbE_11rand_chacha:
- 1531|  4.34M|                fn $assign_fn(&mut self, rhs: Self) {
- 1532|  4.34M|                    *self = self.$bin_fn(rhs);
- 1533|  4.34M|                }
+ 1531|  4.33M|                fn $assign_fn(&mut self, rhs: Self) {
+ 1532|  4.33M|                    *self = self.$bin_fn(rhs);
+ 1533|  4.33M|                }
 _RNvXsu_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIENtNtNtCscdEvteftVc2_4core3ops3bit6BitXor6bitxorCs9UY6Ucr4wbE_11rand_chacha:
- 1547|  4.34M|                fn $op_fn(self, rhs: Self) -> Self::Output {
- 1548|  4.34M|                    Self::new(unsafe { $impl_fn(self.x, rhs.x) })
- 1549|  4.34M|                }
+ 1547|  4.33M|                fn $op_fn(self, rhs: Self) -> Self::Output {
+ 1548|  4.33M|                    Self::new(unsafe { $impl_fn(self.x, rhs.x) })
+ 1549|  4.33M|                }
 _RNvXsy_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIENtNtNtCscdEvteftVc2_4core3ops5arith3Add3addCs9UY6Ucr4wbE_11rand_chacha:
- 1547|  4.34M|                fn $op_fn(self, rhs: Self) -> Self::Output {
- 1548|  4.34M|                    Self::new(unsafe { $impl_fn(self.x, rhs.x) })
- 1549|  4.34M|                }
+ 1547|  4.33M|                fn $op_fn(self, rhs: Self) -> Self::Output {
+ 1548|  4.33M|                    Self::new(unsafe { $impl_fn(self.x, rhs.x) })
+ 1549|  4.33M|                }
 _RNvXsY_NtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse2NtB7_14vec128_storageINtNtCscdEvteftVc2_4core7convert4FromINtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIEE4fromCs9UY6Ucr4wbE_11rand_chacha:
-   60|  45.6k|            fn from(x: $vec<S3, S4, NI>) -> Self {
-   61|  45.6k|                vec128_storage { sse2: x.x }
-   62|  45.6k|            }
+   60|  45.5k|            fn from(x: $vec<S3, S4, NI>) -> Self {
+   61|  45.5k|                vec128_storage { sse2: x.x }
+   62|  45.5k|            }
 _RNvXsj_NtNtNtCscXEpi1jYvvk_10ppv_lite866x86_644sse24avx2NtB9_14vec512_storageINtNtCscdEvteftVc2_4core7convert4FromINtNtBb_4soft2x2INtB5_12u32x4x2_avx2NtB9_4NoNIENtB7_2G0EE4fromCs9UY6Ucr4wbE_11rand_chacha:
  1687|  45.2k|        fn from(x: u32x4x4_avx2<NI>) -> Self {
  1688|  45.2k|            Self {
@@ -4899,24 +4899,24 @@ _RNvMs2_NtCs4QWtT85WPeh_9quick_xml6writerNtB5_11Indentation6ensure:
   648|   396k|    }
 
 _RINvXs2_NtNtCscp4ngNs6yIk_4rand13distributions7integerNtB8_8StandardINtNtB8_12distribution12DistributionoE6sampleNtNtNtBa_4rngs6thread9ThreadRngECs4sYt0urF4vM_8oxrdfxml:
-   51|   724k|    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> u128 {
-   52|   724k|        // Use LE; we explicitly generate one value before the next.
-   53|   724k|        let x = u128::from(rng.next_u64());
-   54|   724k|        let y = u128::from(rng.next_u64());
-   55|   724k|        (y << 64) | x
-   56|   724k|    }
+   51|   723k|    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> u128 {
+   52|   723k|        // Use LE; we explicitly generate one value before the next.
+   53|   723k|        let x = u128::from(rng.next_u64());
+   54|   723k|        let y = u128::from(rng.next_u64());
+   55|   723k|        (y << 64) | x
+   56|   723k|    }
 
 _RINvCscp4ngNs6yIk_4rand6randomoECs4sYt0urF4vM_8oxrdfxml:
-  183|   724k|pub fn random<T>() -> T
-  184|   724k|where Standard: Distribution<T> {
-  185|   724k|    thread_rng().gen()
-  186|   724k|}
+  183|   723k|pub fn random<T>() -> T
+  184|   723k|where Standard: Distribution<T> {
+  185|   723k|    thread_rng().gen()
+  186|   723k|}
 
 _RINvYNtNtNtCscp4ngNs6yIk_4rand4rngs6thread9ThreadRngNtNtB9_3rng3Rng3genoECs4sYt0urF4vM_8oxrdfxml:
-   93|   724k|    fn gen<T>(&mut self) -> T
-   94|   724k|    where Standard: Distribution<T> {
-   95|   724k|        Standard.sample(self)
-   96|   724k|    }
+   93|   723k|    fn gen<T>(&mut self) -> T
+   94|   723k|    where Standard: Distribution<T> {
+   95|   723k|        Standard.sample(self)
+   96|   723k|    }
 
 _RNvXs_NtNtNtCscp4ngNs6yIk_4rand4rngs7adapter9reseedingINtB4_12ReseedingRngNtNtCs9UY6Ucr4wbE_11rand_chacha6chacha12ChaCha12CoreNtNtCsaHtvKV6mKDH_9rand_core2os5OsRngENtB24_7RngCore8next_u64Cs4sYt0urF4vM_8oxrdfxml:
   124|  1.44M|    fn next_u64(&mut self) -> u64 {
@@ -5052,12 +5052,12 @@ _RNvXs_NtNtCscp4ngNs6yIk_4rand4rngs6threadNtB4_9ThreadRngNtCsaHtvKV6mKDH_9rand_c
   113|  1.44M|        rng.next_u64()
   114|  1.44M|    }
 _RNvNtNtCscp4ngNs6yIk_4rand4rngs6thread10thread_rng:
-   88|   724k|pub fn thread_rng() -> ThreadRng {
-   89|   724k|    let rng = THREAD_RNG_KEY.with(|t| t.clone());
-   90|   724k|    ThreadRng { rng }
-   91|   724k|}
+   88|   723k|pub fn thread_rng() -> ThreadRng {
+   89|   723k|    let rng = THREAD_RNG_KEY.with(|t| t.clone());
+   90|   723k|    ThreadRng { rng }
+   91|   723k|}
 _RNCNvNtNtCscp4ngNs6yIk_4rand4rngs6thread10thread_rng0B7_:
-   89|   724k|    let rng = THREAD_RNG_KEY.with(|t| t.clone());
+   89|   723k|    let rng = THREAD_RNG_KEY.with(|t| t.clone());
 
 _RNvXsl_NtCs9UY6Ucr4wbE_11rand_chacha6chachaNtB5_12ChaCha12CoreNtNtCsaHtvKV6mKDH_9rand_core5block12BlockRngCore8generateCscp4ngNs6yIk_4rand:
    89|  45.2k|            fn generate(&mut self, r: &mut Self::Results) {
@@ -5104,17 +5104,17 @@ _RNvMNtCs9UY6Ucr4wbE_11rand_chacha4gutsNtB2_6ChaCha7refill4:
    85|  45.2k|        refill_wide(self, drounds, out)
    86|  45.2k|    }
 _RINvNtCs9UY6Ucr4wbE_11rand_chacha4guts5roundINtNtCscXEpi1jYvvk_10ppv_lite864soft2x2INtNtNtNtBL_6x86_644sse24avx212u32x4x2_avx2NtB1q_4NoNIENtB1o_2G0EEB4_:
-   43|   543k|pub(crate) fn round<V: ArithOps + BitOps32>(mut x: State<V>) -> State<V> {
-   44|   543k|    x.a += x.b;
-   45|   543k|    x.d = (x.d ^ x.a).rotate_each_word_right16();
-   46|   543k|    x.c += x.d;
-   47|   543k|    x.b = (x.b ^ x.c).rotate_each_word_right20();
-   48|   543k|    x.a += x.b;
-   49|   543k|    x.d = (x.d ^ x.a).rotate_each_word_right24();
-   50|   543k|    x.c += x.d;
-   51|   543k|    x.b = (x.b ^ x.c).rotate_each_word_right25();
-   52|   543k|    x
-   53|   543k|}
+   43|   542k|pub(crate) fn round<V: ArithOps + BitOps32>(mut x: State<V>) -> State<V> {
+   44|   542k|    x.a += x.b;
+   45|   542k|    x.d = (x.d ^ x.a).rotate_each_word_right16();
+   46|   542k|    x.c += x.d;
+   47|   542k|    x.b = (x.b ^ x.c).rotate_each_word_right20();
+   48|   542k|    x.a += x.b;
+   49|   542k|    x.d = (x.d ^ x.a).rotate_each_word_right24();
+   50|   542k|    x.c += x.d;
+   51|   542k|    x.b = (x.b ^ x.c).rotate_each_word_right25();
+   52|   542k|    x
+   53|   542k|}
 _RINvNtCs9UY6Ucr4wbE_11rand_chacha4guts11diagonalizeINtNtCscXEpi1jYvvk_10ppv_lite864soft2x2INtNtNtNtBS_6x86_644sse24avx212u32x4x2_avx2NtB1x_4NoNIENtB1v_2G0EEB4_:
    56|   271k|pub(crate) fn diagonalize<V: LaneWords4>(mut x: State<V>) -> State<V> {
    57|   271k|    x.b = x.b.shuffle_lane_words3012();
@@ -5130,10 +5130,10 @@ _RINvNtCs9UY6Ucr4wbE_11rand_chacha4guts13undiagonalizeINtNtCscXEpi1jYvvk_10ppv_l
    67|   271k|    x
    68|   271k|}
 _RINvMNtCs9UY6Ucr4wbE_11rand_chacha4gutsNtB3_6ChaCha5pos64INtNtCscXEpi1jYvvk_10ppv_lite866x86_6411Avx2MachineNtBW_4NoNIEEB5_:
-   77|  90.5k|    fn pos64<M: Machine>(&self, m: M) -> u64 {
-   78|  90.5k|        let d: M::u32x4 = m.unpack(self.d);
-   79|  90.5k|        ((d.extract(1) as u64) << 32) | d.extract(0) as u64
-   80|  90.5k|    }
+   77|  90.4k|    fn pos64<M: Machine>(&self, m: M) -> u64 {
+   78|  90.4k|        let d: M::u32x4 = m.unpack(self.d);
+   79|  90.4k|        ((d.extract(1) as u64) << 32) | d.extract(0) as u64
+   80|  90.4k|    }
 _RINvNtCs9UY6Ucr4wbE_11rand_chacha4guts16refill_wide_implINtNtCscXEpi1jYvvk_10ppv_lite866x86_6411Avx2MachineNtBV_4NoNIEEB4_:
   116|  45.2k|fn refill_wide_impl<Mach: Machine>(
   117|  45.2k|    m: Mach, state: &mut ChaCha, drounds: u32, out: &mut [u8; BUFSZ],
@@ -5182,12 +5182,12 @@ _RINvNtCs9UY6Ucr4wbE_11rand_chacha4guts16refill_wide_implINtNtCscXEpi1jYvvk_10pp
   160|  45.2k|    let sd = [m.unpack(state.d), d1, d2, d3];
   161|  45.2k|    state.d = d4.into();
   162|  45.2k|    let mut words = out.chunks_exact_mut(16);
-  163|   181k|    for ((((&a, &b), &c), &d), &sd) in a.iter().zip(&b).zip(&c).zip(&d).zip(&sd) {
-  164|   181k|        (a + k).write_le(words.next().unwrap());
-  165|   181k|        (b + sb).write_le(words.next().unwrap());
-  166|   181k|        (c + sc).write_le(words.next().unwrap());
-  167|   181k|        (d + sd).write_le(words.next().unwrap());
-  168|   181k|    }
+  163|   180k|    for ((((&a, &b), &c), &d), &sd) in a.iter().zip(&b).zip(&c).zip(&d).zip(&sd) {
+  164|   180k|        (a + k).write_le(words.next().unwrap());
+  165|   180k|        (b + sb).write_le(words.next().unwrap());
+  166|   180k|        (c + sc).write_le(words.next().unwrap());
+  167|   180k|        (d + sd).write_le(words.next().unwrap());
+  168|   180k|    }
   169|  45.2k|}
 _RNvNtCs9UY6Ucr4wbE_11rand_chacha4guts10read_u32le:
   229|    354|fn read_u32le(xs: &[u8]) -> u32 {
@@ -5298,15 +5298,15 @@ _RNvXNtCs5bAalg3UUEX_9thiserror7displayRNtCs8SDT0Q3242W_5oxiri13IriParseErrorNtB
 _RNvNvNtNtCscp4ngNs6yIk_4rand4rngs6thread14THREAD_RNG_KEY6___initB7_:
    82|      1|            fn __init() -> $t { $init }
 _RNvNvNtNtCscp4ngNs6yIk_4rand4rngs6thread14THREAD_RNG_KEY7___getitB7_:
-   85|   724k|            unsafe fn __getit(
-   86|   724k|                init: $crate::option::Option<&mut $crate::option::Option<$t>>,
-   87|   724k|            ) -> $crate::option::Option<&'static $t> {
-   88|   724k|                #[thread_local]
-   89|   724k|                static __KEY: $crate::thread::local_impl::Key<$t> =
-   90|   724k|                    $crate::thread::local_impl::Key::<$t>::new();
-   91|   724k|
-   92|   724k|                unsafe {
-   93|   724k|                    __KEY.get(move || {
+   85|   723k|            unsafe fn __getit(
+   86|   723k|                init: $crate::option::Option<&mut $crate::option::Option<$t>>,
+   87|   723k|            ) -> $crate::option::Option<&'static $t> {
+   88|   723k|                #[thread_local]
+   89|   723k|                static __KEY: $crate::thread::local_impl::Key<$t> =
+   90|   723k|                    $crate::thread::local_impl::Key::<$t>::new();
+   91|   723k|
+   92|   723k|                unsafe {
+   93|   723k|                    __KEY.get(move || {
    94|       |                        if let $crate::option::Option::Some(init) = init {
    95|       |                            if let $crate::option::Option::Some(value) = init.take() {
    96|       |                                return value;
@@ -5315,9 +5315,9 @@ _RNvNvNtNtCscp4ngNs6yIk_4rand4rngs6thread14THREAD_RNG_KEY7___getitB7_:
    99|       |                            }
   100|       |                        }
   101|       |                        __init()
-  102|   724k|                    })
-  103|   724k|                }
-  104|   724k|            }
+  102|   723k|                    })
+  103|   723k|                }
+  104|   723k|            }
 _RNCNvNvNtNtCscp4ngNs6yIk_4rand4rngs6thread14THREAD_RNG_KEY7___getit0B9_:
    93|      1|                    __KEY.get(move || {
    94|      1|                        if let $crate::option::Option::Some(init) = init {
@@ -5398,28 +5398,28 @@ _RNvMs7_NtCs1JxAZnM7jd_5oxrdf10blank_nodeNtB5_5IdStr6as_strCs2kjnqOcnWhU_7rdf_xm
   267|   683k|        str::from_utf8(&self.0[..len]).unwrap()
   268|   683k|    }
 _RNvMs7_NtCs1JxAZnM7jd_5oxrdf10blank_nodeNtB5_5IdStr3newCs4sYt0urF4vM_8oxrdfxml:
-  258|   724k|    fn new(id: u128) -> Self {
-  259|   724k|        let mut str = [0; 32];
-  260|   724k|        write!(&mut str[..], "{id:x}").unwrap();
-  261|   724k|        Self(str)
-  262|   724k|    }
+  258|   723k|    fn new(id: u128) -> Self {
+  259|   723k|        let mut str = [0; 32];
+  260|   723k|        write!(&mut str[..], "{id:x}").unwrap();
+  261|   723k|        Self(str)
+  262|   723k|    }
 _RNvMs7_NtCs1JxAZnM7jd_5oxrdf10blank_nodeNtB5_5IdStr6as_strCs4sYt0urF4vM_8oxrdfxml:
-  265|   724k|    fn as_str(&self) -> &str {
-  266|   724k|        let len = self.0.iter().position(|x| x == &0).unwrap_or(32);
-  267|   724k|        str::from_utf8(&self.0[..len]).unwrap()
-  268|   724k|    }
+  265|   723k|    fn as_str(&self) -> &str {
+  266|   723k|        let len = self.0.iter().position(|x| x == &0).unwrap_or(32);
+  267|   723k|        str::from_utf8(&self.0[..len]).unwrap()
+  268|   723k|    }
 _RNvXs0_NtCs1JxAZnM7jd_5oxrdf10blank_nodeNtB5_9BlankNodeNtNtCscdEvteftVc2_4core7default7Default7defaultCs4sYt0urF4vM_8oxrdfxml:
   109|   289k|    fn default() -> Self {
   110|       |        // We ensure the ID does not start with a number to be also valid with RDF/XML
-  111|   724k|        loop {
-  112|   724k|            let id = random();
-  113|   724k|            let str = IdStr::new(id);
-  114|   724k|            if matches!(str.as_str().as_bytes().first(), Some(b'a'..=b'f')) {
+  111|   723k|        loop {
+  112|   723k|            let id = random();
+  113|   723k|            let str = IdStr::new(id);
+  114|   723k|            if matches!(str.as_str().as_bytes().first(), Some(b'a'..=b'f')) {
   115|   289k|                return Self(BlankNodeContent::Anonymous {
   116|   289k|                    id: id.to_ne_bytes(),
   117|   289k|                    str,
   118|   289k|                });
-  119|   434k|            }
+  119|   433k|            }
   120|       |        }
   121|   289k|    }
 _RINvMNtCs1JxAZnM7jd_5oxrdf10blank_nodeNtB3_9BlankNode13new_uncheckedNtNtCs3OstG5Tqy1X_5alloc6string6StringEB5_:
@@ -5971,7 +5971,7 @@ _RNCNvMNtCs1JxAZnM7jd_5oxrdf7datasetNtB4_7Dataset33canonicalize_interned_blank_n
 _RNCNvMNtCs1JxAZnM7jd_5oxrdf7datasetNtB4_7Dataset11hash_bnodes0B6_:
   680|  84.4k|            .map(|bnode| (*bnode, true))
 _RNCNvMNtCs1JxAZnM7jd_5oxrdf7datasetNtB4_7Dataset11hash_bnodess_0B6_:
-  715|  75.0k|        partition.sort_unstable_by(|(h1, b1), (h2, b2)| (b1.len(), h1).cmp(&(b2.len(), h2)));
+  715|  75.2k|        partition.sort_unstable_by(|(h1, b1), (h2, b2)| (b1.len(), h1).cmp(&(b2.len(), h2)));
 _RINvMNtCs1JxAZnM7jd_5oxrdf7datasetNtB3_7Dataset10hash_tupleNtNtB5_10named_node12NamedNodeRefEB5_:
   803|   341k|    fn hash_tuple(v: impl Hash) -> u64 {
   804|   341k|        let mut hasher = DefaultHasher::new();
