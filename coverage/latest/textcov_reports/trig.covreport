@@ -362,38 +362,38 @@ _RNvMNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCscdEvteftVc
   170|  5.28k|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
   171|  5.28k|        if len >= Self::LOOP_SIZE {
   172|  4.19k|            while cur <= end.sub(Self::LOOP_SIZE) {
-  173|  1.99k|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  173|  1.98k|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
   174|       |
-  175|  1.99k|                let a = V::load_aligned(cur);
-  176|  1.99k|                let b = V::load_aligned(cur.add(1 * V::BYTES));
-  177|  1.99k|                let c = V::load_aligned(cur.add(2 * V::BYTES));
-  178|  1.99k|                let d = V::load_aligned(cur.add(3 * V::BYTES));
-  179|  1.99k|                let eqa = self.v1.cmpeq(a);
-  180|  1.99k|                let eqb = self.v1.cmpeq(b);
-  181|  1.99k|                let eqc = self.v1.cmpeq(c);
-  182|  1.99k|                let eqd = self.v1.cmpeq(d);
-  183|  1.99k|                let or1 = eqa.or(eqb);
-  184|  1.99k|                let or2 = eqc.or(eqd);
-  185|  1.99k|                let or3 = or1.or(or2);
-  186|  1.99k|                if or3.movemask_will_have_non_zero() {
-  187|    230|                    let mask = eqa.movemask();
-  188|    230|                    if mask.has_non_zero() {
-  189|     62|                        return Some(cur.add(topos(mask)));
-  190|    168|                    }
-  191|    168|
-  192|    168|                    let mask = eqb.movemask();
-  193|    168|                    if mask.has_non_zero() {
-  194|     94|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
-  195|     74|                    }
-  196|     74|
-  197|     74|                    let mask = eqc.movemask();
-  198|     74|                    if mask.has_non_zero() {
-  199|     30|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
-  200|     44|                    }
-  201|     44|
-  202|     44|                    let mask = eqd.movemask();
-  203|     44|                    debug_assert!(mask.has_non_zero());
-  204|     44|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+  175|  1.98k|                let a = V::load_aligned(cur);
+  176|  1.98k|                let b = V::load_aligned(cur.add(1 * V::BYTES));
+  177|  1.98k|                let c = V::load_aligned(cur.add(2 * V::BYTES));
+  178|  1.98k|                let d = V::load_aligned(cur.add(3 * V::BYTES));
+  179|  1.98k|                let eqa = self.v1.cmpeq(a);
+  180|  1.98k|                let eqb = self.v1.cmpeq(b);
+  181|  1.98k|                let eqc = self.v1.cmpeq(c);
+  182|  1.98k|                let eqd = self.v1.cmpeq(d);
+  183|  1.98k|                let or1 = eqa.or(eqb);
+  184|  1.98k|                let or2 = eqc.or(eqd);
+  185|  1.98k|                let or3 = or1.or(or2);
+  186|  1.98k|                if or3.movemask_will_have_non_zero() {
+  187|    223|                    let mask = eqa.movemask();
+  188|    223|                    if mask.has_non_zero() {
+  189|     64|                        return Some(cur.add(topos(mask)));
+  190|    159|                    }
+  191|    159|
+  192|    159|                    let mask = eqb.movemask();
+  193|    159|                    if mask.has_non_zero() {
+  194|     76|                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+  195|     83|                    }
+  196|     83|
+  197|     83|                    let mask = eqc.movemask();
+  198|     83|                    if mask.has_non_zero() {
+  199|     44|                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+  200|     39|                    }
+  201|     39|
+  202|     39|                    let mask = eqd.movemask();
+  203|     39|                    debug_assert!(mask.has_non_zero());
+  204|     39|                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
   205|  1.76k|                }
   206|  1.76k|                cur = cur.add(Self::LOOP_SIZE);
   207|       |            }
@@ -401,24 +401,24 @@ _RNvMNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB2_3OneNtNtNtCscdEvteftVc
   209|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   210|       |        // loads here, but I believe we are guaranteed that they are aligned
   211|       |        // since `cur` is aligned.
-  212|  10.9k|        while cur <= end.sub(V::BYTES) {
-  213|  5.93k|            debug_assert!(end.distance(cur) >= V::BYTES);
-  214|  5.93k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  215|     89|                return Some(cur);
-  216|  5.84k|            }
-  217|  5.84k|            cur = cur.add(V::BYTES);
+  212|  10.8k|        while cur <= end.sub(V::BYTES) {
+  213|  5.83k|            debug_assert!(end.distance(cur) >= V::BYTES);
+  214|  5.83k|            if let Some(cur) = self.search_chunk(cur, topos) {
+  215|     97|                return Some(cur);
+  216|  5.73k|            }
+  217|  5.73k|            cur = cur.add(V::BYTES);
   218|       |        }
   219|       |        // Finally handle any remaining bytes less than the size of V. In this
   220|       |        // case, our pointer may indeed be unaligned and the load may overlap
   221|       |        // with the previous one. But that's okay since we know the previous
   222|       |        // load didn't lead to a match (otherwise we wouldn't be here).
-  223|  4.97k|        if cur < end {
-  224|  4.56k|            debug_assert!(end.distance(cur) < V::BYTES);
-  225|  4.56k|            cur = cur.sub(V::BYTES - end.distance(cur));
-  226|  4.56k|            debug_assert_eq!(end.distance(cur), V::BYTES);
-  227|  4.56k|            return self.search_chunk(cur, topos);
-  228|    401|        }
-  229|    401|        None
+  223|  4.96k|        if cur < end {
+  224|  4.61k|            debug_assert!(end.distance(cur) < V::BYTES);
+  225|  4.61k|            cur = cur.sub(V::BYTES - end.distance(cur));
+  226|  4.61k|            debug_assert_eq!(end.distance(cur), V::BYTES);
+  227|  4.61k|            return self.search_chunk(cur, topos);
+  228|    351|        }
+  229|    351|        None
   230|  6.36k|    }
 _RINvMNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE12search_chunkNvYNtNtB9_6vector16SensibleMoveMaskNtB24_8MoveMask12first_offsetEB9_:
   416|  6.51k|    unsafe fn search_chunk(
@@ -445,7 +445,7 @@ _RINvMNtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB3_3OneNtNtNtCscdEvteftV
   423|  16.8k|        if mask.has_non_zero() {
   424|  1.32k|            Some(cur.add(mask_to_offset(mask)))
   425|       |        } else {
-  426|  15.5k|            None
+  426|  15.4k|            None
   427|       |        }
   428|  16.8k|    }
 _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE3newBa_:
@@ -581,40 +581,40 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   519|   472k|        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
   520|   472k|        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
   521|   472k|        if len >= Self::LOOP_SIZE {
-  522|   397k|            while cur <= end.sub(Self::LOOP_SIZE) {
-  523|   336k|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+  522|   396k|            while cur <= end.sub(Self::LOOP_SIZE) {
+  523|   335k|                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
   524|       |
-  525|   336k|                let a = V::load_aligned(cur);
-  526|   336k|                let b = V::load_aligned(cur.add(V::BYTES));
-  527|   336k|                let eqa1 = self.v1.cmpeq(a);
-  528|   336k|                let eqb1 = self.v1.cmpeq(b);
-  529|   336k|                let eqa2 = self.v2.cmpeq(a);
-  530|   336k|                let eqb2 = self.v2.cmpeq(b);
-  531|   336k|                let or1 = eqa1.or(eqb1);
-  532|   336k|                let or2 = eqa2.or(eqb2);
-  533|   336k|                let or3 = or1.or(or2);
-  534|   336k|                if or3.movemask_will_have_non_zero() {
+  525|   335k|                let a = V::load_aligned(cur);
+  526|   335k|                let b = V::load_aligned(cur.add(V::BYTES));
+  527|   335k|                let eqa1 = self.v1.cmpeq(a);
+  528|   335k|                let eqb1 = self.v1.cmpeq(b);
+  529|   335k|                let eqa2 = self.v2.cmpeq(a);
+  530|   335k|                let eqb2 = self.v2.cmpeq(b);
+  531|   335k|                let or1 = eqa1.or(eqb1);
+  532|   335k|                let or2 = eqa2.or(eqb2);
+  533|   335k|                let or3 = or1.or(or2);
+  534|   335k|                if or3.movemask_will_have_non_zero() {
   535|   104k|                    let mask = eqa1.movemask().or(eqa2.movemask());
   536|   104k|                    if mask.has_non_zero() {
-  537|  52.9k|                        return Some(cur.add(topos(mask)));
-  538|  51.1k|                    }
-  539|  51.1k|
-  540|  51.1k|                    let mask = eqb1.movemask().or(eqb2.movemask());
-  541|  51.1k|                    debug_assert!(mask.has_non_zero());
-  542|  51.1k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
-  543|   232k|                }
-  544|   232k|                cur = cur.add(Self::LOOP_SIZE);
+  537|  53.3k|                        return Some(cur.add(topos(mask)));
+  538|  50.8k|                    }
+  539|  50.8k|
+  540|  50.8k|                    let mask = eqb1.movemask().or(eqb2.movemask());
+  541|  50.8k|                    debug_assert!(mask.has_non_zero());
+  542|  50.8k|                    return Some(cur.add(V::BYTES).add(topos(mask)));
+  543|   231k|                }
+  544|   231k|                cur = cur.add(Self::LOOP_SIZE);
   545|       |            }
   546|   306k|        }
   547|       |        // Handle any leftovers after the aligned loop above. We use unaligned
   548|       |        // loads here, but I believe we are guaranteed that they are aligned
   549|       |        // since `cur` is aligned.
-  550|   478k|        while cur <= end.sub(V::BYTES) {
+  550|   479k|        while cur <= end.sub(V::BYTES) {
   551|   114k|            debug_assert!(end.distance(cur) >= V::BYTES);
   552|   114k|            if let Some(cur) = self.search_chunk(cur, topos) {
-  553|  3.44k|                return Some(cur);
-  554|   110k|            }
-  555|   110k|            cur = cur.add(V::BYTES);
+  553|  3.37k|                return Some(cur);
+  554|   111k|            }
+  555|   111k|            cur = cur.add(V::BYTES);
   556|       |        }
   557|       |        // Finally handle any remaining bytes less than the size of V. In this
   558|       |        // case, our pointer may indeed be unaligned and the load may overlap
@@ -625,8 +625,8 @@ _RNvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB4_3TwoNtNtNtCscdEvteft
   563|   353k|            cur = cur.sub(V::BYTES - end.distance(cur));
   564|   353k|            debug_assert_eq!(end.distance(cur), V::BYTES);
   565|   353k|            return self.search_chunk(cur, topos);
-  566|  11.0k|        }
-  567|  11.0k|        None
+  566|  11.1k|        }
+  567|  11.1k|        None
   568|  2.88M|    }
 _RINvMs_NtNtNtCseJq1f3D7C0A_6memchr4arch7generic6memchrINtB5_3TwoNtNtNtCscdEvteftVc2_4core9core_arch3x867___m128iE12search_chunkNvYNtNtBb_6vector16SensibleMoveMaskNtB26_8MoveMask12first_offsetEBb_:
   670|  4.60M|    unsafe fn search_chunk(
@@ -1183,9 +1183,9 @@ _RNvXNtNtCseJq1f3D7C0A_6memchr6vector7x86sse2NtNtNtCscdEvteftVc2_4core9core_arch
   228|  9.22M|            _mm_cmpeq_epi8(self, vector2)
   229|  9.22M|        }
 _RNvYNtNtNtCscdEvteftVc2_4core9core_arch3x867___m256iNtNtCseJq1f3D7C0A_6memchr6vector6Vector27movemask_will_have_non_zeroBS_:
-   63|   338k|    unsafe fn movemask_will_have_non_zero(self) -> bool {
-   64|   338k|        self.movemask().has_non_zero()
-   65|   338k|    }
+   63|   337k|    unsafe fn movemask_will_have_non_zero(self) -> bool {
+   64|   337k|        self.movemask().has_non_zero()
+   65|   337k|    }
 _RNvXNtNtCseJq1f3D7C0A_6memchr6vector7x86avx2NtNtNtCscdEvteftVc2_4core9core_arch3x867___m256iNtB4_6Vector14load_unaligned:
   266|  3.36M|        unsafe fn load_unaligned(data: *const u8) -> __m256i {
   267|  3.36M|            _mm256_loadu_si256(data as *const __m256i)
@@ -1215,9 +1215,9 @@ _RNvXNtNtCseJq1f3D7C0A_6memchr6vector7x86avx2NtNtNtCscdEvteftVc2_4core9core_arch
   257|  35.6M|            _mm256_set1_epi8(byte as i8)
   258|  35.6M|        }
 _RNvXNtNtCseJq1f3D7C0A_6memchr6vector7x86avx2NtNtNtCscdEvteftVc2_4core9core_arch3x867___m256iNtB4_6Vector12load_aligned:
-  261|   680k|        unsafe fn load_aligned(data: *const u8) -> __m256i {
-  262|   680k|            _mm256_load_si256(data as *const __m256i)
-  263|   680k|        }
+  261|   678k|        unsafe fn load_aligned(data: *const u8) -> __m256i {
+  262|   678k|            _mm256_load_si256(data as *const __m256i)
+  263|   678k|        }
 _RNvXNtNtCseJq1f3D7C0A_6memchr6vector7x86avx2NtNtNtCscdEvteftVc2_4core9core_arch3x867___m256iNtB4_6Vector2or:
   286|  4.36M|        unsafe fn or(self, vector2: Self) -> __m256i {
   287|  4.36M|            _mm256_or_si256(self, vector2)
@@ -3587,9 +3587,9 @@ _RNvCs8SDT0Q3242W_5oxiri28is_iunreserved_or_sub_delims:
  1672|  49.3M|}
 
 _RNvMNtCslSsyAEFg2Zg_10ppv_lite864softINtB2_2x2INtNtNtNtB4_6x86_644sse24avx212u32x4x2_avx2NtBP_4NoNIENtBN_2G0E3newCsbnvW2NVUxYG_11rand_chacha:
-   15|  5.25M|    pub fn new(xs: [W; 2]) -> Self {
-   16|  5.25M|        x2(xs, PhantomData)
-   17|  5.25M|    }
+   15|  5.26M|    pub fn new(xs: [W; 2]) -> Self {
+   16|  5.26M|        x2(xs, PhantomData)
+   17|  5.26M|    }
 _RNvXsJ_NtCslSsyAEFg2Zg_10ppv_lite864softINtB5_2x2INtNtNtNtB7_6x86_644sse24avx212u32x4x2_avx2NtBS_4NoNIENtBQ_2G0ENtNtNtCscdEvteftVc2_4core3ops3bit6BitXor6bitxorCsbnvW2NVUxYG_11rand_chacha:
    24|  1.84M|            fn $fn(self, rhs: Self) -> Self::Output {
    25|  1.84M|                x2::new([self.0[0].$fn(rhs.0[0]), self.0[1].$fn(rhs.0[1])])
@@ -3759,14 +3759,14 @@ _RNvMNtNtNtCslSsyAEFg2Zg_10ppv_lite866x86_644sse24avx2INtB2_12u32x4x2_avx2NtB6_4
  1399|  14.2M|            Self { x, ni: PhantomData }
  1400|  14.2M|        }
 _RNvMsZ_NtNtCslSsyAEFg2Zg_10ppv_lite866x86_644sse2INtB5_10u32x4_sse2NtB7_5YesS3NtB7_5YesS4NtB7_4NoNIE3newCsbnvW2NVUxYG_11rand_chacha:
-   66|  2.14M|            fn new(x: __m128i) -> Self {
-   67|  2.14M|                $vec {
-   68|  2.14M|                    x,
-   69|  2.14M|                    s3: PhantomData,
-   70|  2.14M|                    s4: PhantomData,
-   71|  2.14M|                    ni: PhantomData,
-   72|  2.14M|                }
-   73|  2.14M|            }
+   66|  2.15M|            fn new(x: __m128i) -> Self {
+   67|  2.15M|                $vec {
+   68|  2.15M|                    x,
+   69|  2.15M|                    s3: PhantomData,
+   70|  2.15M|                    s4: PhantomData,
+   71|  2.15M|                    ni: PhantomData,
+   72|  2.15M|                }
+   73|  2.15M|            }
 _RNvXs0_NtNtNtCslSsyAEFg2Zg_10ppv_lite866x86_644sse24avx2INtB5_12u32x4x2_avx2NtB9_4NoNIEINtNtBb_5types5StoreNtB9_14vec256_storageE6unpackCsbnvW2NVUxYG_11rand_chacha:
  1406|  76.7k|        unsafe fn unpack(p: vec256_storage) -> Self {
  1407|  76.7k|            Self::new(p.avx)
@@ -4257,9 +4257,9 @@ _RNvXs0_NtCsaHtvKV6mKDH_9rand_core5blockINtB5_8BlockRngINtNtNtNtCs9HF4vAf1EYI_4r
   204|  1.22M|
   205|  1.22M|        let index = self.index;
   206|  1.22M|        if index < len - 1 {
-  207|  1.18M|            self.index += 2;
-  208|  1.18M|            // Read an u64 from the current index
-  209|  1.18M|            read_u64(self.results.as_ref(), index)
+  207|  1.19M|            self.index += 2;
+  208|  1.19M|            // Read an u64 from the current index
+  209|  1.19M|            read_u64(self.results.as_ref(), index)
   210|  38.3k|        } else if index >= len {
   211|  38.3k|            self.generate_and_set(2);
   212|  38.3k|            read_u64(self.results.as_ref(), 0)
@@ -5252,7 +5252,7 @@ _RNCNvMNtCs2KVRoFTj7xQ_5oxrdf7datasetNtB4_7Dataset33canonicalize_interned_blank_
 _RNCNvMNtCs2KVRoFTj7xQ_5oxrdf7datasetNtB4_7Dataset11hash_bnodes0B6_:
   680|  44.3k|            .map(|bnode| (*bnode, true))
 _RNCNvMNtCs2KVRoFTj7xQ_5oxrdf7datasetNtB4_7Dataset11hash_bnodess_0B6_:
-  715|  35.3k|        partition.sort_unstable_by(|(h1, b1), (h2, b2)| (b1.len(), h1).cmp(&(b2.len(), h2)));
+  715|  35.4k|        partition.sort_unstable_by(|(h1, b1), (h2, b2)| (b1.len(), h1).cmp(&(b2.len(), h2)));
 _RINvMNtCs2KVRoFTj7xQ_5oxrdf7datasetNtB3_7Dataset10hash_tupleNtNtB5_10named_node12NamedNodeRefEB5_:
   803|   162k|    fn hash_tuple(v: impl Hash) -> u64 {
   804|   162k|        let mut hasher = DefaultHasher::new();
@@ -7170,7 +7170,7 @@ _RNvMs_NtCs6AqEF9bmAuF_5oxttl5lexerNtB4_7N3Lexer25is_possible_pn_chars_base:
   986|  10.4M|    fn is_possible_pn_chars_base(c: char) -> bool {
   987|  10.4M|        matches!(c,
   988|  4.57M|        'A'..='Z'
-  989|  3.16M|        | 'a'..='z'
+  989|  3.17M|        | 'a'..='z'
   990|  27.4k|        | '\u{00C0}'..='\u{00D6}'
   991|  27.4k|        | '\u{00D8}'..='\u{00F6}'
   992|  27.3k|        | '\u{00F8}'..='\u{02FF}'
