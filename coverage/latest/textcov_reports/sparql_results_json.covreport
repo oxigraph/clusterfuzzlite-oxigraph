@@ -29,18 +29,18 @@ _RNvMs_NtCsiS85MHDKMvU_17json_event_parser4readNtB4_20FromBufferJsonReader3new:
   241|  22.3k|        }
   242|  22.3k|    }
 _RNvMs_NtCsiS85MHDKMvU_17json_event_parser4readNtB4_20FromBufferJsonReader15read_next_event:
-  244|  1.54M|    pub fn read_next_event(&mut self) -> Result<JsonEvent<'_>, SyntaxError> {
-  245|  1.54M|        loop {
-  246|  1.54M|            let LowLevelJsonReaderResult {
-  247|  1.54M|                event,
-  248|  1.54M|                consumed_bytes,
-  249|  1.54M|            } = self.parser.read_next_event(self.input_buffer, true);
-  250|  1.54M|            self.input_buffer = &self.input_buffer[consumed_bytes..];
-  251|  1.54M|            if let Some(event) = event {
-  252|  1.54M|                return event;
+  244|  1.55M|    pub fn read_next_event(&mut self) -> Result<JsonEvent<'_>, SyntaxError> {
+  245|  1.55M|        loop {
+  246|  1.55M|            let LowLevelJsonReaderResult {
+  247|  1.55M|                event,
+  248|  1.55M|                consumed_bytes,
+  249|  1.55M|            } = self.parser.read_next_event(self.input_buffer, true);
+  250|  1.55M|            self.input_buffer = &self.input_buffer[consumed_bytes..];
+  251|  1.55M|            if let Some(event) = event {
+  252|  1.55M|                return event;
   253|      0|            }
   254|       |        }
-  255|  1.54M|    }
+  255|  1.55M|    }
 _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader3new:
   303|  22.3k|    pub const fn new() -> Self {
   304|  22.3k|        Self {
@@ -58,232 +58,232 @@ _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader3new:
   316|  22.3k|        }
   317|  22.3k|    }
 _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader15read_next_event:
-  328|  1.54M|    pub fn read_next_event<'a>(
-  329|  1.54M|        &mut self,
-  330|  1.54M|        input_buffer: &'a [u8],
-  331|  1.54M|        is_ending: bool,
-  332|  1.54M|    ) -> LowLevelJsonReaderResult<'a> {
-  333|  1.54M|        if let Some(event) = self.buffered_event.take() {
+  328|  1.55M|    pub fn read_next_event<'a>(
+  329|  1.55M|        &mut self,
+  330|  1.55M|        input_buffer: &'a [u8],
+  331|  1.55M|        is_ending: bool,
+  332|  1.55M|    ) -> LowLevelJsonReaderResult<'a> {
+  333|  1.55M|        if let Some(event) = self.buffered_event.take() {
   334|      0|            return LowLevelJsonReaderResult {
   335|      0|                consumed_bytes: 0,
   336|      0|                event: Some(Ok(event)),
   337|      0|            };
-  338|  1.54M|        }
-  339|  1.54M|        let start_file_offset = self.lexer.file_offset;
-  340|  2.63M|        while let Some(token) = self.lexer.read_next_token(
-  341|  2.63M|            &input_buffer[usize::try_from(self.lexer.file_offset - start_file_offset).unwrap()..],
-  342|  2.63M|            is_ending,
-  343|  2.63M|        ) {
-  344|  2.63M|            let consumed_bytes = (self.lexer.file_offset - start_file_offset)
-  345|  2.63M|                .try_into()
-  346|  2.63M|                .unwrap();
-  347|  2.63M|            match token {
-  348|  2.62M|                Ok(token) => {
-  349|  2.62M|                    let (event, error) = self.apply_new_token(token);
-  350|  2.62M|                    let error = error.map(|e| {
+  338|  1.55M|        }
+  339|  1.55M|        let start_file_offset = self.lexer.file_offset;
+  340|  2.64M|        while let Some(token) = self.lexer.read_next_token(
+  341|  2.64M|            &input_buffer[usize::try_from(self.lexer.file_offset - start_file_offset).unwrap()..],
+  342|  2.64M|            is_ending,
+  343|  2.64M|        ) {
+  344|  2.64M|            let consumed_bytes = (self.lexer.file_offset - start_file_offset)
+  345|  2.64M|                .try_into()
+  346|  2.64M|                .unwrap();
+  347|  2.64M|            match token {
+  348|  2.63M|                Ok(token) => {
+  349|  2.63M|                    let (event, error) = self.apply_new_token(token);
+  350|  2.63M|                    let error = error.map(|e| {
   351|       |                        self.lexer.syntax_error(
   352|       |                            self.lexer.file_start_of_last_token..self.lexer.file_offset,
   353|       |                            e,
   354|       |                        )
-  355|  2.62M|                    });
-  356|  2.62M|                    if let Some(error) = error {
-  357|  3.29k|                        self.buffered_event = event.map(owned_event);
-  358|  3.29k|                        return LowLevelJsonReaderResult {
-  359|  3.29k|                            consumed_bytes,
-  360|  3.29k|                            event: Some(Err(error)),
-  361|  3.29k|                        };
-  362|  2.62M|                    }
-  363|  2.62M|                    if let Some(event) = event {
-  364|  1.53M|                        return LowLevelJsonReaderResult {
-  365|  1.53M|                            consumed_bytes,
-  366|  1.53M|                            event: Some(Ok(event)),
-  367|  1.53M|                        };
-  368|  1.08M|                    }
+  355|  2.63M|                    });
+  356|  2.63M|                    if let Some(error) = error {
+  357|  3.31k|                        self.buffered_event = event.map(owned_event);
+  358|  3.31k|                        return LowLevelJsonReaderResult {
+  359|  3.31k|                            consumed_bytes,
+  360|  3.31k|                            event: Some(Err(error)),
+  361|  3.31k|                        };
+  362|  2.63M|                    }
+  363|  2.63M|                    if let Some(event) = event {
+  364|  1.54M|                        return LowLevelJsonReaderResult {
+  365|  1.54M|                            consumed_bytes,
+  366|  1.54M|                            event: Some(Ok(event)),
+  367|  1.54M|                        };
+  368|  1.09M|                    }
   369|       |                }
-  370|  3.35k|                Err(error) => {
-  371|  3.35k|                    return LowLevelJsonReaderResult {
-  372|  3.35k|                        consumed_bytes,
-  373|  3.35k|                        event: Some(Err(error)),
-  374|  3.35k|                    }
+  370|  3.36k|                Err(error) => {
+  371|  3.36k|                    return LowLevelJsonReaderResult {
+  372|  3.36k|                        consumed_bytes,
+  373|  3.36k|                        event: Some(Err(error)),
+  374|  3.36k|                    }
   375|       |                }
   376|       |            }
   377|       |        }
   378|       |        LowLevelJsonReaderResult {
-  379|  6.37k|            consumed_bytes: (self.lexer.file_offset - start_file_offset)
-  380|  6.37k|                .try_into()
-  381|  6.37k|                .unwrap(),
-  382|  6.37k|            event: if is_ending {
-  383|  6.37k|                self.buffered_event = Some(JsonEvent::Eof);
-  384|  6.37k|                Some(Err(self.lexer.syntax_error(
-  385|  6.37k|                    self.lexer.file_offset..self.lexer.file_offset + 1,
-  386|  6.37k|                    "Unexpected end of file",
-  387|  6.37k|                )))
+  379|  6.39k|            consumed_bytes: (self.lexer.file_offset - start_file_offset)
+  380|  6.39k|                .try_into()
+  381|  6.39k|                .unwrap(),
+  382|  6.39k|            event: if is_ending {
+  383|  6.39k|                self.buffered_event = Some(JsonEvent::Eof);
+  384|  6.39k|                Some(Err(self.lexer.syntax_error(
+  385|  6.39k|                    self.lexer.file_offset..self.lexer.file_offset + 1,
+  386|  6.39k|                    "Unexpected end of file",
+  387|  6.39k|                )))
   388|       |            } else {
   389|      0|                None
   390|       |            },
   391|       |        }
-  392|  1.54M|    }
+  392|  1.55M|    }
 _RNCNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_18LowLevelJsonReader15read_next_event0B9_:
-  350|  3.29k|                    let error = error.map(|e| {
-  351|  3.29k|                        self.lexer.syntax_error(
-  352|  3.29k|                            self.lexer.file_start_of_last_token..self.lexer.file_offset,
-  353|  3.29k|                            e,
-  354|  3.29k|                        )
-  355|  3.29k|                    });
+  350|  3.31k|                    let error = error.map(|e| {
+  351|  3.31k|                        self.lexer.syntax_error(
+  352|  3.31k|                            self.lexer.file_start_of_last_token..self.lexer.file_offset,
+  353|  3.31k|                            e,
+  354|  3.31k|                        )
+  355|  3.31k|                    });
 _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader15apply_new_token:
-  394|  2.94M|    fn apply_new_token<'a>(
-  395|  2.94M|        &mut self,
-  396|  2.94M|        token: JsonToken<'a>,
-  397|  2.94M|    ) -> (Option<JsonEvent<'a>>, Option<String>) {
-  398|  2.94M|        match self.state_stack.pop() {
+  394|  2.96M|    fn apply_new_token<'a>(
+  395|  2.96M|        &mut self,
+  396|  2.96M|        token: JsonToken<'a>,
+  397|  2.96M|    ) -> (Option<JsonEvent<'a>>, Option<String>) {
+  398|  2.96M|        match self.state_stack.pop() {
   399|       |            Some(JsonState::ObjectKeyOrEnd) => {
-  400|   315k|                if token == JsonToken::ClosingCurlyBracket {
+  400|   316k|                if token == JsonToken::ClosingCurlyBracket {
   401|  34.6k|                    (Some(JsonEvent::EndObject), None)
   402|       |                } else {
-  403|   280k|                    if let Err(e) = self.push_state_stack(JsonState::ObjectKey) {
+  403|   281k|                    if let Err(e) = self.push_state_stack(JsonState::ObjectKey) {
   404|      0|                        return (None, Some(e));
-  405|   280k|                    }
-  406|   280k|                    self.apply_new_token(token)
+  405|   281k|                    }
+  406|   281k|                    self.apply_new_token(token)
   407|       |                }
   408|       |            }
   409|       |            Some(JsonState::ObjectKey) => {
-  410|   631k|                if token == JsonToken::ClosingCurlyBracket {
+  410|   633k|                if token == JsonToken::ClosingCurlyBracket {
   411|      1|                    return (Some(JsonEvent::EndObject), Some("Trailing commas are not allowed".into()));
-  412|   631k|                }
-  413|   631k|                if let Err(e) = self.push_state_stack(JsonState::ObjectColon) {
+  412|   633k|                }
+  413|   633k|                if let Err(e) = self.push_state_stack(JsonState::ObjectColon) {
   414|      0|                    return (None, Some(e));
-  415|   631k|                }
-  416|   631k|                if let JsonToken::String(key) = token {
-  417|   630k|                    (Some(JsonEvent::ObjectKey(key)), None)
+  415|   633k|                }
+  416|   633k|                if let JsonToken::String(key) = token {
+  417|   633k|                    (Some(JsonEvent::ObjectKey(key)), None)
   418|       |                } else {
   419|    570|                    (None, Some("Object keys must be strings".into()))
   420|       |                }
   421|       |            }
   422|       |            Some(JsonState::ObjectColon) => {
-  423|   628k|                if let Err(e) = self.push_state_stack(JsonState::ObjectValue) {
+  423|   631k|                if let Err(e) = self.push_state_stack(JsonState::ObjectValue) {
   424|      0|                    return (None, Some(e));
-  425|   628k|                }
-  426|   628k|                if token == JsonToken::Colon {
-  427|   627k|                    (None, None)
+  425|   631k|                }
+  426|   631k|                if token == JsonToken::Colon {
+  427|   630k|                    (None, None)
   428|       |                } else {
-  429|    999|                    let (event, _) = self.apply_new_token(token);
-  430|    999|                    (event, Some("Object keys must be strings".into()))
+  429|  1.00k|                    let (event, _) = self.apply_new_token(token);
+  430|  1.00k|                    (event, Some("Object keys must be strings".into()))
   431|       |                }
   432|       |            }
   433|       |            Some(JsonState::ObjectValue) => {
-  434|   628k|                if let Err(e) = self.push_state_stack(JsonState::ObjectCommaOrEnd) {
+  434|   630k|                if let Err(e) = self.push_state_stack(JsonState::ObjectCommaOrEnd) {
   435|      0|                    return (None, Some(e));
-  436|   628k|                }
-  437|   628k|                self.apply_new_token_for_value(token)
+  436|   630k|                }
+  437|   630k|                self.apply_new_token_for_value(token)
   438|       |            }
-  439|   399k|            Some(JsonState::ObjectCommaOrEnd) => match token {
+  439|   401k|            Some(JsonState::ObjectCommaOrEnd) => match token {
   440|       |                JsonToken::Comma => {
-  441|   352k|                    (None, self.push_state_stack(JsonState::ObjectKey).err())
+  441|   353k|                    (None, self.push_state_stack(JsonState::ObjectKey).err())
   442|       |                }
-  443|  46.8k|                JsonToken::ClosingCurlyBracket => (Some(JsonEvent::EndObject), None),
-  444|  1.14k|                _ => (None, Some("Object values must be followed by a comma to add a new value or a curly bracket to end the object".into())),
+  443|  46.9k|                JsonToken::ClosingCurlyBracket => (Some(JsonEvent::EndObject), None),
+  444|  1.15k|                _ => (None, Some("Object values must be followed by a comma to add a new value or a curly bracket to end the object".into())),
   445|       |            },
   446|       |            Some(JsonState::ArrayValueOrEnd) =>{
-  447|  53.5k|                if token == JsonToken::ClosingSquareBracket {
+  447|  53.6k|                if token == JsonToken::ClosingSquareBracket {
   448|  15.8k|                    return (Some(JsonEvent::EndArray), None);
-  449|  37.6k|                }
-  450|  37.6k|                if let Err(e) = self.push_state_stack(JsonState::ArrayValue) {
+  449|  37.7k|                }
+  450|  37.7k|                if let Err(e) = self.push_state_stack(JsonState::ArrayValue) {
   451|      0|                    return (None, Some(e));
-  452|  37.6k|                }
-  453|  37.6k|                self.apply_new_token(token)
+  452|  37.7k|                }
+  453|  37.7k|                self.apply_new_token(token)
   454|       |            }
   455|       |            Some(JsonState::ArrayValue) => {
-  456|   146k|                if token == JsonToken::ClosingSquareBracket {
+  456|   147k|                if token == JsonToken::ClosingSquareBracket {
   457|      2|                    return (Some(JsonEvent::EndArray), Some("Trailing commas are not allowed".into()));
-  458|   146k|                }
-  459|   146k|                if let Err(e) = self.push_state_stack(JsonState::ArrayCommaOrEnd) {
+  458|   147k|                }
+  459|   147k|                if let Err(e) = self.push_state_stack(JsonState::ArrayCommaOrEnd) {
   460|      0|                    return (None, Some(e));
-  461|   146k|                }
-  462|   146k|                self.apply_new_token_for_value(token)
+  461|   147k|                }
+  462|   147k|                self.apply_new_token_for_value(token)
   463|       |            }
-  464|   124k|            Some(JsonState::ArrayCommaOrEnd) => match token {
+  464|   125k|            Some(JsonState::ArrayCommaOrEnd) => match token {
   465|       |                JsonToken::Comma => {
-  466|   108k|                    (None, self.push_state_stack(JsonState::ArrayValue).err())
+  466|   109k|                    (None, self.push_state_stack(JsonState::ArrayValue).err())
   467|       |                }
-  468|  15.5k|                JsonToken::ClosingSquareBracket => (Some(JsonEvent::EndArray), None),
+  468|  15.6k|                JsonToken::ClosingSquareBracket => (Some(JsonEvent::EndArray), None),
   469|       |                _ => {
-  470|    261|                    let _ = self.push_state_stack(JsonState::ArrayValue); // We already have an error
-  471|    261|                    let (event, _) = self.apply_new_token(token);
-  472|    261|                    (event, Some("Array values must be followed by a comma to add a new value or a squared bracket to end the array".into()))
+  470|    262|                    let _ = self.push_state_stack(JsonState::ArrayValue); // We already have an error
+  471|    262|                    let (event, _) = self.apply_new_token(token);
+  472|    262|                    (event, Some("Array values must be followed by a comma to add a new value or a squared bracket to end the array".into()))
   473|       |                }
   474|       |            }
-  475|  20.0k|            None => if self.element_read {
+  475|  20.1k|            None => if self.element_read {
   476|  1.13k|                if token == JsonToken::Eof {
-  477|  1.12k|                    (Some(JsonEvent::Eof), None)
+  477|  1.13k|                    (Some(JsonEvent::Eof), None)
   478|       |                } else {
   479|      1|                    (None, Some("The JSON already contains one root element".into()))
   480|       |                }
   481|       |            } else {
-  482|  18.9k|                self.element_read = true;
-  483|  18.9k|                self.apply_new_token_for_value(token)
+  482|  19.0k|                self.element_read = true;
+  483|  19.0k|                self.apply_new_token_for_value(token)
   484|       |            }
   485|       |        }
-  486|  2.94M|    }
+  486|  2.96M|    }
 _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader25apply_new_token_for_value:
-  488|   793k|    fn apply_new_token_for_value<'a>(
-  489|   793k|        &mut self,
-  490|   793k|        token: JsonToken<'a>,
-  491|   793k|    ) -> (Option<JsonEvent<'a>>, Option<String>) {
-  492|   793k|        match token {
-  493|  53.5k|            JsonToken::OpeningSquareBracket => (
-  494|  53.5k|                Some(JsonEvent::StartArray),
-  495|  53.5k|                self.push_state_stack(JsonState::ArrayValueOrEnd).err(),
-  496|  53.5k|            ),
+  488|   797k|    fn apply_new_token_for_value<'a>(
+  489|   797k|        &mut self,
+  490|   797k|        token: JsonToken<'a>,
+  491|   797k|    ) -> (Option<JsonEvent<'a>>, Option<String>) {
+  492|   797k|        match token {
+  493|  53.6k|            JsonToken::OpeningSquareBracket => (
+  494|  53.6k|                Some(JsonEvent::StartArray),
+  495|  53.6k|                self.push_state_stack(JsonState::ArrayValueOrEnd).err(),
+  496|  53.6k|            ),
   497|      4|            JsonToken::ClosingSquareBracket => (
   498|      4|                None,
   499|      4|                Some("Unexpected closing square bracket, no array to close".into()),
   500|      4|            ),
-  501|   317k|            JsonToken::OpeningCurlyBracket => (
-  502|   317k|                Some(JsonEvent::StartObject),
-  503|   317k|                self.push_state_stack(JsonState::ObjectKeyOrEnd).err(),
-  504|   317k|            ),
+  501|   318k|            JsonToken::OpeningCurlyBracket => (
+  502|   318k|                Some(JsonEvent::StartObject),
+  503|   318k|                self.push_state_stack(JsonState::ObjectKeyOrEnd).err(),
+  504|   318k|            ),
   505|      7|            JsonToken::ClosingCurlyBracket => (
   506|      7|                None,
   507|      7|                Some("Unexpected closing curly bracket, no array to close".into()),
   508|      7|            ),
   509|     64|            JsonToken::Comma => (None, Some("Unexpected comma, no values to separate".into())),
   510|     10|            JsonToken::Colon => (None, Some("Unexpected colon, no key to follow".into())),
-  511|   388k|            JsonToken::String(string) => (Some(JsonEvent::String(string)), None),
-  512|  31.4k|            JsonToken::Number(number) => (Some(JsonEvent::Number(number)), None),
+  511|   390k|            JsonToken::String(string) => (Some(JsonEvent::String(string)), None),
+  512|  31.5k|            JsonToken::Number(number) => (Some(JsonEvent::Number(number)), None),
   513|    540|            JsonToken::True => (Some(JsonEvent::Boolean(true)), None),
   514|    130|            JsonToken::False => (Some(JsonEvent::Boolean(false)), None),
   515|    824|            JsonToken::Null => (Some(JsonEvent::Null), None),
-  516|  1.15k|            JsonToken::Eof => (
-  517|  1.15k|                Some(JsonEvent::Eof),
-  518|  1.15k|                Some("Unexpected end of file, a value was expected".into()),
-  519|  1.15k|            ),
+  516|  1.16k|            JsonToken::Eof => (
+  517|  1.16k|                Some(JsonEvent::Eof),
+  518|  1.16k|                Some("Unexpected end of file, a value was expected".into()),
+  519|  1.16k|            ),
   520|       |        }
-  521|   793k|    }
+  521|   797k|    }
 _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader16push_state_stack:
-  523|  3.18M|    fn push_state_stack(&mut self, state: JsonState) -> Result<(), String> {
-  524|  3.18M|        self.check_stack_size()?;
-  525|  3.18M|        self.state_stack.push(state);
-  526|  3.18M|        Ok(())
-  527|  3.18M|    }
+  523|  3.19M|    fn push_state_stack(&mut self, state: JsonState) -> Result<(), String> {
+  524|  3.19M|        self.check_stack_size()?;
+  525|  3.19M|        self.state_stack.push(state);
+  526|  3.19M|        Ok(())
+  527|  3.19M|    }
 _RNvMs0_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_18LowLevelJsonReader16check_stack_size:
-  529|  3.18M|    fn check_stack_size(&self) -> Result<(), String> {
-  530|  3.18M|        if self.state_stack.len() > self.max_state_stack_size {
+  529|  3.19M|    fn check_stack_size(&self) -> Result<(), String> {
+  530|  3.19M|        if self.state_stack.len() > self.max_state_stack_size {
   531|      0|            Err(format!(
   532|      0|                "Max stack size of {} reached on an object opening",
   533|      0|                self.max_state_stack_size
   534|      0|            ))
   535|       |        } else {
-  536|  3.18M|            Ok(())
+  536|  3.19M|            Ok(())
   537|       |        }
-  538|  3.18M|    }
+  538|  3.19M|    }
 _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer15read_next_token:
-  578|  2.63M|    fn read_next_token<'a>(
-  579|  2.63M|        &mut self,
-  580|  2.63M|        mut input_buffer: &'a [u8],
-  581|  2.63M|        is_ending: bool,
-  582|  2.63M|    ) -> Option<Result<JsonToken<'a>, SyntaxError>> {
-  583|  2.63M|        // We remove BOM at the beginning
-  584|  2.63M|        if self.is_start {
+  578|  2.64M|    fn read_next_token<'a>(
+  579|  2.64M|        &mut self,
+  580|  2.64M|        mut input_buffer: &'a [u8],
+  581|  2.64M|        is_ending: bool,
+  582|  2.64M|    ) -> Option<Result<JsonToken<'a>, SyntaxError>> {
+  583|  2.64M|        // We remove BOM at the beginning
+  584|  2.64M|        if self.is_start {
   585|  22.3k|            if input_buffer.len() < 3 && !is_ending {
   586|      0|                return None;
   587|  22.3k|            }
@@ -291,21 +291,21 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer15read_next_token
   589|  22.3k|            if input_buffer.starts_with(&[0xEF, 0xBB, 0xBF]) {
   590|    463|                input_buffer = &input_buffer[3..];
   591|    463|                self.file_offset += 3;
-  592|  21.8k|            }
-  593|  2.61M|        }
+  592|  21.9k|            }
+  593|  2.62M|        }
   594|       |
   595|       |        // We skip whitespaces
-  596|  2.63M|        let mut i = 0;
-  597|  2.70M|        while let Some(c) = input_buffer.get(i) {
-  598|  2.70M|            match *c {
-  599|  67.9k|                b' ' | b'\t' => {
-  600|  67.9k|                    i += 1;
-  601|  67.9k|                }
-  602|    492|                b'\n' => {
-  603|    492|                    i += 1;
-  604|    492|                    self.file_line += 1;
-  605|    492|                    self.file_start_of_last_line = self.file_offset + u64::try_from(i).unwrap();
-  606|    492|                }
+  596|  2.64M|        let mut i = 0;
+  597|  2.71M|        while let Some(c) = input_buffer.get(i) {
+  598|  2.71M|            match *c {
+  599|  68.1k|                b' ' | b'\t' => {
+  600|  68.1k|                    i += 1;
+  601|  68.1k|                }
+  602|    493|                b'\n' => {
+  603|    493|                    i += 1;
+  604|    493|                    self.file_line += 1;
+  605|    493|                    self.file_start_of_last_line = self.file_offset + u64::try_from(i).unwrap();
+  606|    493|                }
   607|       |                b'\r' => {
   608|    855|                    i += 1;
   609|    855|                    if let Some(c) = input_buffer.get(i) {
@@ -322,134 +322,134 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer15read_next_token
   620|    855|                    self.file_start_of_last_line = self.file_offset + u64::try_from(i).unwrap();
   621|       |                }
   622|       |                _ => {
-  623|  2.63M|                    break;
+  623|  2.64M|                    break;
   624|       |                }
   625|       |            }
   626|       |        }
-  627|  2.63M|        self.file_offset += u64::try_from(i).unwrap();
-  628|  2.63M|        input_buffer = &input_buffer[i..];
-  629|  2.63M|        self.file_start_of_last_token = self.file_offset;
-  630|  2.63M|
-  631|  2.63M|        if is_ending && input_buffer.is_empty() {
-  632|  3.13k|            return Some(Ok(JsonToken::Eof));
-  633|  2.63M|        }
-  634|  2.63M|
-  635|  2.63M|        // we get the first character
-  636|  2.63M|        match *input_buffer.first()? {
+  627|  2.64M|        self.file_offset += u64::try_from(i).unwrap();
+  628|  2.64M|        input_buffer = &input_buffer[i..];
+  629|  2.64M|        self.file_start_of_last_token = self.file_offset;
+  630|  2.64M|
+  631|  2.64M|        if is_ending && input_buffer.is_empty() {
+  632|  3.15k|            return Some(Ok(JsonToken::Eof));
+  633|  2.64M|        }
+  634|  2.64M|
+  635|  2.64M|        // we get the first character
+  636|  2.64M|        match *input_buffer.first()? {
   637|       |            b'{' => {
-  638|   317k|                self.file_offset += 1;
-  639|   317k|                Some(Ok(JsonToken::OpeningCurlyBracket))
+  638|   318k|                self.file_offset += 1;
+  639|   318k|                Some(Ok(JsonToken::OpeningCurlyBracket))
   640|       |            }
   641|       |            b'}' => {
-  642|  81.4k|                self.file_offset += 1;
-  643|  81.4k|                Some(Ok(JsonToken::ClosingCurlyBracket))
+  642|  81.5k|                self.file_offset += 1;
+  643|  81.5k|                Some(Ok(JsonToken::ClosingCurlyBracket))
   644|       |            }
   645|       |            b'[' => {
   646|  53.6k|                self.file_offset += 1;
   647|  53.6k|                Some(Ok(JsonToken::OpeningSquareBracket))
   648|       |            }
   649|       |            b']' => {
-  650|  31.4k|                self.file_offset += 1;
-  651|  31.4k|                Some(Ok(JsonToken::ClosingSquareBracket))
+  650|  31.5k|                self.file_offset += 1;
+  651|  31.5k|                Some(Ok(JsonToken::ClosingSquareBracket))
   652|       |            }
   653|       |            b',' => {
-  654|   460k|                self.file_offset += 1;
-  655|   460k|                Some(Ok(JsonToken::Comma))
+  654|   463k|                self.file_offset += 1;
+  655|   463k|                Some(Ok(JsonToken::Comma))
   656|       |            }
   657|       |            b':' => {
-  658|   628k|                self.file_offset += 1;
-  659|   628k|                Some(Ok(JsonToken::Colon))
+  658|   630k|                self.file_offset += 1;
+  659|   630k|                Some(Ok(JsonToken::Colon))
   660|       |            }
-  661|  1.02M|            b'"' => self.read_string(input_buffer),
-  662|    700|            b't' => self.read_constant(input_buffer, is_ending, "true", JsonToken::True),
+  661|  1.03M|            b'"' => self.read_string(input_buffer),
+  662|    701|            b't' => self.read_constant(input_buffer, is_ending, "true", JsonToken::True),
   663|    137|            b'f' => self.read_constant(input_buffer, is_ending, "false", JsonToken::False),
   664|    978|            b'n' => self.read_constant(input_buffer, is_ending, "null", JsonToken::Null),
-  665|  33.5k|            b'-' | b'0'..=b'9' => self.read_number(input_buffer, is_ending),
-  666|  2.05k|            c => {
-  667|  2.05k|                self.file_offset += 1;
-  668|  2.05k|                Some(Err(self.syntax_error(
-  669|  2.05k|                    self.file_offset - 1..self.file_offset,
-  670|  2.05k|                    if c < 128 {
-  671|  1.74k|                        format!("Unexpected char: '{}'", char::from(c))
+  665|  33.6k|            b'-' | b'0'..=b'9' => self.read_number(input_buffer, is_ending),
+  666|  2.06k|            c => {
+  667|  2.06k|                self.file_offset += 1;
+  668|  2.06k|                Some(Err(self.syntax_error(
+  669|  2.06k|                    self.file_offset - 1..self.file_offset,
+  670|  2.06k|                    if c < 128 {
+  671|  1.75k|                        format!("Unexpected char: '{}'", char::from(c))
   672|       |                    } else {
-  673|    312|                        format!("Unexpected byte: \\x{c:X}")
+  673|    313|                        format!("Unexpected byte: \\x{c:X}")
   674|       |                    },
   675|       |                )))
   676|       |            }
   677|       |        }
-  678|  2.63M|    }
+  678|  2.64M|    }
 _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_string:
-  680|  1.02M|    fn read_string<'a>(
-  681|  1.02M|        &mut self,
-  682|  1.02M|        input_buffer: &'a [u8],
-  683|  1.02M|    ) -> Option<Result<JsonToken<'a>, SyntaxError>> {
-  684|  1.02M|        let mut error = None;
-  685|  1.02M|        let mut string: Option<(String, usize)> = None;
-  686|  1.02M|        let mut next_byte_offset = 1;
+  680|  1.03M|    fn read_string<'a>(
+  681|  1.03M|        &mut self,
+  682|  1.03M|        input_buffer: &'a [u8],
+  683|  1.03M|    ) -> Option<Result<JsonToken<'a>, SyntaxError>> {
+  684|  1.03M|        let mut error = None;
+  685|  1.03M|        let mut string: Option<(String, usize)> = None;
+  686|  1.03M|        let mut next_byte_offset = 1;
   687|       |        loop {
-  688|  8.18M|            match *input_buffer.get(next_byte_offset)? {
+  688|  8.21M|            match *input_buffer.get(next_byte_offset)? {
   689|       |                b'"' => {
   690|       |                    // end of string
-  691|  1.01M|                    let result = Some(if let Some(error) = error {
-  692|    776|                        Err(error)
-  693|  1.01M|                    } else if let Some((mut string, read_until)) = string {
-  694|   152k|                        if read_until < next_byte_offset {
-  695|   113k|                            let (str, e) = self.decode_utf8(
-  696|   113k|                                &input_buffer[read_until..next_byte_offset],
-  697|   113k|                                self.file_offset + u64::try_from(read_until).unwrap(),
-  698|   113k|                            );
-  699|   113k|                            error = error.or(e);
-  700|   113k|                            string.push_str(&str);
-  701|   113k|                        }
-  702|   152k|                        if let Some(error) = error {
+  691|  1.02M|                    let result = Some(if let Some(error) = error {
+  692|    779|                        Err(error)
+  693|  1.02M|                    } else if let Some((mut string, read_until)) = string {
+  694|   153k|                        if read_until < next_byte_offset {
+  695|   114k|                            let (str, e) = self.decode_utf8(
+  696|   114k|                                &input_buffer[read_until..next_byte_offset],
+  697|   114k|                                self.file_offset + u64::try_from(read_until).unwrap(),
+  698|   114k|                            );
+  699|   114k|                            error = error.or(e);
+  700|   114k|                            string.push_str(&str);
+  701|   114k|                        }
+  702|   153k|                        if let Some(error) = error {
   703|      9|                            Err(error)
   704|       |                        } else {
-  705|   152k|                            Ok(JsonToken::String(Cow::Owned(string)))
+  705|   153k|                            Ok(JsonToken::String(Cow::Owned(string)))
   706|       |                        }
   707|       |                    } else {
-  708|   866k|                        let (string, error) = self
-  709|   866k|                            .decode_utf8(&input_buffer[1..next_byte_offset], self.file_offset + 1);
-  710|   866k|                        if let Some(error) = error {
+  708|   870k|                        let (string, error) = self
+  709|   870k|                            .decode_utf8(&input_buffer[1..next_byte_offset], self.file_offset + 1);
+  710|   870k|                        if let Some(error) = error {
   711|    233|                            Err(error)
   712|       |                        } else {
-  713|   866k|                            Ok(JsonToken::String(string))
+  713|   870k|                            Ok(JsonToken::String(string))
   714|       |                        }
   715|       |                    });
-  716|  1.01M|                    self.file_offset += u64::try_from(next_byte_offset).unwrap() + 1;
-  717|  1.01M|                    return result;
+  716|  1.02M|                    self.file_offset += u64::try_from(next_byte_offset).unwrap() + 1;
+  717|  1.02M|                    return result;
   718|       |                }
   719|       |                b'\\' => {
   720|       |                    // Escape sequences
-  721|   698k|                    if string.is_none() {
-  722|   158k|                        string = Some((String::new(), 1))
-  723|   539k|                    }
-  724|   698k|                    let (string, read_until) = string.as_mut().unwrap();
-  725|   698k|                    if *read_until < next_byte_offset {
-  726|   355k|                        let (str, e) = self.decode_utf8(
-  727|   355k|                            &input_buffer[*read_until..next_byte_offset],
-  728|   355k|                            self.file_offset + u64::try_from(*read_until).unwrap(),
-  729|   355k|                        );
-  730|   355k|                        error = error.or(e);
-  731|   355k|                        string.push_str(&str);
-  732|   355k|                    }
-  733|   698k|                    next_byte_offset += 1;
-  734|   698k|                    match *input_buffer.get(next_byte_offset)? {
-  735|  28.6k|                        b'"' => {
-  736|  28.6k|                            string.push('"');
-  737|  28.6k|                            next_byte_offset += 1;
-  738|  28.6k|                        }
-  739|  62.1k|                        b'\\' => {
-  740|  62.1k|                            string.push('\\');
-  741|  62.1k|                            next_byte_offset += 1;
-  742|  62.1k|                        }
+  721|   700k|                    if string.is_none() {
+  722|   159k|                        string = Some((String::new(), 1))
+  723|   541k|                    }
+  724|   700k|                    let (string, read_until) = string.as_mut().unwrap();
+  725|   700k|                    if *read_until < next_byte_offset {
+  726|   356k|                        let (str, e) = self.decode_utf8(
+  727|   356k|                            &input_buffer[*read_until..next_byte_offset],
+  728|   356k|                            self.file_offset + u64::try_from(*read_until).unwrap(),
+  729|   356k|                        );
+  730|   356k|                        error = error.or(e);
+  731|   356k|                        string.push_str(&str);
+  732|   356k|                    }
+  733|   700k|                    next_byte_offset += 1;
+  734|   700k|                    match *input_buffer.get(next_byte_offset)? {
+  735|  28.8k|                        b'"' => {
+  736|  28.8k|                            string.push('"');
+  737|  28.8k|                            next_byte_offset += 1;
+  738|  28.8k|                        }
+  739|  62.3k|                        b'\\' => {
+  740|  62.3k|                            string.push('\\');
+  741|  62.3k|                            next_byte_offset += 1;
+  742|  62.3k|                        }
   743|  14.0k|                        b'/' => {
   744|  14.0k|                            string.push('/');
   745|  14.0k|                            next_byte_offset += 1;
   746|  14.0k|                        }
-  747|  16.5k|                        b'b' => {
-  748|  16.5k|                            string.push('\u{8}');
-  749|  16.5k|                            next_byte_offset += 1;
-  750|  16.5k|                        }
+  747|  16.6k|                        b'b' => {
+  748|  16.6k|                            string.push('\u{8}');
+  749|  16.6k|                            next_byte_offset += 1;
+  750|  16.6k|                        }
   751|  4.13k|                        b'f' => {
   752|  4.13k|                            string.push('\u{C}');
   753|  4.13k|                            next_byte_offset += 1;
@@ -458,30 +458,30 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_string:
   756|  28.8k|                            string.push('\n');
   757|  28.8k|                            next_byte_offset += 1;
   758|  28.8k|                        }
-  759|  48.5k|                        b'r' => {
-  760|  48.5k|                            string.push('\r');
-  761|  48.5k|                            next_byte_offset += 1;
-  762|  48.5k|                        }
-  763|  98.5k|                        b't' => {
-  764|  98.5k|                            string.push('\t');
-  765|  98.5k|                            next_byte_offset += 1;
-  766|  98.5k|                        }
+  759|  48.7k|                        b'r' => {
+  760|  48.7k|                            string.push('\r');
+  761|  48.7k|                            next_byte_offset += 1;
+  762|  48.7k|                        }
+  763|  99.4k|                        b't' => {
+  764|  99.4k|                            string.push('\t');
+  765|  99.4k|                            next_byte_offset += 1;
+  766|  99.4k|                        }
   767|       |                        b'u' => {
   768|   363k|                            next_byte_offset += 1;
   769|   363k|                            let val = input_buffer.get(next_byte_offset..next_byte_offset + 4)?;
-  770|   362k|                            next_byte_offset += 4;
-  771|   362k|                            let code_point = match read_hexa_char(val) {
+  770|   363k|                            next_byte_offset += 4;
+  771|   363k|                            let code_point = match read_hexa_char(val) {
   772|   273k|                                Ok(cp) => cp,
-  773|  89.5k|                                Err(e) => {
-  774|  89.5k|                                    error = error.or_else(|| {
+  773|  89.7k|                                Err(e) => {
+  774|  89.7k|                                    error = error.or_else(|| {
   775|       |                                        let pos = self.file_offset
   776|       |                                            + u64::try_from(next_byte_offset).unwrap();
   777|       |                                        Some(self.syntax_error(pos - 4..pos, e))
-  778|  89.5k|                                    });
-  779|  89.5k|                                    char::REPLACEMENT_CHARACTER.into()
+  778|  89.7k|                                    });
+  779|  89.7k|                                    char::REPLACEMENT_CHARACTER.into()
   780|       |                                }
   781|       |                            };
-  782|   362k|                            if let Some(c) = char::from_u32(code_point) {
+  782|   363k|                            if let Some(c) = char::from_u32(code_point) {
   783|   210k|                                string.push(c);
   784|   210k|                            } else {
   785|   152k|                                let high_surrogate = code_point;
@@ -502,7 +502,7 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_string:
   800|   152k|                                    input_buffer.get(next_byte_offset..next_byte_offset + 6)?;
   801|   152k|                                next_byte_offset += 6;
   802|   152k|                                if !val.starts_with(b"\\u") {
-  803|  79.4k|                                    error = error.or_else(|| {
+  803|  79.5k|                                    error = error.or_else(|| {
   804|       |                                        let pos = self.file_offset + u64::try_from(next_byte_offset).unwrap();
   805|       |                                        Some(self.syntax_error(
   806|       |                                            pos - 6..pos,
@@ -511,10 +511,10 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_string:
   809|       |                                                high_surrogate
   810|       |                                            )
   811|       |                                        ))
-  812|  79.4k|                                    });
-  813|  79.4k|                                }
+  812|  79.5k|                                    });
+  813|  79.5k|                                }
   814|   152k|                                let low_surrogate = match read_hexa_char(&val[2..]) {
-  815|  72.1k|                                    Ok(cp) => cp,
+  815|  72.3k|                                    Ok(cp) => cp,
   816|  80.0k|                                    Err(e) => {
   817|  80.0k|                                        error = error.or_else(|| {
   818|       |                                            let pos = self.file_offset
@@ -558,22 +558,22 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_string:
   856|      0|                                }
   857|       |                            }
   858|       |                        }
-  859|  33.2k|                        c => {
-  860|  33.2k|                            next_byte_offset += 1;
-  861|  33.2k|                            error = error.or_else(|| {
+  859|  33.3k|                        c => {
+  860|  33.3k|                            next_byte_offset += 1;
+  861|  33.3k|                            error = error.or_else(|| {
   862|       |                                let pos =
   863|       |                                    self.file_offset + u64::try_from(next_byte_offset).unwrap();
   864|       |                                Some(self.syntax_error(
   865|       |                                    pos - 2..pos,
   866|       |                                    format!("'\\{}' is not a valid escape sequence", char::from(c)),
   867|       |                                ))
-  868|  33.2k|                            });
-  869|  33.2k|                            string.push(char::REPLACEMENT_CHARACTER);
-  870|  33.2k|                        }
+  868|  33.3k|                            });
+  869|  33.3k|                            string.push(char::REPLACEMENT_CHARACTER);
+  870|  33.3k|                        }
   871|       |                    }
-  872|   697k|                    *read_until = next_byte_offset;
+  872|   699k|                    *read_until = next_byte_offset;
   873|       |                }
-  874|  6.46M|                c @ (0..=0x1F) => {
+  874|  6.48M|                c @ (0..=0x1F) => {
   875|  66.9k|                    error = error.or_else(|| {
   876|       |                        let pos = self.file_offset + u64::try_from(next_byte_offset).unwrap();
   877|       |                        Some(self.syntax_error(
@@ -583,12 +583,12 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_string:
   881|  66.9k|                    });
   882|  66.9k|                    next_byte_offset += 1;
   883|  66.9k|                }
-  884|  6.39M|                _ => {
-  885|  6.39M|                    next_byte_offset += 1;
-  886|  6.39M|                }
+  884|  6.41M|                _ => {
+  885|  6.41M|                    next_byte_offset += 1;
+  886|  6.41M|                }
   887|       |            }
   888|       |        }
-  889|  1.02M|    }
+  889|  1.03M|    }
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_string0B9_:
   774|  1.04k|                                    error = error.or_else(|| {
   775|  1.04k|                                        let pos = self.file_offset
@@ -646,13 +646,13 @@ _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_strings4
   867|  1.17k|                                ))
   868|  1.17k|                            });
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_strings5_0B9_:
-  875|    871|                    error = error.or_else(|| {
-  876|    871|                        let pos = self.file_offset + u64::try_from(next_byte_offset).unwrap();
-  877|    871|                        Some(self.syntax_error(
-  878|    871|                            pos..pos + 1,
-  879|    871|                            format!("'{}' is not allowed in JSON strings", char::from(c)),
-  880|    871|                        ))
-  881|    871|                    });
+  875|    874|                    error = error.or_else(|| {
+  876|    874|                        let pos = self.file_offset + u64::try_from(next_byte_offset).unwrap();
+  877|    874|                        Some(self.syntax_error(
+  878|    874|                            pos..pos + 1,
+  879|    874|                            format!("'{}' is not allowed in JSON strings", char::from(c)),
+  880|    874|                        ))
+  881|    874|                    });
 _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer13read_constant:
   891|  1.81k|    fn read_constant(
   892|  1.81k|        &mut self,
@@ -683,23 +683,23 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer13read_constant:
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer13read_constant0B9_:
   904|  2.28k|            .take_while(|c| c.is_ascii_alphabetic())
 _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_number:
-  918|  31.9k|    fn read_number<'a>(
-  919|  31.9k|        &mut self,
-  920|  31.9k|        input_buffer: &'a [u8],
-  921|  31.9k|        is_ending: bool,
-  922|  31.9k|    ) -> Option<Result<JsonToken<'a>, SyntaxError>> {
-  923|  31.9k|        let mut next_byte_offset = 0;
-  924|  31.9k|        if *input_buffer.get(next_byte_offset)? == b'-' {
+  918|  32.0k|    fn read_number<'a>(
+  919|  32.0k|        &mut self,
+  920|  32.0k|        input_buffer: &'a [u8],
+  921|  32.0k|        is_ending: bool,
+  922|  32.0k|    ) -> Option<Result<JsonToken<'a>, SyntaxError>> {
+  923|  32.0k|        let mut next_byte_offset = 0;
+  924|  32.0k|        if *input_buffer.get(next_byte_offset)? == b'-' {
   925|    247|            next_byte_offset += 1;
-  926|  31.6k|        }
+  926|  31.7k|        }
   927|       |        // integer starting with first bytes
-  928|  31.9k|        match *input_buffer.get(next_byte_offset)? {
+  928|  32.0k|        match *input_buffer.get(next_byte_offset)? {
   929|  2.55k|            b'0' => {
   930|  2.55k|                next_byte_offset += 1;
   931|  2.55k|            }
-  932|  29.3k|            b'1'..=b'9' => {
-  933|  29.3k|                next_byte_offset += 1;
-  934|  29.3k|                next_byte_offset += read_digits(&input_buffer[next_byte_offset..], is_ending)?;
+  932|  29.4k|            b'1'..=b'9' => {
+  933|  29.4k|                next_byte_offset += 1;
+  934|  29.4k|                next_byte_offset += read_digits(&input_buffer[next_byte_offset..], is_ending)?;
   935|       |            }
   936|     24|            c => {
   937|     24|                next_byte_offset += 1;
@@ -712,10 +712,10 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_number:
   944|       |        }
   945|       |
   946|       |        // Dot
-  947|  31.8k|        if input_buffer.get(next_byte_offset).map_or_else(
-  948|  31.8k|            || if is_ending { Some(None) } else { None },
-  949|  31.8k|            |c| Some(Some(*c)),
-  950|  31.8k|        )? == Some(b'.')
+  947|  32.0k|        if input_buffer.get(next_byte_offset).map_or_else(
+  948|  32.0k|            || if is_ending { Some(None) } else { None },
+  949|  32.0k|            |c| Some(Some(*c)),
+  950|  32.0k|        )? == Some(b'.')
   951|       |        {
   952|    149|            next_byte_offset += 1;
   953|    149|            let c = *input_buffer.get(next_byte_offset)?;
@@ -731,21 +731,21 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_number:
   963|      1|                )));
   964|    144|            }
   965|    144|            next_byte_offset += read_digits(&input_buffer[next_byte_offset..], is_ending)?;
-  966|  31.7k|        }
+  966|  31.8k|        }
   967|       |
   968|       |        // Exp
-  969|  31.8k|        let c = input_buffer.get(next_byte_offset).map_or_else(
-  970|  31.8k|            || if is_ending { Some(None) } else { None },
-  971|  31.8k|            |c| Some(Some(*c)),
-  972|  31.8k|        )?;
-  973|  31.8k|        if c == Some(b'e') || c == Some(b'E') {
-  974|  14.5k|            next_byte_offset += 1;
-  975|  14.5k|            match *input_buffer.get(next_byte_offset)? {
+  969|  32.0k|        let c = input_buffer.get(next_byte_offset).map_or_else(
+  970|  32.0k|            || if is_ending { Some(None) } else { None },
+  971|  32.0k|            |c| Some(Some(*c)),
+  972|  32.0k|        )?;
+  973|  32.0k|        if c == Some(b'e') || c == Some(b'E') {
+  974|  14.6k|            next_byte_offset += 1;
+  975|  14.6k|            match *input_buffer.get(next_byte_offset)? {
   976|       |                b'-' | b'+' => {
-  977|  14.3k|                    next_byte_offset += 1;
-  978|  14.3k|                    let c = *input_buffer.get(next_byte_offset)?;
-  979|  14.2k|                    next_byte_offset += 1;
-  980|  14.2k|                    if !c.is_ascii_digit() {
+  977|  14.4k|                    next_byte_offset += 1;
+  978|  14.4k|                    let c = *input_buffer.get(next_byte_offset)?;
+  979|  14.3k|                    next_byte_offset += 1;
+  980|  14.3k|                    if !c.is_ascii_digit() {
   981|     66|                        self.file_offset += u64::try_from(next_byte_offset).unwrap();
   982|     66|                        return Some(Err(self.syntax_error(
   983|     66|                            self.file_offset - 1..self.file_offset,
@@ -754,7 +754,7 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_number:
   986|     66|                                char::from(c)
   987|     66|                            ),
   988|     66|                        )));
-  989|  14.1k|                    }
+  989|  14.2k|                    }
   990|       |                }
   991|    203|                b'0'..=b'9' => {
   992|    203|                    next_byte_offset += 1;
@@ -771,29 +771,29 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11read_number:
  1003|      1|                    )));
  1004|       |                }
  1005|       |            }
- 1006|  14.3k|            next_byte_offset += read_digits(&input_buffer[next_byte_offset..], is_ending)?;
+ 1006|  14.4k|            next_byte_offset += read_digits(&input_buffer[next_byte_offset..], is_ending)?;
  1007|  17.3k|        }
- 1008|  31.7k|        self.file_offset += u64::try_from(next_byte_offset).unwrap();
- 1009|  31.7k|        Some(Ok(JsonToken::Number(Cow::Borrowed(
- 1010|  31.7k|            str::from_utf8(&input_buffer[..next_byte_offset]).unwrap(),
- 1011|  31.7k|        ))))
- 1012|  31.9k|    }
+ 1008|  31.8k|        self.file_offset += u64::try_from(next_byte_offset).unwrap();
+ 1009|  31.8k|        Some(Ok(JsonToken::Number(Cow::Borrowed(
+ 1010|  31.8k|            str::from_utf8(&input_buffer[..next_byte_offset]).unwrap(),
+ 1011|  31.8k|        ))))
+ 1012|  32.0k|    }
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_number0B9_:
   948|     82|            || if is_ending { Some(None) } else { None },
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_numbers_0B9_:
-  949|  31.8k|            |c| Some(Some(*c)),
+  949|  31.9k|            |c| Some(Some(*c)),
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_numbers0_0B9_:
   970|    100|            || if is_ending { Some(None) } else { None },
 _RNCNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB7_9JsonLexer11read_numbers1_0B9_:
-  971|  31.7k|            |c| Some(Some(*c)),
+  971|  31.9k|            |c| Some(Some(*c)),
 _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11decode_utf8:
- 1014|  1.33M|    fn decode_utf8<'a>(
- 1015|  1.33M|        &self,
- 1016|  1.33M|        input_buffer: &'a [u8],
- 1017|  1.33M|        start_position: u64,
- 1018|  1.33M|    ) -> (Cow<'a, str>, Option<SyntaxError>) {
- 1019|  1.33M|        match str::from_utf8(input_buffer) {
- 1020|  1.27M|            Ok(str) => (Cow::Borrowed(str), None),
+ 1014|  1.34M|    fn decode_utf8<'a>(
+ 1015|  1.34M|        &self,
+ 1016|  1.34M|        input_buffer: &'a [u8],
+ 1017|  1.34M|        start_position: u64,
+ 1018|  1.34M|    ) -> (Cow<'a, str>, Option<SyntaxError>) {
+ 1019|  1.34M|        match str::from_utf8(input_buffer) {
+ 1020|  1.28M|            Ok(str) => (Cow::Borrowed(str), None),
  1021|  60.8k|            Err(e) => (
  1022|  60.8k|                String::from_utf8_lossy(input_buffer),
  1023|  60.8k|                Some({
@@ -802,48 +802,48 @@ _RNvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB5_9JsonLexer11decode_utf8:
  1026|  60.8k|                }),
  1027|  60.8k|            ),
  1028|       |        }
- 1029|  1.33M|    }
+ 1029|  1.34M|    }
 _RINvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB6_9JsonLexer12syntax_errorNtNtCs3OstG5Tqy1X_5alloc6string6StringEB8_:
- 1031|  70.4k|    fn syntax_error(&self, file_offset: Range<u64>, message: impl Into<String>) -> SyntaxError {
- 1032|  70.4k|        let start_file_offset = max(file_offset.start, self.file_start_of_last_line);
- 1033|  70.4k|        SyntaxError {
- 1034|  70.4k|            location: TextPosition {
- 1035|  70.4k|                line: self.file_line,
- 1036|  70.4k|                column: start_file_offset - self.file_start_of_last_line, //TODO: unicode
- 1037|  70.4k|                offset: start_file_offset,
- 1038|  70.4k|            }..TextPosition {
- 1039|  70.4k|                line: self.file_line,
- 1040|  70.4k|                column: file_offset.end - self.file_start_of_last_line, //TODO: unicode
- 1041|  70.4k|                offset: file_offset.end,
- 1042|  70.4k|            },
- 1043|  70.4k|            message: message.into(),
- 1044|  70.4k|        }
- 1045|  70.4k|    }
+ 1031|  70.5k|    fn syntax_error(&self, file_offset: Range<u64>, message: impl Into<String>) -> SyntaxError {
+ 1032|  70.5k|        let start_file_offset = max(file_offset.start, self.file_start_of_last_line);
+ 1033|  70.5k|        SyntaxError {
+ 1034|  70.5k|            location: TextPosition {
+ 1035|  70.5k|                line: self.file_line,
+ 1036|  70.5k|                column: start_file_offset - self.file_start_of_last_line, //TODO: unicode
+ 1037|  70.5k|                offset: start_file_offset,
+ 1038|  70.5k|            }..TextPosition {
+ 1039|  70.5k|                line: self.file_line,
+ 1040|  70.5k|                column: file_offset.end - self.file_start_of_last_line, //TODO: unicode
+ 1041|  70.5k|                offset: file_offset.end,
+ 1042|  70.5k|            },
+ 1043|  70.5k|            message: message.into(),
+ 1044|  70.5k|        }
+ 1045|  70.5k|    }
 _RINvMs1_NtCsiS85MHDKMvU_17json_event_parser4readNtB6_9JsonLexer12syntax_errorReEB8_:
- 1031|  6.37k|    fn syntax_error(&self, file_offset: Range<u64>, message: impl Into<String>) -> SyntaxError {
- 1032|  6.37k|        let start_file_offset = max(file_offset.start, self.file_start_of_last_line);
- 1033|  6.37k|        SyntaxError {
- 1034|  6.37k|            location: TextPosition {
- 1035|  6.37k|                line: self.file_line,
- 1036|  6.37k|                column: start_file_offset - self.file_start_of_last_line, //TODO: unicode
- 1037|  6.37k|                offset: start_file_offset,
- 1038|  6.37k|            }..TextPosition {
- 1039|  6.37k|                line: self.file_line,
- 1040|  6.37k|                column: file_offset.end - self.file_start_of_last_line, //TODO: unicode
- 1041|  6.37k|                offset: file_offset.end,
- 1042|  6.37k|            },
- 1043|  6.37k|            message: message.into(),
- 1044|  6.37k|        }
- 1045|  6.37k|    }
+ 1031|  6.39k|    fn syntax_error(&self, file_offset: Range<u64>, message: impl Into<String>) -> SyntaxError {
+ 1032|  6.39k|        let start_file_offset = max(file_offset.start, self.file_start_of_last_line);
+ 1033|  6.39k|        SyntaxError {
+ 1034|  6.39k|            location: TextPosition {
+ 1035|  6.39k|                line: self.file_line,
+ 1036|  6.39k|                column: start_file_offset - self.file_start_of_last_line, //TODO: unicode
+ 1037|  6.39k|                offset: start_file_offset,
+ 1038|  6.39k|            }..TextPosition {
+ 1039|  6.39k|                line: self.file_line,
+ 1040|  6.39k|                column: file_offset.end - self.file_start_of_last_line, //TODO: unicode
+ 1041|  6.39k|                offset: file_offset.end,
+ 1042|  6.39k|            },
+ 1043|  6.39k|            message: message.into(),
+ 1044|  6.39k|        }
+ 1045|  6.39k|    }
 _RNvNtCsiS85MHDKMvU_17json_event_parser4read14read_hexa_char:
- 1048|   514k|fn read_hexa_char(input: &[u8]) -> Result<u32, String> {
- 1049|   514k|    let mut value = 0;
+ 1048|   515k|fn read_hexa_char(input: &[u8]) -> Result<u32, String> {
+ 1049|   515k|    let mut value = 0;
  1050|  1.84M|    for c in input.iter().copied() {
  1051|  1.84M|        value = value * 16
  1052|  1.84M|            + match c {
  1053|  1.81M|                b'0'..=b'9' => u32::from(c) - u32::from(b'0'),
- 1054|   348k|                b'a'..=b'f' => u32::from(c) - u32::from(b'a') + 10,
- 1055|   695k|                b'A'..=b'F' => u32::from(c) - u32::from(b'A') + 10,
+ 1054|   349k|                b'a'..=b'f' => u32::from(c) - u32::from(b'a') + 10,
+ 1055|   696k|                b'A'..=b'F' => u32::from(c) - u32::from(b'A') + 10,
  1056|       |                _ => {
  1057|   169k|                    return Err(format!(
  1058|   169k|                        "Unexpected character in a unicode escape: '{}'",
@@ -853,23 +853,23 @@ _RNvNtCsiS85MHDKMvU_17json_event_parser4read14read_hexa_char:
  1062|       |            }
  1063|       |    }
  1064|   345k|    Ok(value)
- 1065|   514k|}
+ 1065|   515k|}
 _RNvNtCsiS85MHDKMvU_17json_event_parser4read11read_digits:
- 1067|  43.8k|fn read_digits(input_buffer: &[u8], is_ending: bool) -> Option<usize> {
- 1068|  43.8k|    let count = input_buffer
- 1069|  43.8k|        .iter()
- 1070|  43.8k|        .take_while(|c| c.is_ascii_digit())
- 1071|  43.8k|        .count();
- 1072|  43.8k|    if count == input_buffer.len() && !is_ending {
+ 1067|  44.0k|fn read_digits(input_buffer: &[u8], is_ending: bool) -> Option<usize> {
+ 1068|  44.0k|    let count = input_buffer
+ 1069|  44.0k|        .iter()
+ 1070|  44.0k|        .take_while(|c| c.is_ascii_digit())
+ 1071|  44.0k|        .count();
+ 1072|  44.0k|    if count == input_buffer.len() && !is_ending {
  1073|      0|        return None;
- 1074|  43.8k|    }
- 1075|  43.8k|    Some(count)
- 1076|  43.8k|}
+ 1074|  44.0k|    }
+ 1075|  44.0k|    Some(count)
+ 1076|  44.0k|}
 _RNCNvNtCsiS85MHDKMvU_17json_event_parser4read11read_digits0B5_:
- 1070|  58.4k|        .take_while(|c| c.is_ascii_digit())
+ 1070|  58.6k|        .take_while(|c| c.is_ascii_digit())
 _RNvNtCsiS85MHDKMvU_17json_event_parser4read11owned_event:
- 1078|  1.48k|fn owned_event(event: JsonEvent<'_>) -> JsonEvent<'static> {
- 1079|  1.48k|    match event {
+ 1078|  1.50k|fn owned_event(event: JsonEvent<'_>) -> JsonEvent<'static> {
+ 1079|  1.50k|    match event {
  1080|    236|        JsonEvent::String(s) => JsonEvent::String(s.into_owned().into()),
  1081|     45|        JsonEvent::Number(n) => JsonEvent::Number(n.into_owned().into()),
  1082|      8|        JsonEvent::Boolean(b) => JsonEvent::Boolean(b),
@@ -879,16 +879,16 @@ _RNvNtCsiS85MHDKMvU_17json_event_parser4read11owned_event:
  1086|     41|        JsonEvent::StartObject => JsonEvent::StartObject,
  1087|      1|        JsonEvent::EndObject => JsonEvent::EndObject,
  1088|      0|        JsonEvent::ObjectKey(k) => JsonEvent::ObjectKey(k.into_owned().into()),
- 1089|  1.15k|        JsonEvent::Eof => JsonEvent::Eof,
+ 1089|  1.16k|        JsonEvent::Eof => JsonEvent::Eof,
  1090|       |    }
- 1091|  1.48k|}
+ 1091|  1.50k|}
 
 _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter11write_eventQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
-  121|  75.0k|    pub fn write_event(&mut self, event: JsonEvent<'_>, mut write: impl Write) -> Result<()> {
-  122|  75.0k|        match event {
-  123|  38.8k|            JsonEvent::String(s) => {
-  124|  38.8k|                self.before_value(&mut write)?;
-  125|  38.8k|                write_escaped_json_string(&s, write)
+  121|  75.4k|    pub fn write_event(&mut self, event: JsonEvent<'_>, mut write: impl Write) -> Result<()> {
+  122|  75.4k|        match event {
+  123|  39.1k|            JsonEvent::String(s) => {
+  124|  39.1k|                self.before_value(&mut write)?;
+  125|  39.1k|                write_escaped_json_string(&s, write)
   126|       |            }
   127|      0|            JsonEvent::Number(number) => {
   128|      0|                self.before_value(&mut write)?;
@@ -903,13 +903,13 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter11writ
   137|      0|                write.write_all(b"null")
   138|       |            }
   139|       |            JsonEvent::StartArray => {
-  140|  2.24k|                self.before_value(&mut write)?;
-  141|  2.24k|                self.state_stack.push(JsonState::OpenArray);
-  142|  2.24k|                write.write_all(b"[")
+  140|  2.25k|                self.before_value(&mut write)?;
+  141|  2.25k|                self.state_stack.push(JsonState::OpenArray);
+  142|  2.25k|                write.write_all(b"[")
   143|       |            }
-  144|  2.24k|            JsonEvent::EndArray => match self.state_stack.pop() {
+  144|  2.25k|            JsonEvent::EndArray => match self.state_stack.pop() {
   145|       |                Some(JsonState::OpenArray) | Some(JsonState::ContinuationArray) => {
-  146|  2.24k|                    write.write_all(b"]")
+  146|  2.25k|                    write.write_all(b"]")
   147|       |                }
   148|      0|                Some(s) => {
   149|      0|                    self.state_stack.push(s);
@@ -944,9 +944,9 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter11writ
   178|      0|                    "Closing a not opened object",
   179|      0|                )),
   180|       |            },
-  181|  4.49k|            JsonEvent::ObjectKey(key) => {
-  182|  4.49k|                match self.state_stack.pop() {
-  183|  3.37k|                    Some(JsonState::OpenObject) => (),
+  181|  4.51k|            JsonEvent::ObjectKey(key) => {
+  182|  4.51k|                match self.state_stack.pop() {
+  183|  3.38k|                    Some(JsonState::OpenObject) => (),
   184|  1.12k|                    Some(JsonState::ContinuationObject) => write.write_all(b",")?,
   185|       |                    _ => {
   186|      0|                        return Err(Error::new(
@@ -955,17 +955,17 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter11writ
   189|      0|                        ))
   190|       |                    }
   191|       |                }
-  192|  4.49k|                self.state_stack.push(JsonState::ContinuationObject);
-  193|  4.49k|                self.state_stack.push(JsonState::ObjectValue);
-  194|  4.49k|                write_escaped_json_string(&key, &mut write)?;
-  195|  4.49k|                write.write_all(b":")
+  192|  4.51k|                self.state_stack.push(JsonState::ContinuationObject);
+  193|  4.51k|                self.state_stack.push(JsonState::ObjectValue);
+  194|  4.51k|                write_escaped_json_string(&key, &mut write)?;
+  195|  4.51k|                write.write_all(b":")
   196|       |            }
   197|      0|            JsonEvent::Eof => Err(Error::new(
   198|      0|                ErrorKind::InvalidInput,
   199|      0|                "EOF is not allowed in JSON writer",
   200|      0|            )),
   201|       |        }
-  202|  75.0k|    }
+  202|  75.4k|    }
 _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter11write_eventQQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
   121|     14|    pub fn write_event(&mut self, event: JsonEvent<'_>, mut write: impl Write) -> Result<()> {
   122|     14|        match event {
@@ -1050,16 +1050,16 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter11writ
   201|       |        }
   202|     14|    }
 _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter12before_valueQQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
-  204|  54.7k|    fn before_value(&mut self, mut write: impl Write) -> Result<()> {
-  205|  54.7k|        match self.state_stack.pop() {
+  204|  55.0k|    fn before_value(&mut self, mut write: impl Write) -> Result<()> {
+  205|  55.0k|        match self.state_stack.pop() {
   206|       |            Some(JsonState::OpenArray) => {
-  207|  2.21k|                self.state_stack.push(JsonState::ContinuationArray);
-  208|  2.21k|                Ok(())
+  207|  2.22k|                self.state_stack.push(JsonState::ContinuationArray);
+  208|  2.22k|                Ok(())
   209|       |            }
   210|       |            Some(JsonState::ContinuationArray) => {
-  211|  46.8k|                self.state_stack.push(JsonState::ContinuationArray);
-  212|  46.8k|                write.write_all(b",")?;
-  213|  46.8k|                Ok(())
+  211|  47.1k|                self.state_stack.push(JsonState::ContinuationArray);
+  212|  47.1k|                write.write_all(b",")?;
+  213|  47.1k|                Ok(())
   214|       |            }
   215|      0|            Some(last_state @ JsonState::OpenObject)
   216|      0|            | Some(last_state @ JsonState::ContinuationObject) => {
@@ -1069,7 +1069,7 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter12befo
   220|      0|                    "Object key expected, string found",
   221|      0|                ))
   222|       |            }
-  223|  4.49k|            Some(JsonState::ObjectValue) => Ok(()),
+  223|  4.51k|            Some(JsonState::ObjectValue) => Ok(()),
   224|       |            None => {
   225|  1.12k|                if self.element_written {
   226|      0|                    Err(Error::new(
@@ -1082,7 +1082,7 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter12befo
   233|       |                }
   234|       |            }
   235|       |        }
-  236|  54.7k|    }
+  236|  55.0k|    }
 _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter12before_valueQQQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
   204|      6|    fn before_value(&mut self, mut write: impl Write) -> Result<()> {
   205|      6|        match self.state_stack.pop() {
@@ -1118,9 +1118,9 @@ _RINvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB5_18LowLevelJsonWriter12befo
   235|       |        }
   236|      6|    }
 _RINvNtCsiS85MHDKMvU_17json_event_parser5write25write_escaped_json_stringQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
-  263|  38.8k|fn write_escaped_json_string(s: &str, mut write: impl Write) -> Result<()> {
-  264|  38.8k|    write.write_all(b"\"")?;
-  265|  38.8k|    let mut buffer = [b'\\', b'u', 0, 0, 0, 0];
+  263|  39.1k|fn write_escaped_json_string(s: &str, mut write: impl Write) -> Result<()> {
+  264|  39.1k|    write.write_all(b"\"")?;
+  265|  39.1k|    let mut buffer = [b'\\', b'u', 0, 0, 0, 0];
   266|   168k|    for c in s.chars() {
   267|   168k|        match c {
   268|      0|            '\\' => write.write_all(b"\\\\"),
@@ -1149,19 +1149,19 @@ _RINvNtCsiS85MHDKMvU_17json_event_parser5write25write_escaped_json_stringQINtNtC
   291|       |            }
   292|      0|        }?;
   293|       |    }
-  294|  38.8k|    write.write_all(b"\"")?;
-  295|  38.8k|    Ok(())
-  296|  38.8k|}
+  294|  39.1k|    write.write_all(b"\"")?;
+  295|  39.1k|    Ok(())
+  296|  39.1k|}
 _RINvNtCsiS85MHDKMvU_17json_event_parser5write25write_escaped_json_stringQQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
-  263|  4.49k|fn write_escaped_json_string(s: &str, mut write: impl Write) -> Result<()> {
-  264|  4.49k|    write.write_all(b"\"")?;
-  265|  4.49k|    let mut buffer = [b'\\', b'u', 0, 0, 0, 0];
-  266|  25.8k|    for c in s.chars() {
-  267|  25.8k|        match c {
+  263|  4.51k|fn write_escaped_json_string(s: &str, mut write: impl Write) -> Result<()> {
+  264|  4.51k|    write.write_all(b"\"")?;
+  265|  4.51k|    let mut buffer = [b'\\', b'u', 0, 0, 0, 0];
+  266|  25.9k|    for c in s.chars() {
+  267|  25.9k|        match c {
   268|      0|            '\\' => write.write_all(b"\\\\"),
   269|      0|            '"' => write.write_all(b"\\\""),
-  270|  25.8k|            c => {
-  271|  25.8k|                if c < char::from(32) {
+  270|  25.9k|            c => {
+  271|  25.9k|                if c < char::from(32) {
   272|      0|                    match c {
   273|      0|                        '\u{08}' => write.write_all(b"\\b"),
   274|      0|                        '\u{0C}' => write.write_all(b"\\f"),
@@ -1179,14 +1179,14 @@ _RINvNtCsiS85MHDKMvU_17json_event_parser5write25write_escaped_json_stringQQINtNt
   286|       |                        }
   287|       |                    }
   288|       |                } else {
-  289|  25.8k|                    write.write_all(c.encode_utf8(&mut buffer[2..]).as_bytes())
+  289|  25.9k|                    write.write_all(c.encode_utf8(&mut buffer[2..]).as_bytes())
   290|       |                }
   291|       |            }
   292|      0|        }?;
   293|       |    }
-  294|  4.49k|    write.write_all(b"\"")?;
-  295|  4.49k|    Ok(())
-  296|  4.49k|}
+  294|  4.51k|    write.write_all(b"\"")?;
+  295|  4.51k|    Ok(())
+  296|  4.51k|}
 _RINvNtCsiS85MHDKMvU_17json_event_parser5write25write_escaped_json_stringQQQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
   263|      4|fn write_escaped_json_string(s: &str, mut write: impl Write) -> Result<()> {
   264|      4|    write.write_all(b"\"")?;
@@ -1223,9 +1223,9 @@ _RINvNtCsiS85MHDKMvU_17json_event_parser5write25write_escaped_json_stringQQQINtN
   295|      4|    Ok(())
   296|      4|}
 _RNvMNtCsiS85MHDKMvU_17json_event_parser5writeINtB2_17ToWriteJsonWriterINtNtCs3OstG5Tqy1X_5alloc3vec3VechEE11write_eventCsayyyEI11TDH_13oxigraph_fuzz:
-   33|  75.0k|    pub fn write_event(&mut self, event: JsonEvent<'_>) -> Result<()> {
-   34|  75.0k|        self.writer.write_event(event, &mut self.write)
-   35|  75.0k|    }
+   33|  75.4k|    pub fn write_event(&mut self, event: JsonEvent<'_>) -> Result<()> {
+   34|  75.4k|        self.writer.write_event(event, &mut self.write)
+   35|  75.4k|    }
 _RNvMNtCsiS85MHDKMvU_17json_event_parser5writeINtB2_17ToWriteJsonWriterINtNtCs3OstG5Tqy1X_5alloc3vec3VechEE3newCsayyyEI11TDH_13oxigraph_fuzz:
    26|  1.12k|    pub const fn new(write: W) -> Self {
    27|  1.12k|        Self {
@@ -1255,28 +1255,28 @@ _RNvMNtCsiS85MHDKMvU_17json_event_parser5writeINtB2_17ToWriteJsonWriterQINtNtCs3
    39|      2|        Ok(self.write)
    40|      2|    }
 _RNvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB4_18LowLevelJsonWriter3new:
-  114|  1.12k|    pub const fn new() -> Self {
-  115|  1.12k|        Self {
-  116|  1.12k|            state_stack: Vec::new(),
-  117|  1.12k|            element_written: false,
-  118|  1.12k|        }
-  119|  1.12k|    }
+  114|  1.13k|    pub const fn new() -> Self {
+  115|  1.13k|        Self {
+  116|  1.13k|            state_stack: Vec::new(),
+  117|  1.13k|            element_written: false,
+  118|  1.13k|        }
+  119|  1.13k|    }
 _RNvMs_NtCsiS85MHDKMvU_17json_event_parser5writeNtB4_18LowLevelJsonWriter12validate_eof:
-  238|  1.12k|    fn validate_eof(&self) -> Result<()> {
-  239|  1.12k|        if !self.state_stack.is_empty() {
+  238|  1.13k|    fn validate_eof(&self) -> Result<()> {
+  239|  1.13k|        if !self.state_stack.is_empty() {
   240|      0|            return Err(Error::new(
   241|      0|                ErrorKind::InvalidInput,
   242|      0|                "The written JSON is not balanced: an object or an array has not been closed",
   243|      0|            ));
-  244|  1.12k|        }
-  245|  1.12k|        if !self.element_written {
+  244|  1.13k|        }
+  245|  1.13k|        if !self.element_written {
   246|      0|            return Err(Error::new(
   247|      0|                ErrorKind::InvalidInput,
   248|      0|                "A JSON file can't be empty",
   249|      0|            ));
-  250|  1.12k|        }
-  251|  1.12k|        Ok(())
-  252|  1.12k|    }
+  250|  1.13k|        }
+  251|  1.13k|        Ok(())
+  252|  1.13k|    }
 
 rust_fuzzer_test_input:
   209|  21.2k|            pub extern "C" fn rust_fuzzer_test_input(bytes: &[u8]) -> i32 {
@@ -1372,22 +1372,22 @@ _RNvMs10_Cs8SDT0Q3242W_5oxiriNtB6_11ParserInput11starts_withCs396iXkOaW7t_5oxrdf
  1157|   148k|        self.value.as_str().starts_with(c)
  1158|   148k|    }
 _RNvMs10_Cs8SDT0Q3242W_5oxiriNtB6_11ParserInput4nextCs396iXkOaW7t_5oxrdf:
- 1141|  1.47M|    fn next(&mut self) -> Option<char> {
- 1142|  1.47M|        if let Some(head) = self.value.next() {
+ 1141|  1.48M|    fn next(&mut self) -> Option<char> {
+ 1142|  1.48M|        if let Some(head) = self.value.next() {
  1143|  1.38M|            self.position += head.len_utf8();
  1144|  1.38M|            Some(head)
  1145|       |        } else {
- 1146|  92.9k|            None
+ 1146|  93.3k|            None
  1147|       |        }
- 1148|  1.47M|    }
+ 1148|  1.48M|    }
 _RNvMs10_Cs8SDT0Q3242W_5oxiriNtB6_11ParserInput5frontCs396iXkOaW7t_5oxrdf:
- 1151|   103k|    fn front(&self) -> Option<char> {
- 1152|   103k|        self.value.clone().next()
- 1153|   103k|    }
+ 1151|   104k|    fn front(&self) -> Option<char> {
+ 1152|   104k|        self.value.clone().next()
+ 1153|   104k|    }
 _RNvXsY_Cs8SDT0Q3242W_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer3lenCs396iXkOaW7t_5oxrdf:
- 1092|   352k|    fn len(&self) -> usize {
- 1093|   352k|        self.len
- 1094|   352k|    }
+ 1092|   354k|    fn len(&self) -> usize {
+ 1093|   354k|        self.len
+ 1094|   354k|    }
 _RNvXsY_Cs8SDT0Q3242W_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer4pushCs396iXkOaW7t_5oxrdf:
  1072|  1.36M|    fn push(&mut self, c: char) {
  1073|  1.36M|        self.len += c.len_utf8();
@@ -1397,13 +1397,13 @@ _RNvXsY_Cs8SDT0Q3242W_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer5clearCs39
  1083|    490|        self.len = 0;
  1084|    490|    }
 _RNvXsY_Cs8SDT0Q3242W_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer6as_strCs396iXkOaW7t_5oxrdf:
- 1097|   194k|    fn as_str(&self) -> &str {
- 1098|   194k|        ""
- 1099|   194k|    }
+ 1097|   195k|    fn as_str(&self) -> &str {
+ 1098|   195k|        ""
+ 1099|   195k|    }
 _RNvXsY_Cs8SDT0Q3242W_5oxiriNtB5_16VoidOutputBufferNtB5_12OutputBuffer8truncateCs396iXkOaW7t_5oxrdf:
- 1087|  23.7k|    fn truncate(&mut self, new_len: usize) {
- 1088|  23.7k|        self.len = new_len;
- 1089|  23.7k|    }
+ 1087|  23.9k|    fn truncate(&mut self, new_len: usize) {
+ 1088|  23.9k|        self.len = new_len;
+ 1089|  23.9k|    }
 _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E11parse_erroruECs396iXkOaW7t_5oxrdf:
  1590|  3.30k|    fn parse_error<T>(&self, kind: IriParseErrorKind) -> Result<T, IriParseError> {
  1591|  3.30k|        Err(IriParseError { kind })
@@ -1454,20 +1454,20 @@ _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E27read
  1568|       |        }
  1569|   157k|    }
 _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E27read_url_codepoint_or_echarNCNvB2_15parse_authority0ECs396iXkOaW7t_5oxrdf:
- 1556|  35.4k|    fn read_url_codepoint_or_echar(
- 1557|  35.4k|        &mut self,
- 1558|  35.4k|        c: char,
- 1559|  35.4k|        valid: impl Fn(char) -> bool,
- 1560|  35.4k|    ) -> Result<(), IriParseError> {
- 1561|  35.4k|        if UNCHECKED || valid(c) {
- 1562|  34.1k|            self.output.push(c);
- 1563|  34.1k|            Ok(())
+ 1556|  35.5k|    fn read_url_codepoint_or_echar(
+ 1557|  35.5k|        &mut self,
+ 1558|  35.5k|        c: char,
+ 1559|  35.5k|        valid: impl Fn(char) -> bool,
+ 1560|  35.5k|    ) -> Result<(), IriParseError> {
+ 1561|  35.5k|        if UNCHECKED || valid(c) {
+ 1562|  34.2k|            self.output.push(c);
+ 1563|  34.2k|            Ok(())
  1564|  1.25k|        } else if c == '%' {
  1565|  1.25k|            self.read_echar()
  1566|       |        } else {
  1567|      1|            self.parse_error(IriParseErrorKind::InvalidIriCodePoint(c))
  1568|       |        }
- 1569|  35.4k|    }
+ 1569|  35.5k|    }
 _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E27read_url_codepoint_or_echarNCNvB2_19parse_relative_path0ECs396iXkOaW7t_5oxrdf:
  1556|  9.77k|    fn read_url_codepoint_or_echar(
  1557|  9.77k|        &mut self,
@@ -1484,12 +1484,12 @@ _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E27read
  1568|       |        }
  1569|  9.77k|    }
 _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E27read_url_codepoint_or_echarNvB7_28is_iunreserved_or_sub_delimsECs396iXkOaW7t_5oxrdf:
- 1556|  26.1k|    fn read_url_codepoint_or_echar(
- 1557|  26.1k|        &mut self,
- 1558|  26.1k|        c: char,
- 1559|  26.1k|        valid: impl Fn(char) -> bool,
- 1560|  26.1k|    ) -> Result<(), IriParseError> {
- 1561|  26.1k|        if UNCHECKED || valid(c) {
+ 1556|  26.2k|    fn read_url_codepoint_or_echar(
+ 1557|  26.2k|        &mut self,
+ 1558|  26.2k|        c: char,
+ 1559|  26.2k|        valid: impl Fn(char) -> bool,
+ 1560|  26.2k|    ) -> Result<(), IriParseError> {
+ 1561|  26.2k|        if UNCHECKED || valid(c) {
  1562|  24.9k|            self.output.push(c);
  1563|  24.9k|            Ok(())
  1564|  1.25k|        } else if c == '%' {
@@ -1497,7 +1497,7 @@ _RINvMs11_Cs8SDT0Q3242W_5oxiriINtB7_9IriParserNtB7_16VoidOutputBufferKb0_E27read
  1566|       |        } else {
  1567|      1|            self.parse_error(IriParseErrorKind::InvalidIriCodePoint(c))
  1568|       |        }
- 1569|  26.1k|    }
+ 1569|  26.2k|    }
 _RNCNvMs11_Cs8SDT0Q3242W_5oxiriINtB8_9IriParserNtB8_16VoidOutputBufferKb0_E10parse_path0Cs396iXkOaW7t_5oxrdf:
  1516|   108k|                Some(c) => self.read_url_codepoint_or_echar(c, |c| {
  1517|   108k|                    is_iunreserved_or_sub_delims(c) || matches!(c, ':' | '@')
@@ -1515,27 +1515,27 @@ _RNCNvMs11_Cs8SDT0Q3242W_5oxiriINtB8_9IriParserNtB8_16VoidOutputBufferKb0_E14par
  1542|   157k|                is_iunreserved_or_sub_delims(c) || matches!(c, ':' | '@' | '/' | '?')
  1543|   157k|            })?;
 _RNCNvMs11_Cs8SDT0Q3242W_5oxiriINtB8_9IriParserNtB8_16VoidOutputBufferKb0_E15parse_authority0Cs396iXkOaW7t_5oxrdf:
- 1364|  35.4k|                    self.read_url_codepoint_or_echar(c, |c| {
- 1365|  35.4k|                        is_iunreserved_or_sub_delims(c) || c == ':'
- 1366|  35.4k|                    })?;
+ 1364|  35.5k|                    self.read_url_codepoint_or_echar(c, |c| {
+ 1365|  35.5k|                        is_iunreserved_or_sub_delims(c) || c == ':'
+ 1366|  35.5k|                    })?;
 _RNCNvMs11_Cs8SDT0Q3242W_5oxiriINtB8_9IriParserNtB8_16VoidOutputBufferKb0_E19parse_relative_path0Cs396iXkOaW7t_5oxrdf:
  1323|  9.77k|            self.read_url_codepoint_or_echar(c, |c| is_iunreserved_or_sub_delims(c) || c == '@')?;
 _RNvMCs8SDT0Q3242W_5oxiriINtB2_6IriRefNtNtCs3OstG5Tqy1X_5alloc6string6StringE10into_innerCs396iXkOaW7t_5oxrdf:
-  185|  86.5k|    pub fn into_inner(self) -> T {
-  186|  86.5k|        self.iri
-  187|  86.5k|    }
+  185|  86.9k|    pub fn into_inner(self) -> T {
+  186|  86.9k|        self.iri
+  187|  86.9k|    }
 _RNvMCs8SDT0Q3242W_5oxiriINtB2_6IriRefNtNtCs3OstG5Tqy1X_5alloc6string6StringE11is_absoluteCs396iXkOaW7t_5oxrdf:
-  199|  89.0k|    pub fn is_absolute(&self) -> bool {
-  200|  89.0k|        self.positions.scheme_end != 0
-  201|  89.0k|    }
+  199|  89.5k|    pub fn is_absolute(&self) -> bool {
+  200|  89.5k|        self.positions.scheme_end != 0
+  201|  89.5k|    }
 _RNvMCs8SDT0Q3242W_5oxiriINtB2_6IriRefNtNtCs3OstG5Tqy1X_5alloc6string6StringE5parseCs396iXkOaW7t_5oxrdf:
-   58|  92.3k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
-   59|  92.3k|        let positions = IriParser::<_, false>::parse(&iri, None, &mut VoidOutputBuffer::default())?;
-   60|  89.0k|        Ok(Self { iri, positions })
-   61|  92.3k|    }
+   58|  92.8k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
+   59|  92.8k|        let positions = IriParser::<_, false>::parse(&iri, None, &mut VoidOutputBuffer::default())?;
+   60|  89.5k|        Ok(Self { iri, positions })
+   61|  92.8k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E10parse_hostCs396iXkOaW7t_5oxrdf:
- 1372|  23.7k|    fn parse_host(&mut self) -> Result<(), IriParseError> {
- 1373|  23.7k|        if self.input.starts_with('[') {
+ 1372|  23.9k|    fn parse_host(&mut self) -> Result<(), IriParseError> {
+ 1373|  23.9k|        if self.input.starts_with('[') {
  1374|       |            // IP v6
  1375|  3.51k|            let start_position = self.input.position;
  1376|   276k|            while let Some(c) = self.input.next() {
@@ -1580,68 +1580,68 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E10parse
  1415|       |            }
  1416|       |        } else {
  1417|       |            // Other host
- 1418|  46.4k|            loop {
- 1419|  46.4k|                let c = self.input.next();
- 1420|  46.4k|                match c {
+ 1418|  46.6k|            loop {
+ 1419|  46.6k|                let c = self.input.next();
+ 1420|  46.6k|                match c {
  1421|       |                    Some(':') => {
- 1422|  9.91k|                        self.output.push(':');
- 1423|  9.91k|                        return self.parse_port();
+ 1422|  9.97k|                        self.output.push(':');
+ 1423|  9.97k|                        return self.parse_port();
  1424|       |                    }
  1425|       |                    None | Some('/') | Some('?') | Some('#') => {
- 1426|  10.3k|                        self.output_positions.authority_end = self.output.len();
- 1427|  10.3k|                        return self.parse_path_start(c);
+ 1426|  10.4k|                        self.output_positions.authority_end = self.output.len();
+ 1427|  10.4k|                        return self.parse_path_start(c);
  1428|       |                    }
- 1429|  26.1k|                    Some(c) => self.read_url_codepoint_or_echar(c, is_iunreserved_or_sub_delims)?,
+ 1429|  26.2k|                    Some(c) => self.read_url_codepoint_or_echar(c, is_iunreserved_or_sub_delims)?,
  1430|       |                }
  1431|       |            }
  1432|       |        }
- 1433|  23.7k|    }
+ 1433|  23.9k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E10parse_pathCs396iXkOaW7t_5oxrdf:
- 1485|  80.4k|    fn parse_path(&mut self) -> Result<(), IriParseError> {
- 1486|   205k|        loop {
- 1487|   205k|            let c = self.input.next();
- 1488|   205k|            match c {
+ 1485|  80.8k|    fn parse_path(&mut self) -> Result<(), IriParseError> {
+ 1486|   206k|        loop {
+ 1487|   206k|            let c = self.input.next();
+ 1488|   206k|            match c {
  1489|       |                None | Some('/') | Some('?') | Some('#') => {
- 1490|  97.0k|                    if self.output.as_str().ends_with("/..") {
+ 1490|  97.6k|                    if self.output.as_str().ends_with("/..") {
  1491|      0|                        self.remove_last_segment();
  1492|      0|                        self.remove_last_segment();
  1493|      0|                        self.output.push('/');
- 1494|  97.0k|                    } else if self.output.as_str().ends_with("/.") {
+ 1494|  97.6k|                    } else if self.output.as_str().ends_with("/.") {
  1495|      0|                        self.remove_last_segment();
  1496|      0|                        self.output.push('/');
- 1497|  97.0k|                    } else if c == Some('/') {
- 1498|  16.8k|                        self.output.push('/');
- 1499|  80.2k|                    }
+ 1497|  97.6k|                    } else if c == Some('/') {
+ 1498|  17.0k|                        self.output.push('/');
+ 1499|  80.6k|                    }
  1500|       |
- 1501|  97.0k|                    if c == Some('?') {
+ 1501|  97.6k|                    if c == Some('?') {
  1502|  38.6k|                        self.output_positions.path_end = self.output.len();
  1503|  38.6k|                        self.output.push('?');
  1504|  38.6k|                        return self.parse_query();
- 1505|  58.4k|                    } else if c == Some('#') {
- 1506|  6.92k|                        self.output_positions.path_end = self.output.len();
- 1507|  6.92k|                        self.output_positions.query_end = self.output.len();
- 1508|  6.92k|                        self.output.push('#');
- 1509|  6.92k|                        return self.parse_fragment();
- 1510|  51.5k|                    } else if c.is_none() {
- 1511|  34.6k|                        self.output_positions.path_end = self.output.len();
- 1512|  34.6k|                        self.output_positions.query_end = self.output.len();
- 1513|  34.6k|                        return Ok(());
- 1514|  16.8k|                    }
+ 1505|  59.0k|                    } else if c == Some('#') {
+ 1506|  7.05k|                        self.output_positions.path_end = self.output.len();
+ 1507|  7.05k|                        self.output_positions.query_end = self.output.len();
+ 1508|  7.05k|                        self.output.push('#');
+ 1509|  7.05k|                        return self.parse_fragment();
+ 1510|  51.9k|                    } else if c.is_none() {
+ 1511|  34.9k|                        self.output_positions.path_end = self.output.len();
+ 1512|  34.9k|                        self.output_positions.query_end = self.output.len();
+ 1513|  34.9k|                        return Ok(());
+ 1514|  17.0k|                    }
  1515|       |                }
  1516|   108k|                Some(c) => self.read_url_codepoint_or_echar(c, |c| {
  1517|       |                    is_iunreserved_or_sub_delims(c) || matches!(c, ':' | '@')
  1518|   108k|                })?,
  1519|       |            }
  1520|       |        }
- 1521|  80.4k|    }
+ 1521|  80.8k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E10parse_portCs396iXkOaW7t_5oxrdf:
  1435|  10.0k|    fn parse_port(&mut self) -> Result<(), IriParseError> {
- 1436|  12.0k|        loop {
- 1437|  12.0k|            let c = self.input.next();
- 1438|  12.0k|            match c {
+ 1436|  12.1k|        loop {
+ 1437|  12.1k|            let c = self.input.next();
+ 1438|  12.1k|            match c {
  1439|       |                Some('/') | Some('?') | Some('#') | None => {
- 1440|  9.96k|                    self.output_positions.authority_end = self.output.len();
- 1441|  9.96k|                    return self.parse_path_start(c);
+ 1440|  10.0k|                    self.output_positions.authority_end = self.output.len();
+ 1441|  10.0k|                    return self.parse_path_start(c);
  1442|       |                }
  1443|  2.09k|                Some(c) => {
  1444|  2.09k|                    if UNCHECKED || c.is_ascii_digit() {
@@ -1689,24 +1689,24 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E11parse
  1536|  16.7k|        Ok(())
  1537|  39.6k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E12parse_schemeCs396iXkOaW7t_5oxrdf:
- 1213|  87.1k|    fn parse_scheme(&mut self) -> Result<(), IriParseError> {
- 1214|   225k|        loop {
- 1215|   225k|            let c = self.input.next();
- 1216|   225k|            match c {
- 1217|   225k|                Some(c) if c.is_ascii_alphanumeric() || c == '+' || c == '-' || c == '.' => {
- 1218|   138k|                    self.output.push(c)
+ 1213|  87.6k|    fn parse_scheme(&mut self) -> Result<(), IriParseError> {
+ 1214|   227k|        loop {
+ 1215|   227k|            let c = self.input.next();
+ 1216|   227k|            match c {
+ 1217|   227k|                Some(c) if c.is_ascii_alphanumeric() || c == '+' || c == '-' || c == '.' => {
+ 1218|   139k|                    self.output.push(c)
  1219|       |                }
  1220|       |                Some(':') => {
- 1221|  86.6k|                    self.output.push(':');
- 1222|  86.6k|                    self.output_positions.scheme_end = self.output.len();
- 1223|  86.6k|                    self.input_scheme_end = self.input.position;
- 1224|  86.6k|                    return if self.input.starts_with('/') {
- 1225|  27.9k|                        self.input.next();
- 1226|  27.9k|                        self.output.push('/');
- 1227|  27.9k|                        self.parse_path_or_authority()
+ 1221|  87.1k|                    self.output.push(':');
+ 1222|  87.1k|                    self.output_positions.scheme_end = self.output.len();
+ 1223|  87.1k|                    self.input_scheme_end = self.input.position;
+ 1224|  87.1k|                    return if self.input.starts_with('/') {
+ 1225|  28.1k|                        self.input.next();
+ 1226|  28.1k|                        self.output.push('/');
+ 1227|  28.1k|                        self.parse_path_or_authority()
  1228|       |                    } else {
- 1229|  58.7k|                        self.output_positions.authority_end = self.output.len();
- 1230|  58.7k|                        self.parse_path()
+ 1229|  59.0k|                        self.output_positions.authority_end = self.output.len();
+ 1230|  59.0k|                        self.parse_path()
  1231|       |                    };
  1232|       |                }
  1233|       |                _ => {
@@ -1719,16 +1719,16 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E12parse
  1240|       |                }
  1241|       |            }
  1242|       |        }
- 1243|  87.1k|    }
+ 1243|  87.6k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E14parse_fragmentCs396iXkOaW7t_5oxrdf:
- 1539|  33.6k|    fn parse_fragment(&mut self) -> Result<(), IriParseError> {
- 1540|   190k|        while let Some(c) = self.input.next() {
+ 1539|  33.7k|    fn parse_fragment(&mut self) -> Result<(), IriParseError> {
+ 1540|   191k|        while let Some(c) = self.input.next() {
  1541|   157k|            self.read_url_codepoint_or_echar(c, |c| {
  1542|       |                is_iunreserved_or_sub_delims(c) || matches!(c, ':' | '@' | '/' | '?')
  1543|   157k|            })?;
  1544|       |        }
- 1545|  33.5k|        Ok(())
- 1546|  33.6k|    }
+ 1545|  33.7k|        Ok(())
+ 1546|  33.7k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E14parse_relativeCs396iXkOaW7t_5oxrdf:
  1256|  5.68k|    fn parse_relative(&mut self) -> Result<(), IriParseError> {
  1257|  5.68k|        if let Some(base) = self.base {
@@ -1791,34 +1791,34 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E14parse
  1314|       |        }
  1315|  5.68k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E15parse_authorityCs396iXkOaW7t_5oxrdf:
- 1346|  23.7k|    fn parse_authority(&mut self) -> Result<(), IriParseError> {
+ 1346|  23.9k|    fn parse_authority(&mut self) -> Result<(), IriParseError> {
  1347|       |        // @ are not allowed in IRI authorities so not need to take care of ambiguities
- 1348|  59.2k|        loop {
- 1349|  59.2k|            let c = self.input.next();
- 1350|  59.2k|            match c {
+ 1348|  59.4k|        loop {
+ 1349|  59.4k|            let c = self.input.next();
+ 1350|  59.4k|            match c {
  1351|       |                Some('@') => {
  1352|     33|                    self.output.push('@');
  1353|     33|                    return self.parse_host();
  1354|       |                }
  1355|       |                None | Some('[') | Some('/') | Some('?') | Some('#') => {
- 1356|  23.7k|                    self.input = ParserInput {
- 1357|  23.7k|                        value: self.iri[self.input_scheme_end + 2..].chars(),
- 1358|  23.7k|                        position: self.input_scheme_end + 2,
- 1359|  23.7k|                    };
- 1360|  23.7k|                    self.output.truncate(self.output_positions.scheme_end + 2);
- 1361|  23.7k|                    return self.parse_host();
+ 1356|  23.9k|                    self.input = ParserInput {
+ 1357|  23.9k|                        value: self.iri[self.input_scheme_end + 2..].chars(),
+ 1358|  23.9k|                        position: self.input_scheme_end + 2,
+ 1359|  23.9k|                    };
+ 1360|  23.9k|                    self.output.truncate(self.output_positions.scheme_end + 2);
+ 1361|  23.9k|                    return self.parse_host();
  1362|       |                }
- 1363|  35.4k|                Some(c) => {
- 1364|  35.4k|                    self.read_url_codepoint_or_echar(c, |c| {
+ 1363|  35.5k|                Some(c) => {
+ 1364|  35.5k|                    self.read_url_codepoint_or_echar(c, |c| {
  1365|       |                        is_iunreserved_or_sub_delims(c) || c == ':'
- 1366|  35.4k|                    })?;
+ 1366|  35.5k|                    })?;
  1367|       |                }
  1368|       |            }
  1369|       |        }
- 1370|  23.7k|    }
+ 1370|  23.9k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E16parse_path_startCs396iXkOaW7t_5oxrdf:
- 1454|  20.8k|    fn parse_path_start(&mut self, c: Option<char>) -> Result<(), IriParseError> {
- 1455|  20.8k|        match c {
+ 1454|  21.0k|    fn parse_path_start(&mut self, c: Option<char>) -> Result<(), IriParseError> {
+ 1455|  21.0k|        match c {
  1456|       |            None => {
  1457|  4.13k|                self.output_positions.path_end = self.output.len();
  1458|  4.13k|                self.output_positions.query_end = self.output.len();
@@ -1830,14 +1830,14 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E16parse
  1464|    971|                self.parse_query()
  1465|       |            }
  1466|       |            Some('#') => {
- 1467|  3.89k|                self.output_positions.path_end = self.output.len();
- 1468|  3.89k|                self.output_positions.query_end = self.output.len();
- 1469|  3.89k|                self.output.push('#');
- 1470|  3.89k|                self.parse_fragment()
+ 1467|  3.92k|                self.output_positions.path_end = self.output.len();
+ 1468|  3.92k|                self.output_positions.query_end = self.output.len();
+ 1469|  3.92k|                self.output.push('#');
+ 1470|  3.92k|                self.parse_fragment()
  1471|       |            }
  1472|       |            Some('/') => {
- 1473|  11.8k|                self.output.push('/');
- 1474|  11.8k|                self.parse_path()
+ 1473|  12.0k|                self.output.push('/');
+ 1474|  12.0k|                self.parse_path()
  1475|       |            }
  1476|      0|            Some(c) => {
  1477|      0|                self.read_url_codepoint_or_echar(c, |c| {
@@ -1846,26 +1846,26 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E16parse
  1480|      0|                self.parse_path()
  1481|       |            }
  1482|       |        }
- 1483|  20.8k|    }
+ 1483|  21.0k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E18parse_scheme_startCs396iXkOaW7t_5oxrdf:
- 1199|  92.3k|    fn parse_scheme_start(&mut self) -> Result<(), IriParseError> {
- 1200|  92.3k|        match self.input.front() {
+ 1199|  92.8k|    fn parse_scheme_start(&mut self) -> Result<(), IriParseError> {
+ 1200|  92.8k|        match self.input.front() {
  1201|       |            Some(':') => {
- 1202|      8|                if UNCHECKED {
+ 1202|      9|                if UNCHECKED {
  1203|      0|                    self.parse_scheme()
  1204|       |                } else {
- 1205|      8|                    self.parse_error(IriParseErrorKind::NoScheme)
+ 1205|      9|                    self.parse_error(IriParseErrorKind::NoScheme)
  1206|       |                }
  1207|       |            }
- 1208|  92.3k|            Some(c) if c.is_ascii_alphabetic() => self.parse_scheme(),
+ 1208|  92.8k|            Some(c) if c.is_ascii_alphabetic() => self.parse_scheme(),
  1209|  5.19k|            _ => self.parse_relative(),
  1210|       |        }
- 1211|  92.3k|    }
+ 1211|  92.8k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E19parse_relative_pathCs396iXkOaW7t_5oxrdf:
  1317|  1.61k|    fn parse_relative_path(&mut self) -> Result<(), IriParseError> {
  1318|  11.3k|        while let Some(c) = self.input.front() {
  1319|  11.0k|            if matches!(c, '/' | '?' | '#') {
- 1320|  1.27k|                break;
+ 1320|  1.28k|                break;
  1321|  9.77k|            }
  1322|  9.77k|            self.input.next();
  1323|  9.77k|            self.read_url_codepoint_or_echar(c, |c| is_iunreserved_or_sub_delims(c) || c == '@')?;
@@ -1911,59 +1911,59 @@ _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E20valid
  1630|  2.47k|        Ok(())
  1631|  3.36k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E23parse_path_or_authorityCs396iXkOaW7t_5oxrdf:
- 1245|  32.0k|    fn parse_path_or_authority(&mut self) -> Result<(), IriParseError> {
- 1246|  32.0k|        if self.input.starts_with('/') {
- 1247|  23.7k|            self.input.next();
- 1248|  23.7k|            self.output.push('/');
- 1249|  23.7k|            self.parse_authority()
+ 1245|  32.2k|    fn parse_path_or_authority(&mut self) -> Result<(), IriParseError> {
+ 1246|  32.2k|        if self.input.starts_with('/') {
+ 1247|  23.9k|            self.input.next();
+ 1248|  23.9k|            self.output.push('/');
+ 1249|  23.9k|            self.parse_authority()
  1250|       |        } else {
- 1251|  8.22k|            self.output_positions.authority_end = self.output.len() - 1;
- 1252|  8.22k|            self.parse_path()
+ 1251|  8.26k|            self.output_positions.authority_end = self.output.len() - 1;
+ 1252|  8.26k|            self.parse_path()
  1253|       |        }
- 1254|  32.0k|    }
+ 1254|  32.2k|    }
 _RNvMs11_Cs8SDT0Q3242W_5oxiriINtB6_9IriParserNtB6_16VoidOutputBufferKb0_E5parseCs396iXkOaW7t_5oxrdf:
- 1174|  92.3k|    fn parse(
- 1175|  92.3k|        iri: &'a str,
- 1176|  92.3k|        base: Option<IriRef<&'a str>>,
- 1177|  92.3k|        output: &'a mut O,
- 1178|  92.3k|    ) -> Result<IriElementsPositions, IriParseError> {
- 1179|  92.3k|        let mut parser = Self {
- 1180|  92.3k|            iri,
- 1181|  92.3k|            base,
- 1182|  92.3k|            input: ParserInput {
- 1183|  92.3k|                value: iri.chars(),
- 1184|  92.3k|                position: 0,
- 1185|  92.3k|            },
- 1186|  92.3k|            output,
- 1187|  92.3k|            output_positions: IriElementsPositions {
- 1188|  92.3k|                scheme_end: 0,
- 1189|  92.3k|                authority_end: 0,
- 1190|  92.3k|                path_end: 0,
- 1191|  92.3k|                query_end: 0,
- 1192|  92.3k|            },
- 1193|  92.3k|            input_scheme_end: 0,
- 1194|  92.3k|        };
- 1195|  92.3k|        parser.parse_scheme_start()?;
- 1196|  89.0k|        Ok(parser.output_positions)
- 1197|  92.3k|    }
+ 1174|  92.8k|    fn parse(
+ 1175|  92.8k|        iri: &'a str,
+ 1176|  92.8k|        base: Option<IriRef<&'a str>>,
+ 1177|  92.8k|        output: &'a mut O,
+ 1178|  92.8k|    ) -> Result<IriElementsPositions, IriParseError> {
+ 1179|  92.8k|        let mut parser = Self {
+ 1180|  92.8k|            iri,
+ 1181|  92.8k|            base,
+ 1182|  92.8k|            input: ParserInput {
+ 1183|  92.8k|                value: iri.chars(),
+ 1184|  92.8k|                position: 0,
+ 1185|  92.8k|            },
+ 1186|  92.8k|            output,
+ 1187|  92.8k|            output_positions: IriElementsPositions {
+ 1188|  92.8k|                scheme_end: 0,
+ 1189|  92.8k|                authority_end: 0,
+ 1190|  92.8k|                path_end: 0,
+ 1191|  92.8k|                query_end: 0,
+ 1192|  92.8k|            },
+ 1193|  92.8k|            input_scheme_end: 0,
+ 1194|  92.8k|        };
+ 1195|  92.8k|        parser.parse_scheme_start()?;
+ 1196|  89.5k|        Ok(parser.output_positions)
+ 1197|  92.8k|    }
 _RNvMsp_Cs8SDT0Q3242W_5oxiriINtB5_3IriNtNtCs3OstG5Tqy1X_5alloc6string6StringE10into_innerCs396iXkOaW7t_5oxrdf:
-  665|  86.5k|    pub fn into_inner(self) -> T {
-  666|  86.5k|        self.0.into_inner()
-  667|  86.5k|    }
+  665|  86.9k|    pub fn into_inner(self) -> T {
+  666|  86.9k|        self.0.into_inner()
+  667|  86.9k|    }
 _RNvMsp_Cs8SDT0Q3242W_5oxiriINtB5_3IriNtNtCs3OstG5Tqy1X_5alloc6string6StringE5parseCs396iXkOaW7t_5oxrdf:
-  556|  92.3k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
-  557|  92.3k|        IriRef::parse(iri)?.try_into()
-  558|  92.3k|    }
+  556|  92.8k|    pub fn parse(iri: T) -> Result<Self, IriParseError> {
+  557|  92.8k|        IriRef::parse(iri)?.try_into()
+  558|  92.8k|    }
 _RNvXsV_Cs8SDT0Q3242W_5oxiriINtB5_3IriNtNtCs3OstG5Tqy1X_5alloc6string6StringEINtNtCscdEvteftVc2_4core7convert7TryFromINtB5_6IriRefBz_EE8try_fromCs396iXkOaW7t_5oxrdf:
-  968|  89.0k|    fn try_from(iri: IriRef<T>) -> Result<Self, IriParseError> {
-  969|  89.0k|        if iri.is_absolute() {
-  970|  86.5k|            Ok(Self(iri))
+  968|  89.5k|    fn try_from(iri: IriRef<T>) -> Result<Self, IriParseError> {
+  969|  89.5k|        if iri.is_absolute() {
+  970|  86.9k|            Ok(Self(iri))
   971|       |        } else {
   972|  2.54k|            Err(IriParseError {
   973|  2.54k|                kind: IriParseErrorKind::NoScheme,
   974|  2.54k|            })
   975|       |        }
-  976|  89.0k|    }
+  976|  89.5k|    }
 _RNvXsW_Cs8SDT0Q3242W_5oxiriNtB5_13IriParseErrorNtNtCscdEvteftVc2_4core3fmt7Display3fmt:
  1003|  5.85k|    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
  1004|  5.85k|        match &self.kind {
@@ -1984,11 +1984,11 @@ _RNvXsW_Cs8SDT0Q3242W_5oxiriNtB5_13IriParseErrorNtNtCscdEvteftVc2_4core3fmt7Disp
  1019|       |        }
  1020|  5.85k|    }
 _RNvCs8SDT0Q3242W_5oxiri28is_iunreserved_or_sub_delims:
- 1634|   678k|fn is_iunreserved_or_sub_delims(c: char) -> bool {
- 1635|   678k|    matches!(c,
+ 1634|   679k|fn is_iunreserved_or_sub_delims(c: char) -> bool {
+ 1635|   679k|    matches!(c,
  1636|   362k|        'a'..='z'
- 1637|   305k|        | 'A'..='Z'
- 1638|   288k|        | '0'..='9'
+ 1637|   306k|        | 'A'..='Z'
+ 1638|   289k|        | '0'..='9'
  1639|       |        | '!'
  1640|       |        | '$'
  1641|       |        | '&'
@@ -2011,7 +2011,7 @@ _RNvCs8SDT0Q3242W_5oxiri28is_iunreserved_or_sub_delims:
  1658|   141k|        | '\u{20000}'..='\u{2FFFD}'
  1659|   141k|        | '\u{30000}'..='\u{3FFFD}'
  1660|   141k|        | '\u{40000}'..='\u{4FFFD}'
- 1661|  9.31k|        | '\u{50000}'..='\u{5FFFD}'
+ 1661|  9.32k|        | '\u{50000}'..='\u{5FFFD}'
  1662|    220|        | '\u{60000}'..='\u{6FFFD}'
  1663|    178|        | '\u{70000}'..='\u{7FFFD}'
  1664|    150|        | '\u{80000}'..='\u{8FFFD}'
@@ -2022,7 +2022,7 @@ _RNvCs8SDT0Q3242W_5oxiri28is_iunreserved_or_sub_delims:
  1669|     22|        | '\u{D0000}'..='\u{DFFFD}'
  1670|     22|        | '\u{E1000}'..='\u{EFFFD}'
  1671|       |    )
- 1672|   678k|}
+ 1672|   679k|}
 _RNvCs8SDT0Q3242W_5oxiri27is_unreserved_or_sub_delims:
  1674|   223k|fn is_unreserved_or_sub_delims(c: char) -> bool {
  1675|   223k|    matches!(c,
@@ -2050,12 +2050,12 @@ _RNvCs8SDT0Q3242W_5oxiri27is_unreserved_or_sub_delims:
 _RNvNtCsayyyEI11TDH_13oxigraph_fuzz13result_format18fuzz_result_format:
     6|  21.2k|pub fn fuzz_result_format(format: QueryResultsFormat, data: &[u8]) {
     7|  21.2k|    let Ok(reader) = QueryResultsParser::from_format(format).for_slice(data) else {
-    8|  19.1k|        return;
+    8|  19.2k|        return;
     9|       |    };
-   10|  2.04k|    match reader {
-   11|  2.03k|        SliceQueryResultsParserOutput::Solutions(solutions) => {
-   12|  2.03k|            let Ok(solutions) = solutions.collect::<Result<Vec<_>, _>>() else {
-   13|    914|                return;
+   10|  2.05k|    match reader {
+   11|  2.04k|        SliceQueryResultsParserOutput::Solutions(solutions) => {
+   12|  2.04k|            let Ok(solutions) = solutions.collect::<Result<Vec<_>, _>>() else {
+   13|    919|                return;
    14|       |            };
    15|       |
    16|       |            // We try to write again
@@ -2110,32 +2110,32 @@ _RNCNvNtCsayyyEI11TDH_13oxigraph_fuzz13result_format18fuzz_result_format0B5_:
    22|  1.11k|                        .map_or_else(Vec::new, |s| s.variables().to_vec()),
 
 _RINvMNtCs396iXkOaW7t_5oxrdf10named_nodeNtB3_9NamedNode3newINtNtCs3OstG5Tqy1X_5alloc6borrow3CoweEECskh3h6I55TK4_10sparesults:
-   24|  92.3k|    pub fn new(iri: impl Into<String>) -> Result<Self, IriParseError> {
-   25|  92.3k|        Ok(Self::new_from_iri(Iri::parse(iri.into())?))
-   26|  92.3k|    }
+   24|  92.8k|    pub fn new(iri: impl Into<String>) -> Result<Self, IriParseError> {
+   25|  92.8k|        Ok(Self::new_from_iri(Iri::parse(iri.into())?))
+   26|  92.8k|    }
 _RNvMNtCs396iXkOaW7t_5oxrdf10named_nodeNtB2_9NamedNode12new_from_iriCskh3h6I55TK4_10sparesults:
-   29|  86.5k|    pub(crate) fn new_from_iri(iri: Iri<String>) -> Self {
-   30|  86.5k|        Self::new_unchecked(iri.into_inner())
-   31|  86.5k|    }
+   29|  86.9k|    pub(crate) fn new_from_iri(iri: Iri<String>) -> Self {
+   30|  86.9k|        Self::new_unchecked(iri.into_inner())
+   31|  86.9k|    }
 _RINvMNtCs396iXkOaW7t_5oxrdf10named_nodeNtB3_9NamedNode13new_uncheckedNtNtCs3OstG5Tqy1X_5alloc6string6StringEB5_:
-   39|  86.5k|    pub fn new_unchecked(iri: impl Into<String>) -> Self {
-   40|  86.5k|        Self { iri: iri.into() }
-   41|  86.5k|    }
+   39|  86.9k|    pub fn new_unchecked(iri: impl Into<String>) -> Self {
+   40|  86.9k|        Self { iri: iri.into() }
+   41|  86.9k|    }
 
 _RINvMNtCs396iXkOaW7t_5oxrdf8variableNtB3_8Variable3newINtNtCs3OstG5Tqy1X_5alloc6borrow3CoweEECskh3h6I55TK4_10sparesults:
-   22|  80.4k|    pub fn new(name: impl Into<String>) -> Result<Self, VariableNameParseError> {
-   23|  80.4k|        let name = name.into();
-   24|  80.4k|        validate_variable_identifier(&name)?;
-   25|  80.4k|        Ok(Self::new_unchecked(name))
-   26|  80.4k|    }
+   22|  81.2k|    pub fn new(name: impl Into<String>) -> Result<Self, VariableNameParseError> {
+   23|  81.2k|        let name = name.into();
+   24|  81.2k|        validate_variable_identifier(&name)?;
+   25|  81.2k|        Ok(Self::new_unchecked(name))
+   26|  81.2k|    }
 _RNvMNtCs396iXkOaW7t_5oxrdf8variableNtB2_8Variable6as_refCskh3h6I55TK4_10sparesults:
    50|     15|    pub fn as_ref(&self) -> VariableRef<'_> {
    51|     15|        VariableRef { name: &self.name }
    52|     15|    }
 _RNvMNtCs396iXkOaW7t_5oxrdf8variableNtB2_8Variable6as_strCskh3h6I55TK4_10sparesults:
-   40|   118k|    pub fn as_str(&self) -> &str {
-   41|   118k|        &self.name
-   42|   118k|    }
+   40|   119k|    pub fn as_str(&self) -> &str {
+   41|   119k|        &self.name
+   42|   119k|    }
 _RNvXs1_NtCs396iXkOaW7t_5oxrdf8variableNtB5_11VariableRefNtNtCscdEvteftVc2_4core3fmt7Display3fmtCskh3h6I55TK4_10sparesults:
   116|     15|    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
   117|     15|        write!(f, "?{}", self.name)
@@ -2145,38 +2145,38 @@ _RNvXs_NtCs396iXkOaW7t_5oxrdf8variableNtB4_8VariableNtNtCscdEvteftVc2_4core3fmt7
    58|     15|        self.as_ref().fmt(f)
    59|     15|    }
 _RNvNtCs396iXkOaW7t_5oxrdf8variable28validate_variable_identifier:
-  163|  80.4k|fn validate_variable_identifier(id: &str) -> Result<(), VariableNameParseError> {
-  164|  80.4k|    let mut chars = id.chars();
-  165|  80.4k|    let front = chars.next().ok_or(VariableNameParseError)?;
-  166|  80.4k|    match front {
-  167|  80.4k|        '0'..='9'
+  163|  81.2k|fn validate_variable_identifier(id: &str) -> Result<(), VariableNameParseError> {
+  164|  81.2k|    let mut chars = id.chars();
+  165|  81.2k|    let front = chars.next().ok_or(VariableNameParseError)?;
+  166|  81.2k|    match front {
+  167|  81.2k|        '0'..='9'
   168|       |        | '_'
   169|       |        | ':'
-  170|  78.3k|        | 'A'..='Z'
-  171|  55.3k|        | 'a'..='z'
-  172|    259|        | '\u{00C0}'..='\u{00D6}'
-  173|    259|        | '\u{00D8}'..='\u{00F6}'
-  174|    259|        | '\u{00F8}'..='\u{02FF}'
-  175|    247|        | '\u{0370}'..='\u{037D}'
-  176|    247|        | '\u{037F}'..='\u{1FFF}'
+  170|  79.1k|        | 'A'..='Z'
+  171|  55.8k|        | 'a'..='z'
+  172|    263|        | '\u{00C0}'..='\u{00D6}'
+  173|    263|        | '\u{00D8}'..='\u{00F6}'
+  174|    263|        | '\u{00F8}'..='\u{02FF}'
+  175|    251|        | '\u{0370}'..='\u{037D}'
+  176|    251|        | '\u{037F}'..='\u{1FFF}'
   177|    202|        | '\u{200C}'..='\u{200D}'
   178|    202|        | '\u{2070}'..='\u{218F}'
   179|    202|        | '\u{2C00}'..='\u{2FEF}'
   180|    202|        | '\u{3001}'..='\u{D7FF}'
   181|    139|        | '\u{F900}'..='\u{FDCF}'
   182|    139|        | '\u{FDF0}'..='\u{FFFD}'
-  183|  80.4k|        | '\u{10000}'..='\u{EFFFF}' => (),
+  183|  81.2k|        | '\u{10000}'..='\u{EFFFF}' => (),
   184|      4|        _ => return Err(VariableNameParseError),
   185|       |    }
-  186|   344k|    for c in chars {
-  187|   264k|        match c {
-  188|   264k|            '0'..='9'
+  186|   346k|    for c in chars {
+  187|   265k|        match c {
+  188|   265k|            '0'..='9'
   189|       |            | '\u{00B7}'
   190|  48.1k|            | '\u{0300}'..='\u{036F}'
   191|  34.0k|            | '\u{203F}'..='\u{2040}'
   192|       |            | '_'
-  193|   249k|            | 'A'..='Z'
-  194|   155k|            | 'a'..='z'
+  193|   250k|            | 'A'..='Z'
+  194|   156k|            | 'a'..='z'
   195|  48.5k|            | '\u{00C0}'..='\u{00D6}'
   196|  48.5k|            | '\u{00D8}'..='\u{00F6}'
   197|  48.4k|            | '\u{00F8}'..='\u{02FF}'
@@ -2188,16 +2188,16 @@ _RNvNtCs396iXkOaW7t_5oxrdf8variable28validate_variable_identifier:
   203|  33.7k|            | '\u{3001}'..='\u{D7FF}'
   204|  23.3k|            | '\u{F900}'..='\u{FDCF}'
   205|  23.3k|            | '\u{FDF0}'..='\u{FFFD}'
-  206|   264k|            | '\u{10000}'..='\u{EFFFF}' => (),
+  206|   265k|            | '\u{10000}'..='\u{EFFFF}' => (),
   207|      4|            _ => return Err(VariableNameParseError),
   208|       |        }
   209|       |    }
-  210|  80.4k|    Ok(())
-  211|  80.4k|}
+  210|  81.2k|    Ok(())
+  211|  81.2k|}
 _RINvMNtCs396iXkOaW7t_5oxrdf8variableNtB3_8Variable13new_uncheckedNtNtCs3OstG5Tqy1X_5alloc6string6StringEB5_:
-   35|  80.4k|    pub fn new_unchecked(name: impl Into<String>) -> Self {
-   36|  80.4k|        Self { name: name.into() }
-   37|  80.4k|    }
+   35|  81.2k|    pub fn new_unchecked(name: impl Into<String>) -> Self {
+   36|  81.2k|        Self { name: name.into() }
+   37|  81.2k|    }
 
 _RNvXs4_NtCskh3h6I55TK4_10sparesults5errorNtB5_23QueryResultsSyntaxErrorINtNtCscdEvteftVc2_4core7convert4FromNtNtCsiS85MHDKMvU_17json_event_parser4read11SyntaxErrorE4from:
   154|  13.0k|    fn from(error: json_event_parser::SyntaxError) -> Self {
@@ -2264,12 +2264,12 @@ _RNvMNtCskh3h6I55TK4_10sparesults4jsonINtB2_29WriterJsonSolutionsSerializerINtNt
    74|  1.12k|        self.writer.finish()
    75|  1.12k|    }
 _RNvMNtCskh3h6I55TK4_10sparesults4jsonINtB2_29WriterJsonSolutionsSerializerINtNtCs3OstG5Tqy1X_5alloc3vec3VechEE8do_writeCsayyyEI11TDH_13oxigraph_fuzz:
-   77|  12.4k|    fn do_write(writer: &mut ToWriteJsonWriter<W>, output: Vec<JsonEvent<'_>>) -> io::Result<()> {
-   78|  87.5k|        for event in output {
-   79|  75.0k|            writer.write_event(event)?;
+   77|  12.5k|    fn do_write(writer: &mut ToWriteJsonWriter<W>, output: Vec<JsonEvent<'_>>) -> io::Result<()> {
+   78|  87.9k|        for event in output {
+   79|  75.4k|            writer.write_event(event)?;
    80|       |        }
-   81|  12.4k|        Ok(())
-   82|  12.4k|    }
+   81|  12.5k|        Ok(())
+   82|  12.5k|    }
 _RNvNtCskh3h6I55TK4_10sparesults4json31inner_write_boolean_json_result:
    35|      2|fn inner_write_boolean_json_result(value: bool) -> [JsonEvent<'static>; 7] {
    36|      2|    [
@@ -2289,9 +2289,9 @@ _RNvMs_NtCskh3h6I55TK4_10sparesults4jsonNtB4_28InnerJsonSolutionsSerializer5star
   134|  1.12k|        output.push(JsonEvent::StartObject);
   135|  1.12k|        output.push(JsonEvent::ObjectKey("vars".into()));
   136|  1.12k|        output.push(JsonEvent::StartArray);
-  137|  39.9k|        for variable in variables {
-  138|  38.8k|            output.push(JsonEvent::String(variable.as_str().into()));
-  139|  38.8k|        }
+  137|  40.2k|        for variable in variables {
+  138|  39.1k|            output.push(JsonEvent::String(variable.as_str().into()));
+  139|  39.1k|        }
   140|  1.12k|        output.push(JsonEvent::EndArray);
   141|  1.12k|        output.push(JsonEvent::EndObject);
   142|  1.12k|        output.push(JsonEvent::ObjectKey("results".into()));
@@ -2311,18 +2311,18 @@ _RNvMs2_NtCskh3h6I55TK4_10sparesults4jsonNtB5_33SliceJsonQueryResultsParserOutpu
   347|  22.3k|        let mut json_reader = FromBufferJsonReader::new(slice);
   348|  22.3k|        let mut inner = JsonInnerReader::new();
   349|       |        loop {
-  350|  1.45M|            if let Some(result) = inner.read_event(json_reader.read_next_event()?)? {
-  351|  3.16k|                return match result {
+  350|  1.46M|            if let Some(result) = inner.read_event(json_reader.read_next_event()?)? {
+  351|  3.18k|                return match result {
   352|       |                    JsonInnerQueryResults::Solutions {
-  353|  3.16k|                        variables,
-  354|  3.16k|                        solutions,
-  355|  3.16k|                    } => Ok(Self::Solutions {
-  356|  3.16k|                        variables,
-  357|  3.16k|                        solutions: SliceJsonSolutionsParser {
-  358|  3.16k|                            inner: solutions,
-  359|  3.16k|                            json_reader,
-  360|  3.16k|                        },
-  361|  3.16k|                    }),
+  353|  3.17k|                        variables,
+  354|  3.17k|                        solutions,
+  355|  3.17k|                    } => Ok(Self::Solutions {
+  356|  3.17k|                        variables,
+  357|  3.17k|                        solutions: SliceJsonSolutionsParser {
+  358|  3.17k|                            inner: solutions,
+  359|  3.17k|                            json_reader,
+  360|  3.17k|                        },
+  361|  3.17k|                    }),
   362|      4|                    JsonInnerQueryResults::Boolean(value) => Ok(Self::Boolean(value)),
   363|       |                };
   364|  1.43M|            }
@@ -2332,13 +2332,13 @@ _RNvMs3_NtCskh3h6I55TK4_10sparesults4jsonNtB5_24SliceJsonSolutionsParser10parse_
   375|  24.2k|    pub fn parse_next(&mut self) -> Result<Option<Vec<Option<Term>>>, QueryResultsSyntaxError> {
   376|  24.2k|        match &mut self.inner {
   377|  12.8k|            JsonInnerSolutions::Reader(reader) => loop {
-  378|  94.5k|                let event = self.json_reader.read_next_event()?;
-  379|  93.9k|                if event == JsonEvent::Eof {
-  380|  1.12k|                    return Ok(None);
-  381|  92.7k|                }
-  382|  92.7k|                if let Some(result) = reader.read_event(event)? {
+  378|  94.9k|                let event = self.json_reader.read_next_event()?;
+  379|  94.3k|                if event == JsonEvent::Eof {
+  380|  1.13k|                    return Ok(None);
+  381|  93.1k|                }
+  382|  93.1k|                if let Some(result) = reader.read_event(event)? {
   383|  10.8k|                    return Ok(Some(result));
-  384|  81.6k|                }
+  384|  82.0k|                }
   385|       |            },
   386|  11.3k|            JsonInnerSolutions::Iterator(iter) => iter.next(),
   387|       |        }
@@ -2371,26 +2371,26 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   474|    111|                    ))
   475|       |                }
   476|       |            }
-  477|   105k|            JsonInnerReaderState::InRootObject => match event {
-  478|   105k|                JsonEvent::ObjectKey(key) => match key.as_ref() {
-  479|   105k|                    "head" => {
-  480|  15.9k|                        self.state = JsonInnerReaderState::BeforeHead;
-  481|  15.9k|                        Ok(None)
+  477|   106k|            JsonInnerReaderState::InRootObject => match event {
+  478|   106k|                JsonEvent::ObjectKey(key) => match key.as_ref() {
+  479|   106k|                    "head" => {
+  480|  16.0k|                        self.state = JsonInnerReaderState::BeforeHead;
+  481|  16.0k|                        Ok(None)
   482|       |                    }
-  483|  90.0k|                    "results" => {
+  483|  90.4k|                    "results" => {
   484|  15.6k|                        self.state = JsonInnerReaderState::BeforeResults;
   485|  15.6k|                        Ok(None)
   486|       |                    }
-  487|  74.3k|                    "boolean" => {
+  487|  74.7k|                    "boolean" => {
   488|      6|                        self.state = JsonInnerReaderState::BeforeBoolean;
   489|      6|                        Ok(None)
   490|       |                    }
   491|       |                    _ => {
-  492|  74.3k|                        self.state = JsonInnerReaderState::Ignore {
-  493|  74.3k|                            level: 0,
-  494|  74.3k|                            after: JsonInnerReaderStateAfterIgnore::InRootObject,
-  495|  74.3k|                        };
-  496|  74.3k|                        Ok(None)
+  492|  74.7k|                        self.state = JsonInnerReaderState::Ignore {
+  493|  74.7k|                            level: 0,
+  494|  74.7k|                            after: JsonInnerReaderStateAfterIgnore::InRootObject,
+  495|  74.7k|                        };
+  496|  74.7k|                        Ok(None)
   497|       |                    }
   498|       |                },
   499|     35|                JsonEvent::EndObject => Err(QueryResultsSyntaxError::msg(
@@ -2399,32 +2399,32 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   502|      0|                _ => unreachable!(),
   503|       |            },
   504|       |            JsonInnerReaderState::BeforeHead => {
-  505|  15.9k|                if event == JsonEvent::StartObject {
-  506|  15.9k|                    self.state = JsonInnerReaderState::InHead;
-  507|  15.9k|                    Ok(None)
+  505|  16.0k|                if event == JsonEvent::StartObject {
+  506|  16.0k|                    self.state = JsonInnerReaderState::InHead;
+  507|  16.0k|                    Ok(None)
   508|       |                } else {
   509|      1|                    Err(QueryResultsSyntaxError::msg(
   510|      1|                        "SPARQL JSON results head must be an object",
   511|      1|                    ))
   512|       |                }
   513|       |            }
-  514|  99.4k|            JsonInnerReaderState::InHead => match event {
-  515|  85.6k|                JsonEvent::ObjectKey(key) => match key.as_ref() {
-  516|  85.6k|                    "vars" => {
-  517|  6.58k|                        self.state = JsonInnerReaderState::BeforeVars;
-  518|  6.58k|                        self.vars_read = true;
-  519|  6.58k|                        Ok(None)
+  514|   100k|            JsonInnerReaderState::InHead => match event {
+  515|  86.1k|                JsonEvent::ObjectKey(key) => match key.as_ref() {
+  516|  86.1k|                    "vars" => {
+  517|  6.60k|                        self.state = JsonInnerReaderState::BeforeVars;
+  518|  6.60k|                        self.vars_read = true;
+  519|  6.60k|                        Ok(None)
   520|       |                    }
-  521|  79.0k|                    "links" => {
+  521|  79.5k|                    "links" => {
   522|     28|                        self.state = JsonInnerReaderState::BeforeLinks;
   523|     28|                        Ok(None)
   524|       |                    }
   525|       |                    _ => {
-  526|  79.0k|                        self.state = JsonInnerReaderState::Ignore {
-  527|  79.0k|                            level: 0,
-  528|  79.0k|                            after: JsonInnerReaderStateAfterIgnore::InHead,
-  529|  79.0k|                        };
-  530|  79.0k|                        Ok(None)
+  526|  79.5k|                        self.state = JsonInnerReaderState::Ignore {
+  527|  79.5k|                            level: 0,
+  528|  79.5k|                            after: JsonInnerReaderStateAfterIgnore::InHead,
+  529|  79.5k|                        };
+  530|  79.5k|                        Ok(None)
   531|       |                    }
   532|       |                },
   533|       |                JsonEvent::EndObject => {
@@ -2434,48 +2434,48 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   537|      0|                _ => unreachable!(),
   538|       |            },
   539|       |            JsonInnerReaderState::BeforeVars => {
-  540|  6.56k|                if event == JsonEvent::StartArray {
-  541|  6.56k|                    self.state = JsonInnerReaderState::InVars;
-  542|  6.56k|                    Ok(None)
+  540|  6.58k|                if event == JsonEvent::StartArray {
+  541|  6.58k|                    self.state = JsonInnerReaderState::InVars;
+  542|  6.58k|                    Ok(None)
   543|       |                } else {
   544|      1|                    Err(QueryResultsSyntaxError::msg(
   545|      1|                        "SPARQL JSON results vars must be an array",
   546|      1|                    ))
   547|       |                }
   548|       |            }
-  549|  86.8k|            JsonInnerReaderState::InVars => match event {
-  550|  80.4k|                JsonEvent::String(variable) => match Variable::new(variable.clone()) {
-  551|  80.4k|                    Ok(var) => {
-  552|  80.4k|                        if self.variables.contains(&var) {
+  549|  87.6k|            JsonInnerReaderState::InVars => match event {
+  550|  81.2k|                JsonEvent::String(variable) => match Variable::new(variable.clone()) {
+  551|  81.2k|                    Ok(var) => {
+  552|  81.2k|                        if self.variables.contains(&var) {
   553|     15|                            return Err(QueryResultsSyntaxError::msg(format!(
   554|     15|                                "The variable {var} is declared twice"
   555|     15|                            )));
-  556|  80.3k|                        }
-  557|  80.3k|                        self.variables.push(var);
-  558|  80.3k|                        Ok(None)
+  556|  81.2k|                        }
+  557|  81.2k|                        self.variables.push(var);
+  558|  81.2k|                        Ok(None)
   559|       |                    }
   560|      9|                    Err(e) => Err(QueryResultsSyntaxError::msg(format!(
   561|      9|                        "Invalid variable name '{variable}': {e}"
   562|      9|                    ))),
   563|       |                },
   564|       |                JsonEvent::EndArray => {
-  565|  6.41k|                    if self.solutions_read {
-  566|  1.11k|                        let mut mapping = BTreeMap::default();
-  567|  38.8k|                        for (i, var) in self.variables.iter().enumerate() {
-  568|  38.8k|                            mapping.insert(var.as_str().to_owned(), i);
-  569|  38.8k|                        }
-  570|  1.11k|                        Ok(Some(JsonInnerQueryResults::Solutions {
-  571|  1.11k|                            variables: take(&mut self.variables),
-  572|  1.11k|                            solutions: JsonInnerSolutions::Iterator(
-  573|  1.11k|                                JsonBufferedSolutionsIterator {
-  574|  1.11k|                                    mapping,
-  575|  1.11k|                                    bindings: take(&mut self.solutions).into_iter(),
-  576|  1.11k|                                },
-  577|  1.11k|                            ),
-  578|  1.11k|                        }))
+  565|  6.43k|                    if self.solutions_read {
+  566|  1.12k|                        let mut mapping = BTreeMap::default();
+  567|  39.1k|                        for (i, var) in self.variables.iter().enumerate() {
+  568|  39.1k|                            mapping.insert(var.as_str().to_owned(), i);
+  569|  39.1k|                        }
+  570|  1.12k|                        Ok(Some(JsonInnerQueryResults::Solutions {
+  571|  1.12k|                            variables: take(&mut self.variables),
+  572|  1.12k|                            solutions: JsonInnerSolutions::Iterator(
+  573|  1.12k|                                JsonBufferedSolutionsIterator {
+  574|  1.12k|                                    mapping,
+  575|  1.12k|                                    bindings: take(&mut self.solutions).into_iter(),
+  576|  1.12k|                                },
+  577|  1.12k|                            ),
+  578|  1.12k|                        }))
   579|       |                    } else {
-  580|  5.30k|                        self.state = JsonInnerReaderState::InHead;
-  581|  5.30k|                        Ok(None)
+  580|  5.31k|                        self.state = JsonInnerReaderState::InHead;
+  581|  5.31k|                        Ok(None)
   582|       |                    }
   583|       |                }
   584|      1|                _ => Err(QueryResultsSyntaxError::msg(
@@ -2512,17 +2512,17 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   615|      1|                    ))
   616|       |                }
   617|       |            }
-  618|  38.2k|            JsonInnerReaderState::InResults => match event {
-  619|  38.2k|                JsonEvent::ObjectKey(key) => {
-  620|  38.2k|                    if key == "bindings" {
+  618|  38.4k|            JsonInnerReaderState::InResults => match event {
+  619|  38.4k|                JsonEvent::ObjectKey(key) => {
+  620|  38.4k|                    if key == "bindings" {
   621|  15.2k|                        self.state = JsonInnerReaderState::BeforeBindings;
   622|  15.2k|                        Ok(None)
   623|       |                    } else {
-  624|  23.0k|                        self.state = JsonInnerReaderState::Ignore {
-  625|  23.0k|                            level: 0,
-  626|  23.0k|                            after: JsonInnerReaderStateAfterIgnore::InResults,
-  627|  23.0k|                        };
-  628|  23.0k|                        Ok(None)
+  624|  23.1k|                        self.state = JsonInnerReaderState::Ignore {
+  625|  23.1k|                            level: 0,
+  626|  23.1k|                            after: JsonInnerReaderStateAfterIgnore::InResults,
+  627|  23.1k|                        };
+  628|  23.1k|                        Ok(None)
   629|       |                    }
   630|       |                }
   631|     35|                JsonEvent::EndObject => Err(QueryResultsSyntaxError::msg(
@@ -2534,21 +2534,21 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   637|  15.2k|                if event == JsonEvent::StartArray {
   638|  15.2k|                    self.solutions_read = true;
   639|  15.2k|                    if self.vars_read {
-  640|  2.04k|                        let mut mapping = BTreeMap::default();
-  641|  41.0k|                        for (i, var) in self.variables.iter().enumerate() {
-  642|  41.0k|                            mapping.insert(var.as_str().to_owned(), i);
-  643|  41.0k|                        }
-  644|  2.04k|                        Ok(Some(JsonInnerQueryResults::Solutions {
-  645|  2.04k|                            variables: take(&mut self.variables),
-  646|  2.04k|                            solutions: JsonInnerSolutions::Reader(JsonInnerSolutionsParser {
-  647|  2.04k|                                state: JsonInnerSolutionsParserState::BeforeSolution,
-  648|  2.04k|                                mapping,
-  649|  2.04k|                                new_bindings: Vec::new(),
-  650|  2.04k|                            }),
-  651|  2.04k|                        }))
+  640|  2.05k|                        let mut mapping = BTreeMap::default();
+  641|  41.5k|                        for (i, var) in self.variables.iter().enumerate() {
+  642|  41.5k|                            mapping.insert(var.as_str().to_owned(), i);
+  643|  41.5k|                        }
+  644|  2.05k|                        Ok(Some(JsonInnerQueryResults::Solutions {
+  645|  2.05k|                            variables: take(&mut self.variables),
+  646|  2.05k|                            solutions: JsonInnerSolutions::Reader(JsonInnerSolutionsParser {
+  647|  2.05k|                                state: JsonInnerSolutionsParserState::BeforeSolution,
+  648|  2.05k|                                mapping,
+  649|  2.05k|                                new_bindings: Vec::new(),
+  650|  2.05k|                            }),
+  651|  2.05k|                        }))
   652|       |                    } else {
-  653|  13.1k|                        self.state = JsonInnerReaderState::BeforeSolution;
-  654|  13.1k|                        Ok(None)
+  653|  13.2k|                        self.state = JsonInnerReaderState::BeforeSolution;
+  654|  13.2k|                        Ok(None)
   655|       |                    }
   656|       |                } else {
   657|      1|                    Err(QueryResultsSyntaxError::msg(
@@ -2570,12 +2570,12 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   673|      1|                )),
   674|       |            },
   675|  21.6k|            JsonInnerReaderState::BetweenSolutionTerms => match event {
-  676|  9.38k|                JsonEvent::ObjectKey(key) => {
-  677|  9.38k|                    self.state = JsonInnerReaderState::Term {
-  678|  9.38k|                        reader: JsonInnerTermReader::default(),
-  679|  9.38k|                        variable: key.into(),
-  680|  9.38k|                    };
-  681|  9.38k|                    Ok(None)
+  676|  9.39k|                JsonEvent::ObjectKey(key) => {
+  677|  9.39k|                    self.state = JsonInnerReaderState::Term {
+  678|  9.39k|                        reader: JsonInnerTermReader::default(),
+  679|  9.39k|                        variable: key.into(),
+  680|  9.39k|                    };
+  681|  9.39k|                    Ok(None)
   682|       |                }
   683|       |                JsonEvent::EndObject => {
   684|  12.2k|                    self.state = JsonInnerReaderState::BeforeSolution;
@@ -2588,27 +2588,27 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   691|      0|                _ => unreachable!(),
   692|       |            },
   693|       |            JsonInnerReaderState::Term {
-  694|   368k|                ref mut reader,
-  695|   368k|                variable,
-  696|   368k|            } => {
-  697|   368k|                let result = reader.read_event(event);
-  698|   368k|                if let Some(term) = result? {
+  694|   369k|                ref mut reader,
+  695|   369k|                variable,
+  696|   369k|            } => {
+  697|   369k|                let result = reader.read_event(event);
+  698|   369k|                if let Some(term) = result? {
   699|      0|                    self.current_solution_variables.push(take(variable));
   700|      0|                    self.current_solution_values.push(term);
   701|      0|                    self.state = JsonInnerReaderState::BetweenSolutionTerms;
-  702|   361k|                }
-  703|   361k|                Ok(None)
+  702|   363k|                }
+  703|   363k|                Ok(None)
   704|       |            }
   705|       |            JsonInnerReaderState::AfterBindings => {
-  706|  28.0k|                if event == JsonEvent::EndObject {
+  706|  28.1k|                if event == JsonEvent::EndObject {
   707|  3.49k|                    self.state = JsonInnerReaderState::InRootObject;
   708|  3.49k|                } else {
-  709|  24.5k|                    self.state = JsonInnerReaderState::Ignore {
-  710|  24.5k|                        level: 0,
-  711|  24.5k|                        after: JsonInnerReaderStateAfterIgnore::AfterBindings,
-  712|  24.5k|                    }
+  709|  24.6k|                    self.state = JsonInnerReaderState::Ignore {
+  710|  24.6k|                        level: 0,
+  711|  24.6k|                        after: JsonInnerReaderStateAfterIgnore::AfterBindings,
+  712|  24.6k|                    }
   713|       |                }
-  714|  28.0k|                Ok(None)
+  714|  28.1k|                Ok(None)
   715|       |            }
   716|       |            JsonInnerReaderState::BeforeBoolean => {
   717|      5|                if let JsonEvent::Boolean(v) = event {
@@ -2618,46 +2618,46 @@ _RNvMs4_NtCskh3h6I55TK4_10sparesults4jsonNtB5_15JsonInnerReader10read_event:
   721|       |                }
   722|       |            }
   723|       |            #[allow(clippy::ref_patterns)]
-  724|   594k|            JsonInnerReaderState::Ignore { level, ref after } => {
-  725|   594k|                let level = match event {
+  724|   596k|            JsonInnerReaderState::Ignore { level, ref after } => {
+  725|   596k|                let level = match event {
   726|   159k|                    JsonEvent::StartArray | JsonEvent::StartObject => *level + 1,
-  727|  58.7k|                    JsonEvent::EndArray | JsonEvent::EndObject => *level - 1,
+  727|  58.8k|                    JsonEvent::EndArray | JsonEvent::EndObject => *level - 1,
   728|       |                    JsonEvent::String(_)
   729|       |                    | JsonEvent::Number(_)
   730|       |                    | JsonEvent::Boolean(_)
   731|       |                    | JsonEvent::Null
   732|       |                    | JsonEvent::ObjectKey(_)
-  733|   375k|                    | JsonEvent::Eof => *level,
+  733|   377k|                    | JsonEvent::Eof => *level,
   734|       |                };
-  735|   594k|                self.state = if level == 0 {
-  736|   197k|                    match after {
+  735|   596k|                self.state = if level == 0 {
+  736|   198k|                    match after {
   737|       |                        JsonInnerReaderStateAfterIgnore::InRootObject => {
-  738|  71.7k|                            JsonInnerReaderState::InRootObject
+  738|  72.1k|                            JsonInnerReaderState::InRootObject
   739|       |                        }
-  740|  78.6k|                        JsonInnerReaderStateAfterIgnore::InHead => JsonInnerReaderState::InHead,
+  740|  79.1k|                        JsonInnerReaderStateAfterIgnore::InHead => JsonInnerReaderState::InHead,
   741|       |                        JsonInnerReaderStateAfterIgnore::InResults => {
-  742|  22.6k|                            JsonInnerReaderState::InResults
+  742|  22.8k|                            JsonInnerReaderState::InResults
   743|       |                        }
   744|       |                        JsonInnerReaderStateAfterIgnore::AfterBindings => {
-  745|  24.2k|                            JsonInnerReaderState::AfterBindings
+  745|  24.3k|                            JsonInnerReaderState::AfterBindings
   746|       |                        }
   747|       |                    }
   748|       |                } else {
-  749|   396k|                    JsonInnerReaderState::Ignore {
-  750|   396k|                        level,
-  751|   396k|                        after: *after,
-  752|   396k|                    }
+  749|   397k|                    JsonInnerReaderState::Ignore {
+  750|   397k|                        level,
+  751|   397k|                        after: *after,
+  752|   397k|                    }
   753|       |                };
-  754|   594k|                Ok(None)
+  754|   596k|                Ok(None)
   755|       |            }
   756|       |        }
   757|  1.44M|    }
 _RNvMs5_NtCskh3h6I55TK4_10sparesults4jsonNtB5_24JsonInnerSolutionsParser10read_event:
-  777|  92.7k|    fn read_event(
-  778|  92.7k|        &mut self,
-  779|  92.7k|        event: JsonEvent<'_>,
-  780|  92.7k|    ) -> Result<Option<Vec<Option<Term>>>, QueryResultsSyntaxError> {
-  781|  92.7k|        match &mut self.state {
+  777|  93.1k|    fn read_event(
+  778|  93.1k|        &mut self,
+  779|  93.1k|        event: JsonEvent<'_>,
+  780|  93.1k|    ) -> Result<Option<Vec<Option<Term>>>, QueryResultsSyntaxError> {
+  781|  93.1k|        match &mut self.state {
   782|  12.7k|            JsonInnerSolutionsParserState::BeforeSolution => match event {
   783|       |                JsonEvent::StartObject => {
   784|  11.6k|                    self.state = JsonInnerSolutionsParserState::BetweenSolutionTerms;
@@ -2673,17 +2673,17 @@ _RNvMs5_NtCskh3h6I55TK4_10sparesults4jsonNtB5_24JsonInnerSolutionsParser10read_e
   794|      3|                )),
   795|       |            },
   796|  11.6k|            JsonInnerSolutionsParserState::BetweenSolutionTerms => match event {
-  797|    818|                JsonEvent::ObjectKey(key) => {
-  798|    818|                    let key = *self.mapping.get(key.as_ref()).ok_or_else(|| {
+  797|    819|                JsonEvent::ObjectKey(key) => {
+  798|    819|                    let key = *self.mapping.get(key.as_ref()).ok_or_else(|| {
   799|       |                        QueryResultsSyntaxError::msg(format!(
   800|       |                            "The variable {key} has not been defined in the header"
   801|       |                        ))
-  802|    818|                    })?;
-  803|    807|                    self.state = JsonInnerSolutionsParserState::Term {
-  804|    807|                        reader: JsonInnerTermReader::default(),
-  805|    807|                        key,
-  806|    807|                    };
-  807|    807|                    Ok(None)
+  802|    819|                    })?;
+  803|    808|                    self.state = JsonInnerSolutionsParserState::Term {
+  804|    808|                        reader: JsonInnerTermReader::default(),
+  805|    808|                        key,
+  806|    808|                    };
+  807|    808|                    Ok(None)
   808|       |                }
   809|       |                JsonEvent::EndObject => {
   810|  10.8k|                    self.state = JsonInnerSolutionsParserState::BeforeSolution;
@@ -2692,19 +2692,19 @@ _RNvMs5_NtCskh3h6I55TK4_10sparesults4jsonNtB5_24JsonInnerSolutionsParser10read_e
   813|      0|                _ => unreachable!(),
   814|       |            },
   815|       |            JsonInnerSolutionsParserState::Term {
-  816|  66.1k|                ref mut reader,
-  817|  66.1k|                key,
-  818|  66.1k|            } => {
-  819|  66.1k|                let result = reader.read_event(event);
-  820|  66.1k|                if let Some(term) = result? {
+  816|  66.4k|                ref mut reader,
+  817|  66.4k|                key,
+  818|  66.4k|            } => {
+  819|  66.4k|                let result = reader.read_event(event);
+  820|  66.4k|                if let Some(term) = result? {
   821|      0|                    self.new_bindings[*key] = Some(term);
   822|      0|                    self.state = JsonInnerSolutionsParserState::BetweenSolutionTerms;
-  823|  65.8k|                }
-  824|  65.8k|                Ok(None)
+  823|  66.2k|                }
+  824|  66.2k|                Ok(None)
   825|       |            }
   826|       |            JsonInnerSolutionsParserState::AfterEnd => {
-  827|  2.26k|                if event == JsonEvent::EndObject {
-  828|  2.26k|                    Ok(None)
+  827|  2.27k|                if event == JsonEvent::EndObject {
+  828|  2.27k|                    Ok(None)
   829|       |                } else {
   830|      2|                    Err(QueryResultsSyntaxError::msg(
   831|      2|                        "Unexpected JSON after the end of the bindings array",
@@ -2712,37 +2712,37 @@ _RNvMs5_NtCskh3h6I55TK4_10sparesults4jsonNtB5_24JsonInnerSolutionsParser10read_e
   833|       |                }
   834|       |            }
   835|       |        }
-  836|  92.7k|    }
+  836|  93.1k|    }
 _RNvMs6_NtCskh3h6I55TK4_10sparesults4jsonNtB5_19JsonInnerTermReader10read_event:
-  882|  7.97M|    fn read_event(
-  883|  7.97M|        &mut self,
-  884|  7.97M|        event: JsonEvent<'_>,
-  885|  7.97M|    ) -> Result<Option<Term>, QueryResultsSyntaxError> {
-  886|  7.97M|        match &mut self.state {
+  882|  8.01M|    fn read_event(
+  883|  8.01M|        &mut self,
+  884|  8.01M|        event: JsonEvent<'_>,
+  885|  8.01M|    ) -> Result<Option<Term>, QueryResultsSyntaxError> {
+  886|  8.01M|        match &mut self.state {
   887|       |            JsonInnerTermReaderState::Start => {
-  888|  58.1k|                if event == JsonEvent::StartObject {
-  889|  58.0k|                    self.state = JsonInnerTermReaderState::Middle;
-  890|  58.0k|                    Ok(None)
+  888|  58.3k|                if event == JsonEvent::StartObject {
+  889|  58.2k|                    self.state = JsonInnerTermReaderState::Middle;
+  890|  58.2k|                    Ok(None)
   891|       |                } else {
   892|     34|                    Err(QueryResultsSyntaxError::msg(
   893|     34|                        "RDF terms must be encoded using objects",
   894|     34|                    ))
   895|       |                }
   896|       |            }
-  897|   164k|            JsonInnerTermReaderState::Middle => match event {
-  898|   164k|                JsonEvent::ObjectKey(object_key) => {
-  899|   164k|                    self.state = match object_key.as_ref() {
-  900|   164k|                        "type" => JsonInnerTermReaderState::TermType,
-  901|   164k|                        "value" => JsonInnerTermReaderState::Value,
-  902|  96.5k|                        "datatype" => JsonInnerTermReaderState::Datatype,
-  903|  3.94k|                        "xml:lang" => JsonInnerTermReaderState::Lang,
+  897|   165k|            JsonInnerTermReaderState::Middle => match event {
+  898|   165k|                JsonEvent::ObjectKey(object_key) => {
+  899|   165k|                    self.state = match object_key.as_ref() {
+  900|   165k|                        "type" => JsonInnerTermReaderState::TermType,
+  901|   165k|                        "value" => JsonInnerTermReaderState::Value,
+  902|  97.0k|                        "datatype" => JsonInnerTermReaderState::Datatype,
+  903|  3.95k|                        "xml:lang" => JsonInnerTermReaderState::Lang,
   904|       |                        _ => {
-  905|    845|                            return Err(QueryResultsSyntaxError::msg(format!(
-  906|    845|                                "Unsupported term key: {object_key}"
-  907|    845|                            )));
+  905|    847|                            return Err(QueryResultsSyntaxError::msg(format!(
+  906|    847|                                "Unsupported term key: {object_key}"
+  907|    847|                            )));
   908|       |                        }
   909|       |                    };
-  910|   163k|                    Ok(None)
+  910|   164k|                    Ok(None)
   911|       |                }
   912|       |                JsonEvent::EndObject => {
   913|      5|                    self.state = JsonInnerTermReaderState::Start;
@@ -2873,7 +2873,7 @@ _RNvMs6_NtCskh3h6I55TK4_10sparesults4jsonNtB5_19JsonInnerTermReader10read_event:
  1038|      4|                    Err(QueryResultsSyntaxError::msg("Term type must be a string"))
  1039|       |                }
  1040|       |            }
- 1041|  67.8k|            JsonInnerTermReaderState::Value => match event {
+ 1041|  68.0k|            JsonInnerTermReaderState::Value => match event {
  1042|  19.5k|                JsonEvent::String(value) => {
  1043|  19.5k|                    self.value = Some(value.into_owned());
  1044|  19.5k|                    self.state = JsonInnerTermReaderState::Middle;
@@ -2881,8 +2881,8 @@ _RNvMs6_NtCskh3h6I55TK4_10sparesults4jsonNtB5_19JsonInnerTermReader10read_event:
  1046|       |                }
  1047|       |                #[cfg(feature = "rdf-star")]
  1048|       |                JsonEvent::StartObject => {
- 1049|  48.2k|                    self.state = JsonInnerTermReaderState::InValue;
- 1050|  48.2k|                    Ok(None)
+ 1049|  48.4k|                    self.state = JsonInnerTermReaderState::InValue;
+ 1050|  48.4k|                    Ok(None)
  1051|       |                }
  1052|       |                _ => {
  1053|      1|                    self.state = JsonInnerTermReaderState::Middle;
@@ -2891,22 +2891,22 @@ _RNvMs6_NtCskh3h6I55TK4_10sparesults4jsonNtB5_19JsonInnerTermReader10read_event:
  1056|       |                }
  1057|       |            },
  1058|       |            JsonInnerTermReaderState::Lang => {
- 1059|  3.08k|                let result = if let JsonEvent::String(value) = event {
- 1060|  3.08k|                    self.lang = Some(value.into_owned());
- 1061|  3.08k|                    Ok(None)
+ 1059|  3.09k|                let result = if let JsonEvent::String(value) = event {
+ 1060|  3.09k|                    self.lang = Some(value.into_owned());
+ 1061|  3.09k|                    Ok(None)
  1062|       |                } else {
  1063|      1|                    Err(QueryResultsSyntaxError::msg("Term lang must be strings"))
  1064|       |                };
- 1065|  3.08k|                self.state = JsonInnerTermReaderState::Middle;
- 1066|  3.08k|
- 1067|  3.08k|                result
+ 1065|  3.09k|                self.state = JsonInnerTermReaderState::Middle;
+ 1066|  3.09k|
+ 1067|  3.09k|                result
  1068|       |            }
  1069|       |            JsonInnerTermReaderState::Datatype => {
- 1070|  92.3k|                let result = if let JsonEvent::String(value) = event {
- 1071|  92.3k|                    match NamedNode::new(value) {
- 1072|  86.5k|                        Ok(datatype) => {
- 1073|  86.5k|                            self.datatype = Some(datatype);
- 1074|  86.5k|                            Ok(None)
+ 1070|  92.8k|                let result = if let JsonEvent::String(value) = event {
+ 1071|  92.8k|                    match NamedNode::new(value) {
+ 1072|  86.9k|                        Ok(datatype) => {
+ 1073|  86.9k|                            self.datatype = Some(datatype);
+ 1074|  86.9k|                            Ok(None)
  1075|       |                        }
  1076|  5.85k|                        Err(e) => Err(QueryResultsSyntaxError::msg(format!(
  1077|  5.85k|                            "Invalid datatype: {e}"
@@ -2915,24 +2915,24 @@ _RNvMs6_NtCskh3h6I55TK4_10sparesults4jsonNtB5_19JsonInnerTermReader10read_event:
  1080|       |                } else {
  1081|      1|                    Err(QueryResultsSyntaxError::msg("Term lang must be strings"))
  1082|       |                };
- 1083|  92.3k|                self.state = JsonInnerTermReaderState::Middle;
- 1084|  92.3k|
- 1085|  92.3k|                result
+ 1083|  92.8k|                self.state = JsonInnerTermReaderState::Middle;
+ 1084|  92.8k|
+ 1085|  92.8k|                result
  1086|       |            }
  1087|       |            #[cfg(feature = "rdf-star")]
- 1088|  48.2k|            JsonInnerTermReaderState::InValue => match event {
- 1089|  48.1k|                JsonEvent::ObjectKey(object_key) => {
- 1090|  48.1k|                    self.state = match object_key.as_ref() {
- 1091|  48.1k|                        "subject" => JsonInnerTermReaderState::Subject(Box::default()),
- 1092|  47.3k|                        "predicate" => JsonInnerTermReaderState::Predicate(Box::default()),
- 1093|  1.35k|                        "object" => JsonInnerTermReaderState::Object(Box::default()),
+ 1088|  48.4k|            JsonInnerTermReaderState::InValue => match event {
+ 1089|  48.3k|                JsonEvent::ObjectKey(object_key) => {
+ 1090|  48.3k|                    self.state = match object_key.as_ref() {
+ 1091|  48.3k|                        "subject" => JsonInnerTermReaderState::Subject(Box::default()),
+ 1092|  47.5k|                        "predicate" => JsonInnerTermReaderState::Predicate(Box::default()),
+ 1093|  1.36k|                        "object" => JsonInnerTermReaderState::Object(Box::default()),
  1094|       |                        _ => {
  1095|     79|                            return Err(QueryResultsSyntaxError::msg(format!(
  1096|     79|                                "Unsupported value key: {object_key}"
  1097|     79|                            )));
  1098|       |                        }
  1099|       |                    };
- 1100|  48.1k|                    Ok(None)
+ 1100|  48.2k|                    Ok(None)
  1101|       |                }
  1102|       |                JsonEvent::EndObject => {
  1103|     66|                    self.state = JsonInnerTermReaderState::Middle;
@@ -2949,27 +2949,27 @@ _RNvMs6_NtCskh3h6I55TK4_10sparesults4jsonNtB5_19JsonInnerTermReader10read_event:
  1114|  24.0k|                Ok(None)
  1115|       |            }
  1116|       |            #[cfg(feature = "rdf-star")]
- 1117|  7.41M|            JsonInnerTermReaderState::Predicate(ref mut inner_state) => {
- 1118|  7.41M|                if let Some(term) = inner_state.read_event(event)? {
+ 1117|  7.45M|            JsonInnerTermReaderState::Predicate(ref mut inner_state) => {
+ 1118|  7.45M|                if let Some(term) = inner_state.read_event(event)? {
  1119|      0|                    self.state = JsonInnerTermReaderState::InValue;
  1120|      0|                    self.predicate = Some(term);
- 1121|  7.39M|                }
- 1122|  7.39M|                Ok(None)
+ 1121|  7.43M|                }
+ 1122|  7.43M|                Ok(None)
  1123|       |            }
  1124|       |            #[cfg(feature = "rdf-star")]
- 1125|  99.5k|            JsonInnerTermReaderState::Object(ref mut inner_state) => {
- 1126|  99.5k|                if let Some(term) = inner_state.read_event(event)? {
+ 1125|   100k|            JsonInnerTermReaderState::Object(ref mut inner_state) => {
+ 1126|   100k|                if let Some(term) = inner_state.read_event(event)? {
  1127|      0|                    self.state = JsonInnerTermReaderState::InValue;
  1128|      0|                    self.object = Some(term);
- 1129|  98.9k|                }
- 1130|  98.9k|                Ok(None)
+ 1129|  99.9k|                }
+ 1130|  99.9k|                Ok(None)
  1131|       |            }
  1132|       |        }
- 1133|  7.97M|    }
+ 1133|  8.01M|    }
 _RNvMs7_NtCskh3h6I55TK4_10sparesults4jsonNtB5_29JsonBufferedSolutionsIterator4next:
  1142|  11.3k|    fn next(&mut self) -> Result<Option<Vec<Option<Term>>>, QueryResultsSyntaxError> {
  1143|  11.3k|        let Some((variables, values)) = self.bindings.next() else {
- 1144|  1.11k|            return Ok(None);
+ 1144|  1.12k|            return Ok(None);
  1145|       |        };
  1146|  10.2k|        let mut new_bindings = vec![None; self.mapping.len()];
  1147|  10.2k|        for (variable, value) in variables.into_iter().zip(values) {
@@ -3036,12 +3036,12 @@ _RNvMNtCskh3h6I55TK4_10sparesults6parserNtB2_18QueryResultsParser9for_slice:
   249|  22.3k|            QueryResultsFormat::Json => match SliceJsonQueryResultsParserOutput::read(slice)? {
   250|      4|                SliceJsonQueryResultsParserOutput::Boolean(r) => SliceQueryResultsParserOutput::Boolean(r),
   251|       |                SliceJsonQueryResultsParserOutput::Solutions {
-  252|  3.16k|                    solutions,
-  253|  3.16k|                    variables,
-  254|  3.16k|                } => SliceQueryResultsParserOutput::Solutions(SliceSolutionsParser {
-  255|  3.16k|                    variables: variables.into(),
-  256|  3.16k|                    solutions: SliceSolutionsParserKind::Json(solutions),
-  257|  3.16k|                }),
+  252|  3.17k|                    solutions,
+  253|  3.17k|                    variables,
+  254|  3.17k|                } => SliceQueryResultsParserOutput::Solutions(SliceSolutionsParser {
+  255|  3.17k|                    variables: variables.into(),
+  256|  3.17k|                    solutions: SliceSolutionsParserKind::Json(solutions),
+  257|  3.17k|                }),
   258|       |            },
   259|      0|            QueryResultsFormat::Csv => return Err(QueryResultsSyntaxError::msg("CSV SPARQL results syntax is lossy and can't be parsed to a proper RDF representation")),
   260|      0|            QueryResultsFormat::Tsv => match SliceTsvQueryResultsParserOutput::read(slice)? {
@@ -3072,9 +3072,9 @@ _RNCNvXs3_NtCskh3h6I55TK4_10sparesults6parserNtB7_20SliceSolutionsParserNtNtNtNt
   650|  21.0k|            .map(|values| (Arc::clone(&self.variables), values).into()),
 
 _RNvMNtCskh3h6I55TK4_10sparesults10serializerNtB2_22QueryResultsSerializer11from_formatCsayyyEI11TDH_13oxigraph_fuzz:
-   59|  1.12k|    pub fn from_format(format: QueryResultsFormat) -> Self {
-   60|  1.12k|        Self { format }
-   61|  1.12k|    }
+   59|  1.13k|    pub fn from_format(format: QueryResultsFormat) -> Self {
+   60|  1.13k|        Self { format }
+   61|  1.13k|    }
 _RINvMNtCskh3h6I55TK4_10sparesults10serializerNtB3_22QueryResultsSerializer27serialize_boolean_to_writerQINtNtCs3OstG5Tqy1X_5alloc3vec3VechEECsayyyEI11TDH_13oxigraph_fuzz:
    75|      2|    pub fn serialize_boolean_to_writer<W: Write>(self, writer: W, value: bool) -> io::Result<W> {
    76|      2|        match self.format {
@@ -3143,10 +3143,10 @@ _RNvXs0_NtCskh3h6I55TK4_10sparesults8solutionRNtB5_13QuerySolutionNtNtNtNtCscdEv
   182|  10.2k|    }
 _RNvXs9_NtCskh3h6I55TK4_10sparesults8solutionNtB5_4IterNtNtNtNtCscdEvteftVc2_4core4iter6traits8iterator8Iterator4nextCsayyyEI11TDH_13oxigraph_fuzz:
   285|  10.2k|    fn next(&mut self) -> Option<Self::Item> {
-  286|   102k|        for (variable, value) in &mut self.inner {
-  287|  92.5k|            if let Some(value) = value {
+  286|   103k|        for (variable, value) in &mut self.inner {
+  287|  92.9k|            if let Some(value) = value {
   288|      0|                return Some((variable, value));
-  289|  92.5k|            }
+  289|  92.9k|            }
   290|       |        }
   291|  10.2k|        None
   292|  10.2k|    }
@@ -3183,7 +3183,7 @@ _RNvXs6_NtCskh3h6I55TK4_10sparesults8solutionNtB5_13QuerySolutionNtNtCscdEvteftV
   248|  10.2k|    }
 _RNvXs9_NtCskh3h6I55TK4_10sparesults8solutionNtB5_4IterNtNtNtNtCscdEvteftVc2_4core4iter6traits8iterator8Iterator4nextB7_:
   285|  20.4k|    fn next(&mut self) -> Option<Self::Item> {
-  286|   205k|        for (variable, value) in &mut self.inner {
+  286|   206k|        for (variable, value) in &mut self.inner {
   287|   185k|            if let Some(value) = value {
   288|      0|                return Some((variable, value));
   289|   185k|            }
